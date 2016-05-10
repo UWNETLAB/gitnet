@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Research Methods</title>
+    <link>http://syui.github.io/hugo-theme-air/</link>
+    <description>Recent content on Research Methods</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <copyright>John McLevey</copyright>
+    <lastBuildDate>Tue, 10 May 2016 11:12:45 +0900</lastBuildDate>
+    <atom:link href="http://syui.github.io/hugo-theme-air/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title></title>
+      <link>http://syui.github.io/hugo-theme-air/post/profile/</link>
+      <pubDate>Tue, 10 May 2016 11:12:45 +0900</pubDate>
+      
+      <guid>http://syui.github.io/hugo-theme-air/post/profile/</guid>
+      <description>
+
+&lt;h1 id=&#34;description:3e19b1a3ed52dcfc9895143fe9bdc719&#34;&gt;Description&lt;/h1&gt;
+
+&lt;p&gt;Coming soon&amp;hellip;&lt;/p&gt;
+
+&lt;h1 id=&#34;deliverables:3e19b1a3ed52dcfc9895143fe9bdc719&#34;&gt;Deliverables&lt;/h1&gt;
+
+&lt;p&gt;Coming soon&amp;hellip;&lt;/p&gt;
+
+&lt;h1 id=&#34;schedule:3e19b1a3ed52dcfc9895143fe9bdc719&#34;&gt;Schedule&lt;/h1&gt;
+
+&lt;p&gt;Coming soon&amp;hellip;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
