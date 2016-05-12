@@ -11,3 +11,10 @@ class ParseError(gitnetException):
     """
     Exception given when an error occurs duing parsing.
     """
+    pass
+
+class InputError(gitnetException):
+    """
+    Exception given when the user gives an invalid input.
+    """
+    pass

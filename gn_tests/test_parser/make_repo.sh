@@ -7,4 +7,5 @@ git commit -m "Made readme." --author="Alice <alice@gmail.com>" --date="Fri May 
 echo "Added new features." >> readme.md
 git add readme.md
 git commit -m "Made readme." --author="Bob <bob@gmail.com>" --date="Fri May 6 14:50:22 2016 -0400"
-git log >> "test_logs.txt"
+git log >> "basic_logs.txt"
+git log --raw >> "raw_logs.txt"
