@@ -1,7 +1,7 @@
 import bash as sh
 import os
 import warnings
-from gn_exceptions import RepositoryError, ParseError, InputError
+from .gn_exceptions import RepositoryError, ParseError, InputError
 
 # Example path for testing.
 rp_path = "/Users/joelbecker/Documents/Work/Networks Lab/rad_pariphernalia"
