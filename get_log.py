@@ -24,7 +24,7 @@ def retrieve_commits(path, mode = "raw"):
     """
     print("Attempting local git log retrieval...")
     # Log command modes, referenced by "mode" input.
-    log_commands = {"basic": "git log", "raw": "git log --raw"}
+    log_commands = {"basic": "git log", "raw": "git log --raw", "stat":"git log --stat"}
     if mode not in log_commands.keys():
         raise InputError("{} is not a valid retrieval mode.".format(mode))
     # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
@@ -66,3 +66,5 @@ def parse_commits(commit_str):
     if mode == "basic":
         pass
     pass
+
+# Don't forget to save "mode":"stat" for each commit record.
