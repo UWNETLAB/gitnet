@@ -13,11 +13,11 @@ class TestGetLog(unittest.TestCase):
         # Save gitnet directory.
         self.gitnet_dir = os.getcwd()
         # Go into parser testing folder. Make directory and copy in bash script.
-        os.chdir(self.gitnet_dir + "/gn_tests/test_parser")
+        os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
         sh.bash("mkdir test_repo")
         sh.bash("cp make_repo.sh ./test_repo")
         # Run the bash script with Git initialization and commit activity.
-        self.test_repo_dir = self.gitnet_dir + "/gn_tests/test_parser/test_repo"
+        self.test_repo_dir = self.gitnet_dir + "/gitnet_tests/test_parser/test_repo"
         os.chdir(self.test_repo_dir)
         sh.bash("bash make_repo.sh")
         # Navigate back to gitnet home folder for testing.
@@ -57,7 +57,7 @@ class TestGetLog(unittest.TestCase):
                          ("Mode =\nstat\n"+bash_logs).replace("\n",""))
 
     def tearDown(self):
-        os.chdir(self.gitnet_dir + "/gn_tests/test_parser")
+        os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
         sh.bash("rm -r test_repo")
         os.chdir(self.gitnet_dir)
 
@@ -66,11 +66,11 @@ class RetrievalFailure(unittest.TestCase):
         # Save gitnet directory.
         self.gitnet_dir = os.getcwd()
         # Go into parser testing folder. Make directory and copy in bash script.
-        os.chdir(self.gitnet_dir + "/gn_tests/test_parser")
+        os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
         sh.bash("mkdir test_repo")
         sh.bash("cp make_repo.sh ./test_repo")
         # Run the bash script with Git initialization and commit activity.
-        self.test_repo_dir = self.gitnet_dir + "/gn_tests/test_parser/test_repo"
+        self.test_repo_dir = self.gitnet_dir + "/gitnet_tests/test_parser/test_repo"
         os.chdir(self.test_repo_dir)
         sh.bash("git init")
         # Navigate back to gitnet home folder for testing.
@@ -92,7 +92,7 @@ class RetrievalFailure(unittest.TestCase):
             retrieve_commits("/")
 
     def tearDown(self):
-        os.chdir(self.gitnet_dir + "/gn_tests/test_parser")
+        os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
         sh.bash("rm -r test_repo")
         os.chdir(self.gitnet_dir)
 
