@@ -6,9 +6,6 @@ build/*
 dist/*
 /gitnet.egg-info
 gitnet.egg-info/*
-/idea
-/idea/*
-*.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
