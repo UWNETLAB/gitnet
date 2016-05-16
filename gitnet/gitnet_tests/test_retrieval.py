@@ -1,8 +1,7 @@
 import unittest
 import os
 import bash as sh
-from get_log import retrieve_commits
-from gn_exceptions import RepositoryError, ParseError, InputError
+import gitnet
 
 # A unit test module for gitnet. Be careful making changes to this file. It is sensitive to its position in the
 #   file system.
@@ -11,6 +10,7 @@ class TestGetLog(unittest.TestCase):
 
     def setUp(self):
         # Save gitnet directory.
+        os.chdir("gitnet")
         self.gitnet_dir = os.getcwd()
         # Go into parser testing folder. Make directory and copy in bash script.
         os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
@@ -30,7 +30,7 @@ class TestGetLog(unittest.TestCase):
         bash_logs = f.read()
         f.close()
         # Read in the git logs with retrieve_commits
-        generated_logs = retrieve_commits(self.test_repo_dir,mode = "basic")
+        generated_logs = gitnet.retrieve_commits(self.test_repo_dir,mode = "basic")
         self.assertEqual(generated_logs.replace("\n",""),
                          ("Mode =\nbasic\n"+bash_logs).replace("\n",""))
 
@@ -41,7 +41,7 @@ class TestGetLog(unittest.TestCase):
         bash_logs = f.read()
         f.close()
         # Read in the git logs with retrieve_commits
-        generated_logs = retrieve_commits(self.test_repo_dir,mode = "raw")
+        generated_logs = gitnet.retrieve_commits(self.test_repo_dir,mode = "raw")
         self.assertEqual(generated_logs.replace("\n",""),
                          ("Mode =\nraw\n"+bash_logs).replace("\n",""))
 
@@ -52,7 +52,7 @@ class TestGetLog(unittest.TestCase):
         bash_logs = f.read()
         f.close()
         # Read in the git logs with retrieve_commits
-        generated_logs = retrieve_commits(self.test_repo_dir,mode = "stat")
+        generated_logs = gitnet.retrieve_commits(self.test_repo_dir,mode = "stat")
         self.assertEqual(generated_logs.replace("\n",""),
                          ("Mode =\nstat\n"+bash_logs).replace("\n",""))
 
@@ -79,17 +79,17 @@ class RetrievalFailure(unittest.TestCase):
     # Tests whether get_log.py raises the appropriate error when accessing an inactive Git repository.
     def test_no_commits_failure(self):
         with self.assertRaises(RepositoryError):
-            retrieve_commits(self.test_repo_dir, mode = "basic")
+            gitnet.retrieve_commits(self.test_repo_dir, mode = "basic")
 
     # Tests whether get_log.py raises the appropriate error when passed an invalid retrieval mode.
     def test_bad_mode_error(self):
         with self.assertRaises(InputError):
-            retrieve_commits(self.test_repo_dir, mode="hoolagin")
+            gitnet.retrieve_commits(self.test_repo_dir, mode="hoolagin")
 
     # Tests whether get_log.py raises the appropriate error when accessing a directory that's not a Git repository.
     def test_not_repo(self):
         with self.assertRaises(RepositoryError):
-            retrieve_commits("/")
+            gitnet.retrieve_commits("~/")
 
     def tearDown(self):
         os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")

@@ -1,16 +1,17 @@
 import bash as sh
 import os
 import warnings
-from .gn_exceptions import RepositoryError, ParseError, InputError
+from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
+from gitnet.gn_log import Log, CommitLog
 
 # Example path for testing.
 rp_path = "/Users/joelbecker/Documents/Work/Networks Lab/rad_pariphernalia"
 
-def retrieve_commits(path, mode = "raw"):
+def retrieve_commits(path, mode = "stat"):
     """
     retrieve_commits(path, mode = "basic") takes a file path string and a mode string and produces the  git log for the
-    specified directory. The default mode, "raw" retrieves the logs by running "git log --raw". Other modes include:
-    "basic" :
+    specified directory. The default mode, "stat" retrieves the logs by running "git log --stat". Modes include:
+    "basic" ("git log") and "raw" ("git log --raw").
     retrieve_commits: Str -> Str
     Effects: If successful, prints a summary message. If unsuccesful, raises a RepositoryError.
     Example: retrieve_log("/Users/.../my_repo") => "Mode =\nbasic\ncommit df4d...\nAuthor: Socrates <socrates@gmail.com>..."
@@ -81,6 +82,22 @@ def identify(s):
 
 
 def parse_commits(commit_str):
+    """
+    parse_commits(commit_str) Parses a raw string containing a commit Log for a Git repository. It produces a dictionary
+    of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference
+    codes.
+
+    Modes currently supported: Basic, Raw, Stat.
+
+    Git log data types currently implemented: hash ("HA"), mode ("MO"), author name ("AU"), author email ("AE"),
+    date ("DA"), commit message ("CM"), merge ("MG"), summary ("SU"), and a list of change records ("CH").
+
+    Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
+    matched during parse ("ER").
+
+    parse_commits: Str -> Dictof(Dictof(Str,Any))
+
+    """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
     commit_list = list(filter(lambda s: s != "",commit_str.split("\n")))
     mode_list = ["basic","raw","stat"]
@@ -144,7 +161,7 @@ def print_dd(coll,mode="manual"):
     """
     for key in coll.keys():
         print("----- {} -----".format(key))
-        for rkey in test_coll[key].keys():
+        for rkey in coll[key].keys():
             print("--- {} ---".format(rkey))
             if type(coll[key][rkey]) == str:
                 print(coll[key][rkey])
@@ -159,6 +176,35 @@ def print_dd(coll,mode="manual"):
 
 
 
-# Test
-#test_coll = parse_commits(retrieve_commits(rp_path,mode="raw"))
-#print_dd(test_coll,mode="manual")
+
+
+def get_log(path,mode = "stat",commit_source = "local git"):
+    """
+    A function for gathering data from a local Git repository.
+    :param path: A string containing the path of the Git repository.
+    :param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
+    :return: A CommitLog object.
+    """
+    if commit_source == "local git":
+        detect_key = "hash"
+    else:
+        detect_key = "unknown"
+    return CommitLog(dofd = parse_commits(retrieve_commits(path,mode)),
+                     source = commit_source,
+                     key_type = detect_key)
+
+my_log = get_log(rp_path)
+
+for record in my_log:
+    print(my_log.collection[record])
+
+print(my_log.attributes())
+
+print(len(my_log))
+
+def my_fun(x):
+    """
+    This is a great function that does cool stuff.
+    :param x: X is a nice number.
+    :return: Returns the answer to life, the universe, and everything.
+    """
