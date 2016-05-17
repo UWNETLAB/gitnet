@@ -2,19 +2,18 @@ import bash as sh
 import os
 import warnings
 from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
-from gitnet.gn_log import Log, CommitLog
+from gitnet.gn_log import CommitLog
 
-# Example path for testing.
-rp_path = "/Users/joelbecker/Documents/Work/Networks Lab/rad_pariphernalia"
+
 
 def retrieve_commits(path, mode = "stat"):
     """
-    retrieve_commits(path, mode = "basic") takes a file path string and a mode string and produces the  git log for the
+    retrieve_commits takes a file path string and a mode string and produces the  git log for the
     specified directory. The default mode, "stat" retrieves the logs by running "git log --stat". Modes include:
-    "basic" ("git log") and "raw" ("git log --raw").
-    retrieve_commits: Str -> Str
-    Effects: If successful, prints a summary message. If unsuccesful, raises a RepositoryError.
-    Example: retrieve_log("/Users/.../my_repo") => "Mode =\nbasic\ncommit df4d...\nAuthor: Socrates <socrates@gmail.com>..."
+    "basic" ("git log"), "raw" ("git log --raw"), and "stat" ("git log --stat").
+    :param path: A string identifying the path to the target git repository.
+    :param mode: A string identifying the git log mode to be retrieved. Default mode is "stat".
+    :return: Returns a large string containing the raw output from the repository's git log.
     """
     print("Attempting local git log retrieval...")
     # Log command modes, referenced by "mode" input.
@@ -43,10 +42,12 @@ def retrieve_commits(path, mode = "stat"):
 
 def identify(s):
     """
-    identify(s) is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry
+    identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry
     field from a Git commit log.
-    identify: Str -> Str
-    Example:
+    :param s: A string. One line of standard git log output (in basic, raw, or stat mode.)
+    :return: A string identifying the type of data received.
+
+    Examples:
     identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") => "hash"
     identify("Author: JBWBecker <joelbecker@gto.net>") => "author"
     identify("__init__.py                                  |   2 ++") => "change"
@@ -83,20 +84,18 @@ def identify(s):
 
 def parse_commits(commit_str):
     """
-    parse_commits(commit_str) Parses a raw string containing a commit Log for a Git repository. It produces a dictionary
+    Parses a raw string containing a commit Log for a Git repository. It produces a dictionary
     of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference
     codes.
-
-    Modes currently supported: Basic, Raw, Stat.
+    :param commit_str: Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.
+    :return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
+    recording the data from one commit log.
 
     Git log data types currently implemented: hash ("HA"), mode ("MO"), author name ("AU"), author email ("AE"),
     date ("DA"), commit message ("CM"), merge ("MG"), summary ("SU"), and a list of change records ("CH").
 
     Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
     matched during parse ("ER").
-
-    parse_commits: Str -> Dictof(Dictof(Str,Any))
-
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
     commit_list = list(filter(lambda s: s != "",commit_str.split("\n")))
@@ -154,29 +153,6 @@ def parse_commits(commit_str):
 
 
 
-def print_dd(coll,mode="manual"):
-    """
-    print_dd(coll) pretty prints a dictionary of dictionaries. Requires that the values in the nested dictionaries
-    are strings or lists of strings. Mode = manual to go record by record, mode = auto for entire collection.
-    """
-    for key in coll.keys():
-        print("----- {} -----".format(key))
-        for rkey in coll[key].keys():
-            print("--- {} ---".format(rkey))
-            if type(coll[key][rkey]) == str:
-                print(coll[key][rkey])
-            elif type(coll[key][rkey]) == list:
-                for s in coll[key][rkey]:
-                    print(s)
-            else:
-                warnings.warn("Dict of dict values not strings or list of strings.")
-        if mode == "manual":
-            if input("\nAnother? [press any key to continue, or press q to quit]\n") == "q":
-                break
-
-
-
-
 
 def get_log(path,mode = "stat",commit_source = "local git"):
     """
@@ -192,19 +168,3 @@ def get_log(path,mode = "stat",commit_source = "local git"):
     return CommitLog(dofd = parse_commits(retrieve_commits(path,mode)),
                      source = commit_source,
                      key_type = detect_key)
-
-my_log = get_log(rp_path)
-
-for record in my_log:
-    print(my_log.collection[record])
-
-print(my_log.attributes())
-
-print(len(my_log))
-
-def my_fun(x):
-    """
-    This is a great function that does cool stuff.
-    :param x: X is a nice number.
-    :return: Returns the answer to life, the universe, and everything.
-    """

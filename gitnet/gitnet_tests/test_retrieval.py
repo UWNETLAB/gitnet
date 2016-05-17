@@ -6,18 +6,24 @@ import gitnet
 # A unit test module for gitnet. Be careful making changes to this file. It is sensitive to its position in the
 #   file system.
 
+
+
 class TestGetLog(unittest.TestCase):
 
     def setUp(self):
+        print("*******************************")
+        print(os.getcwd())
+        print("*******************************")
         # Save gitnet directory.
-        os.chdir("gitnet")
+        os.chdir("..")
+        os.chdir("..")
         self.gitnet_dir = os.getcwd()
         # Go into parser testing folder. Make directory and copy in bash script.
         os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
         sh.bash("mkdir test_repo")
         sh.bash("cp make_repo.sh ./test_repo")
         # Run the bash script with Git initialization and commit activity.
-        self.test_repo_dir = self.gitnet_dir + "/gitnet_tests/test_parser/test_repo"
+        self.test_repo_dir = self.gitnet_dir + "/gitnet/gitnet_tests/test_parser/test_repo"
         os.chdir(self.test_repo_dir)
         sh.bash("bash make_repo.sh")
         # Navigate back to gitnet home folder for testing.
@@ -66,7 +72,7 @@ class RetrievalFailure(unittest.TestCase):
         # Save gitnet directory.
         self.gitnet_dir = os.getcwd()
         # Go into parser testing folder. Make directory and copy in bash script.
-        os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
+        os.chdir(self.gitnet_dir + "/gitnet/gitnet_tests/test_parser")
         sh.bash("mkdir test_repo")
         sh.bash("cp make_repo.sh ./test_repo")
         # Run the bash script with Git initialization and commit activity.
@@ -89,7 +95,7 @@ class RetrievalFailure(unittest.TestCase):
     # Tests whether get_log.py raises the appropriate error when accessing a directory that's not a Git repository.
     def test_not_repo(self):
         with self.assertRaises(RepositoryError):
-            gitnet.retrieve_commits("~/")
+            gitnet.retrieve_commits("/")
 
     def tearDown(self):
         os.chdir(self.gitnet_dir + "/gitnet_tests/test_parser")
