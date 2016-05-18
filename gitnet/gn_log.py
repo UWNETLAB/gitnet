@@ -80,10 +80,17 @@ class Log(object):
         """
         pass
 
-    def csv(self, ignore = [], fname = None, empty_cols = False):
+    def tsv(self, ignore = [], fname = None, empty_cols = False):
         """
-        Converts the Log to a tab-delimited string. Note that commas aren't appropriate since commit messages
-        will likely contain commas.
+        Converts the Log to a tab-delimited string. Note that while the CSV method (NOT YET IMPLEMENTED) strips commas
+        from the data ( e.g. commit messages and file names), this option does not change the content strings. This method will be preferrable when
+        working with a large dataset (where efficiency is a concern), when intending to perform linguistic analysis
+        on the data, or if you prefer the TSV format for export. Because the CSV method alters the dataset during
+        export, TSV is our recommended format for output.
+        :param ignore: Tags included in this list of strings will be ignored.
+        :param fname: If a file name is provided, the function will write to this file instead of to a string for output.
+        :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
+        :return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)
         """
         # Get the tags present in the Log.
         if empty_cols == True:
@@ -118,32 +125,33 @@ class Log(object):
             # Add the value for each tag.
             for tag in types:
                 tags_cur += 1
-                # If the key is valid, add the value.
-                if tag in self.collection[record].keys():
-                    cur_item = self.collection[record][tag]
-                    # If the item is a simple string, add it.
-                    if type(cur_item) == str:
-                        line = line + cur_item
-                    # If the item is a list, add each string in the list.
-                    elif type(cur_item) == list:
-                        list_cur = 0
-                        for i in cur_item:
-                            list_cur += 1
-                            if type(i) == str:
-                                line = line + i
-                            # Force a non-string to string.
-                            else:
-                                line = line + str(i)
-                                num_forced += 1
-                            if list_cur != len(cur_item):
-                                line = line + ";"
-                    # If the item is neither a string nor a list, force it to a string.
-                    else:
-                        line = line + str(cur_item)
-                        num_forced += 1
-                # Unless it is the last tag, add a separating tab.
-                if tags_cur != len(types):
-                    line = line + "\t"
+                if tag not in ignore:
+                    # If the key is valid, add the value.
+                    if tag in self.collection[record].keys():
+                        cur_item = self.collection[record][tag]
+                        # If the item is a simple string, add it.
+                        if type(cur_item) == str:
+                            line = line + cur_item
+                        # If the item is a list, add each string in the list.
+                        elif type(cur_item) == list:
+                            list_cur = 0
+                            for i in cur_item:
+                                list_cur += 1
+                                if type(i) == str:
+                                    line = line + i
+                                # Force a non-string to string.
+                                else:
+                                    line = line + str(i)
+                                    num_forced += 1
+                                if list_cur != len(cur_item):
+                                    line = line + ";"
+                        # If the item is neither a string nor a list, force it to a string.
+                        else:
+                            line = line + str(cur_item)
+                            num_forced += 1
+                    # Unless it is the last tag, add a separating tab.
+                    if tags_cur != len(types):
+                        line = line + "\t"
             # Give the line to string or file.
             line = line + "\n"
             if fname != None:
@@ -156,6 +164,7 @@ class Log(object):
             f.close()
             out = "Data written to {}".format(fname)
         return out
+
 
     def df(self,fname):
         """
@@ -189,7 +198,6 @@ class CommitLog(Log):
     """
     A Log class for holding Git commit logs.
     """
-
     def get_tags(self):
         return ["HA","AU","AE","DA","MO","MG","SU","CM","CH"]
 
@@ -206,4 +214,3 @@ class CommitLog(Log):
         :return: None
         """
         pass
-    pass

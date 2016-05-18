@@ -29,9 +29,9 @@ def retrieve_commits(path, mode = "stat"):
     if len(raw_logs) == 0:
         print("Raising error.")
         if "true" in str(sh.bash("git rev-parse --is-inside-work-tree").stdout):
-            raise RepositoryError("The specified directory is not a Git repository.")
+            raise RepositoryError("{} is not a Git repository.".format(path))
         else:
-            raise RepositoryError("This Git repository has no commits.")
+            raise RepositoryError("{} has no commits.".format(path))
     # If the retrieval was successful, print a summary."
     print("Got {} characters from: {}".format(len(raw_logs), path))
     # Record the retrieval mode.
