@@ -71,22 +71,24 @@ class Log(object):
         """
         A method which provides a description of the contents of the log.
         """
+        # TODO Implement Log.describe()
         pass
 
-    def filter(self):
+    def filter(self,):
         """
         A method which filters contents based on an expression.
         (There must be online documentation of how to do this. To the Google!)
         """
+        # TODO Implement Log.filter()
         pass
 
     def tsv(self, ignore = [], fname = None, empty_cols = False):
         """
         Converts the Log to a tab-delimited string. Note that while the CSV method (NOT YET IMPLEMENTED) strips commas
-        from the data ( e.g. commit messages and file names), this option does not change the content strings. This method will be preferrable when
-        working with a large dataset (where efficiency is a concern), when intending to perform linguistic analysis
-        on the data, or if you prefer the TSV format for export. Because the CSV method alters the dataset during
-        export, TSV is our recommended format for output.
+        from the data ( e.g. commit messages and file names), this option does not change the content strings. This
+        method will be preferrable when working with a large dataset (where efficiency is a concern), when intending to
+        perform linguistic analysis on the data, or if you prefer the TSV format for export. Because the CSV method alters
+        the dataset during export, TSV is our recommended format for output.
         :param ignore: Tags included in this list of strings will be ignored.
         :param fname: If a file name is provided, the function will write to this file instead of to a string for output.
         :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
@@ -171,6 +173,7 @@ class Log(object):
         Converts the Log to a Pandas dataframe.
         See http://stackoverflow.com/questions/15455388/dict-of-dicts-of-dicts-to-dataframe.
         """
+        # TODO Implement Log.df()
         pass
 
     def browse(self):
@@ -189,7 +192,7 @@ class Log(object):
                         print(s)
                 else:
                     warnings.warn("Dict of dict values not strings or list of strings.")
-            if input("\nAnother? [press any key to continue, or press q to quit]\n") == "q":
+            if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
                 break
 
 
@@ -201,9 +204,6 @@ class CommitLog(Log):
     def get_tags(self):
         return ["HA","AU","AE","DA","MO","MG","SU","CM","CH"]
 
-    #def __init__(self,dofd,source,key_type):
-    #    super().__init__()
-    #    self.tags = ["HA","AU","AE","DA","MO","MG","SU","CM","CH"]
     def ignore(self):
         """
         Not yet implemented. Mutates the CommitLog to move glob-matched change logs from the list of change logs to
@@ -213,4 +213,5 @@ class CommitLog(Log):
         criteria (i.e. globs/regex).
         :return: None
         """
+        # TODO Implement CommitLog.ignore()
         pass
