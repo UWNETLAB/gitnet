@@ -7,4 +7,3 @@ def git_datetime(s)
     :return: A datetime object.
     """
     return datetime.datetime.strptime(s,"%a %B %d %H:%M:%S %Y %z")
-

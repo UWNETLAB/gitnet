@@ -74,7 +74,19 @@ class Log(object):
         # TODO Implement Log.describe()
         pass
 
-    def filter(self,):
+    def filter(self, fun, tag, match, helper = None):
+        """
+        A method which creates a new Log, containing only records which match certain criteria.
+        :param fun: A string denoting which predicate function to use.
+        :param tag: Denotes the tag by which the Log should be filtered.
+        :param match: A string which the predicate function uses for comparison.
+        :param helper: Passing a function object over-rides 'fun' and uses the
+        :return:
+
+        Details:
+        Comparisons are made in the following way: fun(self.collection[sha][tag],match).
+        Predicates currently implemented:
+        """
         """
         A method which filters contents based on an expression.
         (There must be online documentation of how to do this. To the Google!)

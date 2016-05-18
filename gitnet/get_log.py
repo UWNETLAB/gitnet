@@ -1,10 +1,11 @@
 import bash as sh
 import os
 import warnings
+import time
 from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
 from gitnet.gn_log import CommitLog
 
-
+time_log = time.time()
 
 def retrieve_commits(path, mode = "stat"):
     """
@@ -16,6 +17,7 @@ def retrieve_commits(path, mode = "stat"):
     :return: Returns a large string containing the raw output from the repository's git log.
     """
     print("Attempting local git log retrieval...")
+    print("TIMESTAMP: Log retrieval started at {}".format(round(abs(time.time() - time_log),3)))
     # Log command modes, referenced by "mode" input.
     log_commands = {"basic": "git log", "raw": "git log --raw", "stat":"git log --stat"}
     if mode not in log_commands.keys():
@@ -36,6 +38,7 @@ def retrieve_commits(path, mode = "stat"):
     print("Got {} characters from: {}".format(len(raw_logs), path))
     # Record the retrieval mode.
     raw_logs = "Mode =\n{}\n".format(mode) + raw_logs
+    print("TIMESTAMP: Log retrieval ended at {}".format(round(abs(time.time() - time_log), 3)))
     return raw_logs
 
 
@@ -54,7 +57,7 @@ def identify(s):
     """
     # identify checks whether the string matches an expected format. All matches are saved in a list.
     matches = []
-    if "commit" in s and len(s) == 47:
+    if s[:6] == "commit" and len(s) == 47:
         matches.append("hash")
     if s[:7] == "Author:":
         matches.append("author")
@@ -62,9 +65,9 @@ def identify(s):
         matches.append("date")
     if s[:4] == "    ":
         matches.append("message")
-    if (s[0] == " " and s[:5] != "    " and "|" in s) or (s[0] == ":" and type(int(s[1:8])) == int):
+    if (s[0] == " " and s[:4] != "    " and "|" in s) or (s[0] == ":" and type(int(s[1:8])) == int):
         matches.append("change")
-    if s[0] == " " and s[:5] != "    " and (("insertion" in s and "(+)" in s) or ("deletion" in s and "(-)" in s)):
+    if s[0] == " " and s[:4] != "    " and (("insertion" in s and "(+)" in s) or ("deletion" in s and "(-)" in s)):
         matches.append("summary")
     if s[:6] == "Merge:":
         matches.append("merge")
@@ -72,8 +75,8 @@ def identify(s):
     if len(matches) == 1:
         return matches[0]
     elif len(matches) > 1:
-        warnings.warn("Unexpected parsing behaviour. <{}> matched multiple input patterns during parsing,"
-                      " so was identified as 'other'.".format(s))
+        warnings.warn("Unexpected parsing behaviour. <{}> matched multiple input patterns ({}) during parsing,"
+                      " so was identified as 'other'.".format(s,matches))
         return "multiple"
     else:
         warnings.warn("Unexpected parsing behaviour. <{}> did not match any input patterns during parsing,"
@@ -98,6 +101,7 @@ def parse_commits(commit_str):
     matched during parse ("ER").
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
+    print("TIMESTAMP: Log parsing started at {}".format(round(abs(time.time() - time_log), 3)))
     commit_list = list(filter(lambda s: s != "",commit_str.split("\n")))
     mode_list = ["basic","raw","stat"]
     # Get the mode signature and the mode string.
@@ -149,6 +153,7 @@ def parse_commits(commit_str):
                 collection[sha]["ER"] = [line]
         else:
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
+    print("TIMESTAMP: Log parsing ended at {}".format(round(abs(time.time() - time_log), 3)))
     return collection
 
 
@@ -161,6 +166,7 @@ def get_log(path,mode = "stat",commit_source = "local git"):
     :param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
     :return: A CommitLog object.
     """
+    print("TIMESTAMP: get_log started at {}".format(round(abs(time.time() - time_log), 3)))
     if commit_source == "local git":
         detect_key = "hash"
     else:
