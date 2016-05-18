@@ -1,5 +1,6 @@
 import datetime as dt
 import warnings
+import copy
 
 class Log(object):
     """
@@ -25,6 +26,7 @@ class Log(object):
         """
         Log iterates upon its core data set, which is a dictionary of dictionaries.
         """
+        # TODO Log is not subscriptable.
         return iter(self.collection)
 
     def __str__(self):
@@ -74,25 +76,55 @@ class Log(object):
         # TODO Implement Log.describe()
         pass
 
-    def filter(self, fun, tag, match, helper = None):
+    def filter(self, tag, fun, match, negate = False, helper = None):
         """
         A method which creates a new Log, containing only records which match certain criteria.
+        :param tag: Denotes the tag by which the Log should be filtered. ("ALL" searches every value.)
         :param fun: A string denoting which predicate function to use.
-        :param tag: Denotes the tag by which the Log should be filtered.
         :param match: A string which the predicate function uses for comparison.
-        :param helper: Passing a function object over-rides 'fun' and uses the
-        :return:
+        :param negate: If negate is set to true, only entries which do not match will be kept.
+        :param helper: Passing a function object over-rides 'fun'.
+        :return: A new Log object identical to self but with only matching records.
 
         Details:
-        Comparisons are made in the following way: fun(self.collection[sha][tag],match).
-        Predicates currently implemented:
+        Comparisons are usually made in the following way: fun(self.collection[sha][tag],match).
+        Predicates currently implemented: None
+        Note that if a keyed value is a list, every item in the list is checked.
         """
-        """
-        A method which filters contents based on an expression.
-        (There must be online documentation of how to do this. To the Google!)
-        """
-        # TODO Implement Log.filter()
-        pass
+        # TODO Implement MORE HELPERS!!! Time (before, since, exclusive?). REGEX. Anything else?
+        fun_reference = {"equals": lambda x,val: x == val,
+                         "in" : lambda x,val: val in x}
+        new_log = copy.deepcopy(self)
+        if callable(helper):
+            use_fun = helper
+        else:
+            use_fun = fun_reference[fun]
+        for record in self.collection:
+            keep = False
+            if tag == "ALL":
+                for rkey in self.collection[record]:
+                    if type(self.collection[record][rkey]) == list:
+                        for item in self.collection[record][rkey]:
+                            if use_fun(item,match):
+                                keep = True
+                                break
+                    if use_fun(self.collection[record][rkey],match):
+                        keep = True
+                        break
+            elif tag in self.collection[record].keys():
+                if type(self.collection[record][tag]) == list:
+                    for item in self.collection[record][tag]:
+                        if use_fun(item, match):
+                            keep = True
+                            break
+                if use_fun(self.collection[record][tag], match):
+                    keep = True
+            if negate:
+                keep = not(keep)
+            if not keep:
+                del new_log.collection[record]
+        return new_log
+
 
     def tsv(self, ignore = [], fname = None, empty_cols = False):
         """
