@@ -4,6 +4,7 @@
     <list default="true" id="1caf3948-1ccf-4824-a130-97d99527f06f" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gitnet/get_log.py" afterPath="$PROJECT_DIR$/gitnet/get_log.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py" afterPath="$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gitnet/gn_helpers.py" afterPath="$PROJECT_DIR$/gitnet/gn_helpers.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gitnet/gn_log.py" afterPath="$PROJECT_DIR$/gitnet/gn_log.py" />
     </list>
@@ -29,8 +30,8 @@
       <file leaf-file-name="gn_log.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/gitnet/gn_log.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="344" column="41" selection-start-line="344" selection-start-column="41" selection-end-line="344" selection-end-column="41" />
+            <state relative-caret-position="336">
+              <caret line="427" column="0" selection-start-line="427" selection-start-column="0" selection-end-line="427" selection-end-column="0" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -38,14 +39,34 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="test_get.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-119">
+              <caret line="32" column="37" selection-start-line="32" selection-start-column="37" selection-end-line="32" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="get_log.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gitnet/get_log.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+            <state relative-caret-position="321">
+              <caret line="190" column="43" selection-start-line="190" selection-start-column="43" selection-end-line="190" selection-end-column="43" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gn_helpers.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gitnet/gn_helpers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="705">
+              <caret line="47" column="26" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -80,17 +101,17 @@
         <option value="$PROJECT_DIR$/gitnet/gitnet_tests/test_dummy.py" />
         <option value="$PROJECT_DIR$/gitnet/gitnet_tests/dummy_test.py" />
         <option value="$PROJECT_DIR$/gitnet/gitnet_tests/time_test.py" />
-        <option value="$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py" />
         <option value="$PROJECT_DIR$/gitnet/gn_helpers.py" />
-        <option value="$PROJECT_DIR$/gitnet/gn_log.py" />
         <option value="$PROJECT_DIR$/gitnet/get_log.py" />
+        <option value="$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py" />
+        <option value="$PROJECT_DIR$/gitnet/gn_log.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="39" />
     <option name="y" value="23" />
-    <option name="width" value="1401" />
+    <option name="width" value="1216" />
     <option name="height" value="877" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -185,24 +206,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.time_test">
-    <configuration default="false" name="test_dummy" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gitnet/gitnet_tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="gitnet" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gitnet/gitnet_tests/dummy_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.gn_helpers">
     <configuration default="false" name="Nosetest TestGetLog.test_retrieve_basic_commits" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -279,6 +283,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="gitnet" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gitnet/gitnet_tests/time_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="gn_helpers" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gitnet" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gitnet" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gitnet/gn_helpers.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -429,19 +450,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.test_dummy" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetest TestGetLog.test_retrieve_basic_commits" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in RetrievalFailure (1)" />
-      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in test_get" />
-      <item index="4" class="java.lang.String" itemvalue="Python.time_test" />
+      <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetest TestGetLog.test_retrieve_basic_commits" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in RetrievalFailure (1)" />
+      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in test_get" />
+      <item index="3" class="java.lang.String" itemvalue="Python.time_test" />
+      <item index="4" class="java.lang.String" itemvalue="Python.gn_helpers" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.time_test" />
-        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in test_get" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetest TestGetLog.test_retrieve_basic_commits" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in RetrievalFailure (1)" />
-        <item index="4" class="java.lang.String" itemvalue="Python.test_dummy" />
+        <item index="0" class="java.lang.String" itemvalue="Python.gn_helpers" />
+        <item index="1" class="java.lang.String" itemvalue="Python.time_test" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in test_get" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest TestGetLog.test_retrieve_basic_commits" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in RetrievalFailure (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -503,16 +524,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="39" y="23" width="1401" height="877" extended-state="0" />
+    <frame x="39" y="23" width="1216" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18478261" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17280813" sideWeight="0.48867825" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21338913" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37229988" sideWeight="0.48867825" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32909784" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885212" sideWeight="0.49552396" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31257942" sideWeight="0.44347826" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.327818" sideWeight="0.5208004" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32655653" sideWeight="0.5208004" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31257942" sideWeight="0.5565217" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -745,13 +766,6 @@
     <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/time_test.py" />
     <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/dummy_test.py" />
     <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/broken_test.py" />
-    <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gitnet/gn_exceptions.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -762,16 +776,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gitnet/gn_helpers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="46" selection-start-line="8" selection-start-column="46" selection-end-line="8" selection-end-column="46" />
+        <state relative-caret-position="705">
+          <caret line="47" column="26" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gitnet/gitnet_tests/test_get.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-119">
+          <caret line="32" column="37" selection-start-line="32" selection-start-column="37" selection-end-line="32" selection-end-column="37" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gitnet/get_log.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+        <state relative-caret-position="321">
+          <caret line="190" column="43" selection-start-line="190" selection-start-column="43" selection-end-line="190" selection-end-column="43" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>
@@ -780,8 +802,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gitnet/gn_log.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="344" column="41" selection-start-line="344" selection-start-column="41" selection-end-line="344" selection-end-column="41" />
+        <state relative-caret-position="336">
+          <caret line="427" column="0" selection-start-line="427" selection-start-column="0" selection-end-line="427" selection-end-column="0" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

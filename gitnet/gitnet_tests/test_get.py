@@ -22,14 +22,14 @@ class TestGetLog(unittest.TestCase):
         my_log = gitnet.get_log(self.good_path)
         self.assertEqual(len(my_log),3)
         self.assertEqual(type(my_log),gitnet.CommitLog)
-        self.assertEqual(my_log.collection["fc3527c"]["HA"],"fc3527c0eb2e8ee314b551893c88889ad8647c1d")
-        self.assertEqual(my_log.collection["fc3527c"]["AU"],"Alice")
-        self.assertEqual(my_log.collection["fc3527c"]["AE"],"alice@gmail.com")
-        self.assertEqual(my_log.collection["44b4c72"]["SU"], "3 files changed, 129 insertions(+)")
+        self.assertEqual(my_log.collection["fc3527c"]["hash"],"fc3527c0eb2e8ee314b551893c88889ad8647c1d")
+        self.assertEqual(my_log.collection["fc3527c"]["author"],"Alice")
+        self.assertEqual(my_log.collection["fc3527c"]["email"],"alice@gmail.com")
+        self.assertEqual(my_log.collection["44b4c72"]["summary"], "3 files changed, 129 insertions(+)")
         parse_problems = False
         for record in my_log.collection:
             for rkey in my_log.collection[record]:
-                if rkey == "ER":
+                if rkey == "error":
                     parse_problems = True
         self.assertEqual(parse_problems, False)
 

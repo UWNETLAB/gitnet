@@ -94,11 +94,13 @@ def parse_commits(commit_str):
     :return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
     recording the data from one commit log.
 
-    Git log data types currently implemented: hash ("HA"), mode ("MO"), author name ("AU"), author email ("AE"),
-    date ("DA"), commit message ("CM"), merge ("MG"), summary ("SU"), and a list of change records ("CH").
+    Git log data types currently implemented: hash ("hash"), mode ("mode"), author name ("author"), author email
+    ("email"), date ("date"), commit message ("message"), merge ("merge"), summary ("summary"),
+    a list of change records ("changes"), files edited ("fedits"), lines inserted ("inserts"), lines deleted ("deletes"),
+    files changed ("files").
 
     Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
-    matched during parse ("ER").
+    matched during parse ("error").
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
     print("TIMESTAMP: Log parsing started at {}".format(round(abs(time.time() - time_log), 3)))
@@ -121,48 +123,48 @@ def parse_commits(commit_str):
         if id == "hash":
             sha = line[7:14]
             collection[sha] = {}
-            collection[sha]["HA"] = line[7:]
-            collection[sha]["MO"] = mode
+            collection[sha]["hash"] = line[7:]
+            collection[sha]["mode"] = mode
         # Author?
         elif id == "author":
-            collection[sha]["AU"] = line.split("<")[0][8:-1]
-            collection[sha]["AE"] = line.split("<")[1][:-1]
+            collection[sha]["author"] = line.split("<")[0][8:-1]
+            collection[sha]["email"] = line.split("<")[1][:-1]
         # Date?
         elif id == "date":
-            collection[sha]["DA"] = line[8:]
+            collection[sha]["date"] = line[8:]
         # Message?
         elif id == "message":
             if "CM" in collection[sha].keys():
-                collection[sha]["CM"] += " " + line[4:]
+                collection[sha]["message"] += " " + line[4:]
             else:
-                collection[sha]["CM"] = line[4:]
+                collection[sha]["message"] = line[4:]
         # File change record?
         elif id == "change":
             if "CH" in collection[sha].keys():
-                collection[sha]["CH"].append(line[1:])
-                collection[sha]["FS"].append(line.split("|")[0].replace(" ",""))
+                collection[sha]["changes"].append(line[1:])
+                collection[sha]["files"].append(line.split("|")[0].replace(" ",""))
             else:
-                collection[sha]["CH"] = [line[1:]]
-                collection[sha]["FS"] = [line.split("|")[0].replace(" ","")]
+                collection[sha]["changes"] = [line[1:]]
+                collection[sha]["files"] = [line.split("|")[0].replace(" ","")]
         elif id == "summary":
-            collection[sha]["SU"] = line[1:]
+            collection[sha]["summary"] = line[1:]
             # Filter numbers
             temp = line.split(",")
             for s in temp:
                 num = int("".join(list(filter(str.isdigit, s))))
                 if "file" in s and "change" in s:
-                    collection[sha]["FC"] = num
+                    collection[sha]["fedits"] = num
                 if "insert" in s:
-                    collection[sha]["FI"] = num
+                    collection[sha]["inserts"] = num
                 if "delet" in s:
-                    collection[sha]["FD"] = num
+                    collection[sha]["deletes"] = num
         elif id == "merge":
-            collection[sha]["MG"] = line[6:]
+            collection[sha]["merge"] = line[6:]
         elif id == "multiple" or id == "none":
-            if "ER" in collection[sha].keys():
-                collection[sha]["ER"].append(line)
+            if "errors" in collection[sha].keys():
+                collection[sha]["errors"].append(line)
             else:
-                collection[sha]["ER"] = [line]
+                collection[sha]["errors"] = [line]
         else:
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
     print("TIMESTAMP: Log parsing ended at {}".format(round(abs(time.time() - time_log), 3)))
@@ -185,4 +187,5 @@ def get_log(path,mode = "stat",commit_source = "local git"):
         detect_key = "unknown"
     return CommitLog(dofd = parse_commits(retrieve_commits(path,mode)),
                      source = commit_source,
+                     path = path,
                      key_type = detect_key)

@@ -3,7 +3,7 @@ import warnings
 import copy
 import datetime
 import numpy as np
-from gitnet.gn_helpers import git_datetime
+from gitnet.gn_helpers import git_datetime, most_common, most_occurrences
 
 
 class Log(object):
@@ -12,7 +12,7 @@ class Log(object):
     store all of the data retrieved by gitnet. Log has methods to describe, export, and model the data it contains.
     """
 
-    def __init__(self,dofd = {},source = None,key_type = None):
+    def __init__(self, dofd = {}, source = None, path = None, key_type = None, filters = []):
         """
         Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.
         Log objects should be passed a dictionary of dictionaries after initialization, or entries should be
@@ -21,18 +21,24 @@ class Log(object):
         self.collection = dofd
         self.timestamp = str(dt.datetime.now())
         self.source = source
+        self.path = path
         self.key_type = key_type
+        self.filters = filters
         # This must be updated as tags/subclasses are added. Ideally, this would be housed within each subclass.
         self.tags = self.get_tags()
-        # TODO source should indicate the path, and this should be printed during description.
 
 
     def __iter__(self):
         """
         Log iterates upon its core data set, which is a dictionary of dictionaries.
         """
-        # TODO Log is not subscriptable.
         return iter(self.collection)
+
+    def __getitem__(self, item):
+        """
+        Makes Log subscriptable.
+        """
+        return self.collection[item]
 
     def __str__(self):
         """
@@ -53,7 +59,7 @@ class Log(object):
         """
         A method for determining what data has been recorded in this commit log.
         :return: A sorted list containing every key present in the Log's records. For example, the attributes for
-        a local commit log would contain hashes ("HA"), author name ("AU"), author email ("AE"), etc.
+        a local commit log would contain hashes ("hash"), author name ("author"), author email ("email"), etc.
         If the self.tags attribute has been defined for this object, tags appear by their order in self.tags. Any
         unrecognized tags will be added at the end.
         """
@@ -79,9 +85,14 @@ class Log(object):
         A method which provides a description of the contents of the log.
         """
         print(self)
+        print(self.path)
+        if len(self.filters) != 0:
+            print("Filters:")
+            for f in self.filters:
+                print("\t",f)
         pass
 
-    def filter(self, tag, fun, match, negate = False, helper = None):
+    def filter(self, tag, fun, match, negate = False, helper = None, summary = None):
         """
         A method which creates a new Log, containing only records which match certain criteria.
         :param tag: Denotes the tag by which the Log should be filtered. ("ALL" searches every value.)
@@ -89,20 +100,25 @@ class Log(object):
         :param match: A string which the predicate function uses for comparison.
         :param negate: If negate is set to true, only entries which do not match will be kept.
         :param helper: Passing a function object over-rides 'fun'.
+        :param summary: An optional summary of the filter. Recommended when using a custom helper function.
         :return: A new Log object identical to self but with only matching records.
 
         Details:
         Comparisons are usually made in the following way: fun(self.collection[sha][tag],match).
         Predicates currently implemented:
-            - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("AU","equals","Jane"))
-            - "has" (Is match "in" the [tag] value? e.g. self.filter("AE","has","@gmail.com"))
+            - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("author","equals","Jane"))
+            - "has" (Is match "in" the [tag] value? e.g. self.filter("email","has","@gmail.com"))
         Note that if a keyed value is a list, every item in the list is checked.
         """
-        # TODO when you filter, add it to a Log attribute, and print during description. Subclass or Log String?
         # TODO Implement MORE HELPERS!!! Time (before, since, exclusive?, between?). REGEX. Anything else?
         fun_reference = {"equals": lambda x,val: x == val,
                          "has" : lambda x,val: val in x}
         new_log = copy.deepcopy(self)
+        if summary is not None:
+            filter_summary = summary
+        else:
+            filter_summary = "{} {} {} | Negate: {} | Helper: {}".format(tag,fun,match,negate,helper)
+        new_log.filters.append(filter_summary)
         if callable(helper):
             use_fun = helper
         else:
@@ -278,9 +294,10 @@ class CommitLog(Log):
         specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,
         the attributes method will produce the tags in sorted order. The most important consequence of this ordering
         is the order of columns in TSV output.
-        :return: A list of ordered reference hashes.
+        :return: A list of ordered reference hashshes.
         """
-        return ["HA","AU","AE","DA","MO","MG","SU","FC","FI","FD","CM","FS","CH"]
+        return ["hash","author","email","date","mode","merge","summary",
+                "fedits","inserts","deletes","messages","files","changes"]
 
 
     def describe(self, mode = "default", exclude = []):
@@ -292,7 +309,7 @@ class CommitLog(Log):
         Output items currently implemented (and their tag for exclusion):
             - "summary" : Prints the number of logs and creation date. Identical to str(self).
             - "authors" : Prints the number of authors who commit to the repository.
-            - "emails" : Prints the most common email address domain.
+            - "emails" : Prints the most common email address domain (not counting re-occurences of the same address).
             - "dates" : Prints the date range for commits in the collection.
             - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
             - "merges" : Prints the number of merges in the collection.
@@ -300,32 +317,44 @@ class CommitLog(Log):
 
         """
         if mode == "default":
-            output = ["summary","authors", "files", "emails","dates","changes","merges","errors"]
+            output = ["summary", "name", "path", "filters", "authors", "files",
+                      "emails", "dates","changes","merges","errors"]
         else:
-            output = ["summary", "authors", "files", "emails", "dates", "changes", "merges", "errors"]
+            output = ["summary", "name", "path", "filters", "authors", "files",
+                      "emails", "dates","changes","merges","errors"]
         for i in exclude:
             output.remove(i)
         if "summary" in output:
             print(self)
+        if "name" in output:
+            pass
+            # TODO Filter: can we access the identifier and print in the description?
+        if "path" in output:
+            print("Origin: ", self.path)
+        if "filters" in output:
+            if len(self.filters) != 0:
+                print("Filters:")
+                for f in self.filters:
+                    print("\t", f)
         if "authors" in output:
             author_dict = {}
             for record in self.collection:
-                author = self.collection[record]["AU"]
+                author = self.collection[record]["author"]
                 if author in author_dict.keys():
                     author_dict[author] += 1
                 else:
                     author_dict[author] = 1
             print("Number of authors: {}".format(len(author_dict)))
         if "files" in output:
-            num_files = len(set(self.vector("FS")))
+            num_files = len(set(self.vector("files")))
             print("Number of files: {}".format(num_files))
         if "emails" in output:
-            # TODO: "email" currently uses the absolute number of occurrences of a domain. Run on duplicate-free email vector.
-            domain_dict = {}
-            max = 0
-            max_domain = []
-            for record in self.collection:
-                domain = self.collection[record]["AE"]
+            def get_domain(s):
+                """
+                :param s: An email address (string).
+                :return: An email domain, i.e. "@domain.com" (string)
+                """
+                domain = s
                 while True:
                     if domain == "":
                         domain = "None"
@@ -334,24 +363,20 @@ class CommitLog(Log):
                         domain = domain[1:]
                     else:
                         break
-                if domain in domain_dict.keys():
-                    domain_dict[domain] += 1
-                else:
-                    domain_dict[domain] = 1
-                if domain_dict[domain] == max:
-                    max_domain.append(domain)
-                elif domain_dict[domain] > max:
-                    max = domain_dict[domain]
-                    max_domain = [domain]
+                return domain
+            emails = set(self.vector("email"))
+            emails = list(map(get_domain, emails))
+            max_domain = most_common(emails)
+            max = most_occurrences(emails)
             print_string = "Modal email address domain:"
             for s in max_domain:
-                print_string = print_string + " " + s + " " + "[{}]".format(max)
+                print_string = print_string + " " + s + " " + "[{} users]".format(max)
             print(print_string)
         if "dates" in output:
             early = None
             late = None
             for record in self.collection:
-                date = git_datetime(self.collection[record]["DA"])
+                date = git_datetime(self.collection[record]["date"])
                 if early == None or date < early:
                     early = date
                 if late == None or late < early:
@@ -363,12 +388,12 @@ class CommitLog(Log):
             delete_lst = []
             for record in self.collection:
                 cur_record = self.collection[record]
-                if "FC" in cur_record.keys():
-                    file_lst.append(cur_record["FC"])
-                if "FI" in cur_record.keys():
-                    insert_lst.append(cur_record["FI"])
-                if "FD" in cur_record.keys():
-                    delete_lst.append(cur_record["FD"])
+                if "fedits" in cur_record.keys():
+                    file_lst.append(cur_record["fedits"])
+                if "inserts" in cur_record.keys():
+                    insert_lst.append(cur_record["inserts"])
+                if "deletes" in cur_record.keys():
+                    delete_lst.append(cur_record["deletes"])
             print("Change distribution summary:")
             print("\t Files changed: Mean = {}, SD = {}".format(round(np.mean(file_lst),3),
                                                                 round(np.std(file_lst),3)))
@@ -379,7 +404,7 @@ class CommitLog(Log):
         if "merges" in output:
             n_merge = 0
             for record in self.collection:
-                if "MG" in self.collection[record].keys():
+                if "merge" in self.collection[record].keys():
                     n_merge += 1
             print("Number of merges: {}".format(n_merge))
         if "errors" in output:
@@ -398,5 +423,5 @@ class CommitLog(Log):
         criteria (i.e. globs/regex).
         :return: None
         """
-        # TODO Implement CommitLog.ignore()
+        # TODO Implement CommitLog.ignore() OR just implement a filter helper for Globs!!!
         pass
