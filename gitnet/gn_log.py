@@ -1,6 +1,10 @@
 import datetime as dt
 import warnings
 import copy
+import datetime
+import numpy as np
+from gitnet.gn_helpers import git_datetime
+
 
 class Log(object):
     """
@@ -20,6 +24,7 @@ class Log(object):
         self.key_type = key_type
         # This must be updated as tags/subclasses are added. Ideally, this would be housed within each subclass.
         self.tags = self.get_tags()
+        # TODO source should indicate the path, and this should be printed during description.
 
 
     def __iter__(self):
@@ -73,7 +78,7 @@ class Log(object):
         """
         A method which provides a description of the contents of the log.
         """
-        # TODO Implement Log.describe()
+        print(self)
         pass
 
     def filter(self, tag, fun, match, negate = False, helper = None):
@@ -88,12 +93,15 @@ class Log(object):
 
         Details:
         Comparisons are usually made in the following way: fun(self.collection[sha][tag],match).
-        Predicates currently implemented: None
+        Predicates currently implemented:
+            - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("AU","equals","Jane"))
+            - "has" (Is match "in" the [tag] value? e.g. self.filter("AE","has","@gmail.com"))
         Note that if a keyed value is a list, every item in the list is checked.
         """
-        # TODO Implement MORE HELPERS!!! Time (before, since, exclusive?). REGEX. Anything else?
+        # TODO when you filter, add it to a Log attribute, and print during description. Subclass or Log String?
+        # TODO Implement MORE HELPERS!!! Time (before, since, exclusive?, between?). REGEX. Anything else?
         fun_reference = {"equals": lambda x,val: x == val,
-                         "in" : lambda x,val: val in x}
+                         "has" : lambda x,val: val in x}
         new_log = copy.deepcopy(self)
         if callable(helper):
             use_fun = helper
@@ -131,8 +139,8 @@ class Log(object):
         Converts the Log to a tab-delimited string. Note that while the CSV method (NOT YET IMPLEMENTED) strips commas
         from the data ( e.g. commit messages and file names), this option does not change the content strings. This
         method will be preferrable when working with a large dataset (where efficiency is a concern), when intending to
-        perform linguistic analysis on the data, or if you prefer the TSV format for export. Because the CSV method alters
-        the dataset during export, TSV is our recommended format for output.
+        perform linguistic analysis on the data, or if you prefer the TSV format for export. Because the CSV method
+        alters the dataset during export, TSV is our recommended format for output.
         :param ignore: Tags included in this list of strings will be ignored.
         :param fname: If a file name is provided, the function will write to this file instead of to a string for output.
         :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
@@ -220,6 +228,25 @@ class Log(object):
         # TODO Implement Log.df()
         pass
 
+
+    def vector(self,tag):
+        """
+        Returns a list containing all of the (keyless) values of a certain tag in the Log collection.
+        :param tag: A collection tag. See subclass documentation for subclass-specific tags.
+        :return: Returns a list of values (usually strings or numbers).
+        """
+        v = []
+        for record in self.collection:
+            if tag in self.collection[record].keys():
+                value = self.collection[record][tag]
+                if type(value) is list:
+                    for i in value:
+                        v.append(i)
+                else:
+                    v.append(value)
+        return v
+
+
     def browse(self):
         """
         Interactively prints the contents of the Log collection, one commit at a time.
@@ -229,13 +256,11 @@ class Log(object):
             print("----- {} -----".format(key))
             for rkey in self.collection[key].keys():
                 print("--- {} ---".format(rkey))
-                if type(self.collection[key][rkey]) == str:
+                if type(self.collection[key][rkey]) in [str,int,bool,float]:
                     print(self.collection[key][rkey])
                 elif type(self.collection[key][rkey]) == list:
                     for s in self.collection[key][rkey]:
                         print(s)
-                else:
-                    warnings.warn("Dict of dict values not strings or list of strings.")
             if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
                 break
 
@@ -245,8 +270,124 @@ class CommitLog(Log):
     """
     A Log class for holding Git commit logs.
     """
+
+
     def get_tags(self):
-        return ["HA","AU","AE","DA","MO","MG","SU","CM","CH"]
+        """
+        A Log's tags are automatically detected by the self.attributes() method. Attributes are produced in the order
+        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,
+        the attributes method will produce the tags in sorted order. The most important consequence of this ordering
+        is the order of columns in TSV output.
+        :return: A list of ordered reference hashes.
+        """
+        return ["HA","AU","AE","DA","MO","MG","SU","FC","FI","FD","CM","FS","CH"]
+
+
+    def describe(self, mode = "default", exclude = []):
+        """
+        A method for creating an extended descriptive output for the CommitLog subclass.
+        :param mode: Indicate an output mode. Currently implemented: "default"
+        :param exclude: A list of output tag strings to exclude from the pringin. Default is an empty list.
+        :return: None
+        Output items currently implemented (and their tag for exclusion):
+            - "summary" : Prints the number of logs and creation date. Identical to str(self).
+            - "authors" : Prints the number of authors who commit to the repository.
+            - "emails" : Prints the most common email address domain.
+            - "dates" : Prints the date range for commits in the collection.
+            - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
+            - "merges" : Prints the number of merges in the collection.
+            - "errors" : Prints the number of parsing errors in the collection.
+
+        """
+        if mode == "default":
+            output = ["summary","authors", "files", "emails","dates","changes","merges","errors"]
+        else:
+            output = ["summary", "authors", "files", "emails", "dates", "changes", "merges", "errors"]
+        for i in exclude:
+            output.remove(i)
+        if "summary" in output:
+            print(self)
+        if "authors" in output:
+            author_dict = {}
+            for record in self.collection:
+                author = self.collection[record]["AU"]
+                if author in author_dict.keys():
+                    author_dict[author] += 1
+                else:
+                    author_dict[author] = 1
+            print("Number of authors: {}".format(len(author_dict)))
+        if "files" in output:
+            num_files = len(set(self.vector("FS")))
+            print("Number of files: {}".format(num_files))
+        if "emails" in output:
+            # TODO: "email" currently uses the absolute number of occurrences of a domain. Run on duplicate-free email vector.
+            domain_dict = {}
+            max = 0
+            max_domain = []
+            for record in self.collection:
+                domain = self.collection[record]["AE"]
+                while True:
+                    if domain == "":
+                        domain = "None"
+                        break
+                    elif domain[0] != "@":
+                        domain = domain[1:]
+                    else:
+                        break
+                if domain in domain_dict.keys():
+                    domain_dict[domain] += 1
+                else:
+                    domain_dict[domain] = 1
+                if domain_dict[domain] == max:
+                    max_domain.append(domain)
+                elif domain_dict[domain] > max:
+                    max = domain_dict[domain]
+                    max_domain = [domain]
+            print_string = "Modal email address domain:"
+            for s in max_domain:
+                print_string = print_string + " " + s + " " + "[{}]".format(max)
+            print(print_string)
+        if "dates" in output:
+            early = None
+            late = None
+            for record in self.collection:
+                date = git_datetime(self.collection[record]["DA"])
+                if early == None or date < early:
+                    early = date
+                if late == None or late < early:
+                    late = date
+            print("Date range: {} to {}".format(early,late))
+        if "changes" in output:
+            file_lst = []
+            insert_lst = []
+            delete_lst = []
+            for record in self.collection:
+                cur_record = self.collection[record]
+                if "FC" in cur_record.keys():
+                    file_lst.append(cur_record["FC"])
+                if "FI" in cur_record.keys():
+                    insert_lst.append(cur_record["FI"])
+                if "FD" in cur_record.keys():
+                    delete_lst.append(cur_record["FD"])
+            print("Change distribution summary:")
+            print("\t Files changed: Mean = {}, SD = {}".format(round(np.mean(file_lst),3),
+                                                                round(np.std(file_lst),3)))
+            print("\t Line insertions: Mean = {}, SD = {}".format(round(np.mean(insert_lst),3),
+                                                                  round(np.std(insert_lst),3)))
+            print("\t Line deletions: Mean = {}, SD = {}".format(round(np.mean(delete_lst),3),
+                                                                 round(np.std(delete_lst),3)))
+        if "merges" in output:
+            n_merge = 0
+            for record in self.collection:
+                if "MG" in self.collection[record].keys():
+                    n_merge += 1
+            print("Number of merges: {}".format(n_merge))
+        if "errors" in output:
+            n_errors = 0
+            for record in self.collection:
+                if "ER" in self.collection[record].keys():
+                    n_errors += len(self.collection[record]["ER"])
+            print("Number of parsing errors: {}".format(n_errors))
 
     def ignore(self):
         """

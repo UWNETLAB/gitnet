@@ -140,10 +140,22 @@ def parse_commits(commit_str):
         elif id == "change":
             if "CH" in collection[sha].keys():
                 collection[sha]["CH"].append(line[1:])
+                collection[sha]["FS"].append(line.split("|")[0].replace(" ",""))
             else:
                 collection[sha]["CH"] = [line[1:]]
+                collection[sha]["FS"] = [line.split("|")[0].replace(" ","")]
         elif id == "summary":
             collection[sha]["SU"] = line[1:]
+            # Filter numbers
+            temp = line.split(",")
+            for s in temp:
+                num = int("".join(list(filter(str.isdigit, s))))
+                if "file" in s and "change" in s:
+                    collection[sha]["FC"] = num
+                if "insert" in s:
+                    collection[sha]["FI"] = num
+                if "delet" in s:
+                    collection[sha]["FD"] = num
         elif id == "merge":
             collection[sha]["MG"] = line[6:]
         elif id == "multiple" or id == "none":
