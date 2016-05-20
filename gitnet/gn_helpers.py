@@ -1,4 +1,9 @@
-import datetime
+import datetime as dt
+import re
+from gitnet.gn_exceptions import InputError
+
+# Working with Git Log date strings
+
 
 def git_datetime(s):
     """
@@ -6,7 +11,92 @@ def git_datetime(s):
     :param s: A git-formatted date string.
     :return: A datetime object.
     """
-    return datetime.datetime.strptime(s,"%a %b %d %H:%M:%S %Y %z")
+    return dt.datetime.strptime(s,"%a %b %d %H:%M:%S %Y %z")
+
+
+def reference_datetime(s):
+    """
+    Turns a Git date string, or a datetime object into a datetime.
+    :param s: String or Datetime
+    :return: Datetime
+    """
+    if type(s) is dt.datetime:
+        ref_date = s
+    elif type(s) is str:
+        git_date_p = re.compile("[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}")
+        if bool(re.match(git_date_p, s)):
+            ref_date = git_datetime(s)
+        else:
+            raise InputError("Unrecognized date format. match should be a Git formatted date string "
+                             "(e.g. 'Mon Apr 18 00:59:02 2016 -0400'), a date string (e.g. 2016-05-20) "
+                             "or a datetime object.")
+    return ref_date
+
+
+
+# Filtering functions.
+
+def since(s,match):
+    """
+    A predicate determining if s is a date since match (inclusive).
+    :param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).
+    :param match: A comparison date. Either a Git date string or a datetime object.
+    :return: True or False.
+    """
+    dt_match = reference_datetime(match)
+    return git_datetime(s) >= dt_match
+
+
+def before(s,match):
+    dt_match = reference_datetime(match)
+    return git_datetime(s) <= dt_match
+
+def sincex(s,match):
+    dt_match = reference_datetime(match)
+    return git_datetime(s) > dt_match
+
+def beforex(s,match):
+    dt_match = reference_datetime(match)
+    return git_datetime(s) < dt_match
+
+def filter_regex(s,match,mode = "match"):
+    """
+    A predicate which determines whether "s" matches the regular expression "match".
+    :param s: An input string which is compared to the regex pattern.
+    :param match: A regular expression string.
+    :param mode: Indicates whether regex should be matched ("match") or searched for ("search")
+    :return: True or false.
+    """
+    pattern = re.compile(match)
+    if mode == "match":
+        return bool(re.match(pattern,s))
+    elif mode == "search":
+        return bool(re.search(pattern,s))
+
+def filter_equals(x,match):
+    """
+    Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.
+    :param x: An input value.
+    :param match: A reference value.
+    :return: Are they the same?
+    """
+    if type(x) is str and type(match) is str:
+        return filter_regex(x,match,mode = "match")
+    else:
+        return x == match
+
+def filter_has(x,match):
+    if type(x) is str and type(match) is str:
+        return filter_regex(x,match,mode="search")
+    else:
+        return match in x
+
+# Helper needed for .ignrore? Can probably do this in the method...
+def glob():
+    pass
+
+
+# Working with lists.
 
 def most_common(lst):
     """

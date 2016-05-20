@@ -1,10 +1,10 @@
+import pandas as pd
+import numpy as np
 import datetime as dt
 import warnings
 import copy
-import datetime
-import numpy as np
-from gitnet.gn_helpers import git_datetime, most_common, most_occurrences
-
+from gitnet.gn_helpers import \
+    git_datetime, most_common, most_occurrences, before, beforex, since, sincex, filter_regex, filter_has, filter_equals
 
 class Log(object):
     """
@@ -107,12 +107,33 @@ class Log(object):
         Comparisons are usually made in the following way: fun(self.collection[sha][tag],match).
         Predicates currently implemented:
             - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("author","equals","Jane"))
+                - If both values are strings, match can be a regular expression.
             - "has" (Is match "in" the [tag] value? e.g. self.filter("email","has","@gmail.com"))
+                - If both values are strings, match can be a regular expression.
+            - Numerical comparisons. The values of tag, and match, must be comparable with >, and <.
+                - "<" tag value less than match.
+                - "<=" tag value less than or equal to match.
+                - ">" tag value greater than match.
+                - ">=" tag value greater than or equal to match.
+            - Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as
+                "Mon Apr 8 00:59:02 2016 -0400")
+                - "since" (Is the date since match? Inclusive.)
+                - "sincex" (Is the date since match? Exclusive.)
+                - "before" (Is the date before match? Inclusive.)
+                - "beforex" (Is the date before match? Exclusive.)
+
         Note that if a keyed value is a list, every item in the list is checked.
         """
-        # TODO Implement MORE HELPERS!!! Time (before, since, exclusive?, between?). REGEX. Anything else?
-        fun_reference = {"equals": lambda x,val: x == val,
-                         "has" : lambda x,val: val in x}
+        fun_reference = {"equals" : filter_equals,
+                         "has" : filter_has,
+                         "<": lambda x, val: x < val,
+                         "<=": lambda x, val: x < val or x == val,
+                         ">": lambda x, val: x > val,
+                         ">=": lambda x, val: x > val or x == val,
+                         "since": since,
+                         "sincex": sincex,
+                         "before": before,
+                         "beforex": beforex}
         new_log = copy.deepcopy(self)
         if summary is not None:
             filter_summary = summary
@@ -236,13 +257,12 @@ class Log(object):
         return out
 
 
-    def df(self,fname):
+    def df(self):
         """
-        Converts the Log to a Pandas dataframe.
-        See http://stackoverflow.com/questions/15455388/dict-of-dicts-of-dicts-to-dataframe.
+        Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
+        :return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.
         """
-        # TODO Implement Log.df()
-        pass
+        return pd.DataFrame.from_dict(self.collection, orient = "index")[self.attributes()]
 
 
     def vector(self,tag):
@@ -317,18 +337,15 @@ class CommitLog(Log):
 
         """
         if mode == "default":
-            output = ["summary", "name", "path", "filters", "authors", "files",
+            output = ["summary", "path", "filters", "authors", "files",
                       "emails", "dates","changes","merges","errors"]
         else:
-            output = ["summary", "name", "path", "filters", "authors", "files",
+            output = ["summary", "path", "filters", "authors", "files",
                       "emails", "dates","changes","merges","errors"]
         for i in exclude:
             output.remove(i)
         if "summary" in output:
             print(self)
-        if "name" in output:
-            pass
-            # TODO Filter: can we access the identifier and print in the description?
         if "path" in output:
             print("Origin: ", self.path)
         if "filters" in output:
@@ -414,14 +431,31 @@ class CommitLog(Log):
                     n_errors += len(self.collection[record]["ER"])
             print("Number of parsing errors: {}".format(n_errors))
 
-    def ignore(self):
+    def ignore(self,pattern,ignoreif = "match"):
         """
-        Not yet implemented. Mutates the CommitLog to move glob-matched change logs from the list of change logs to
-        an alternate heading. This would be very useful if change log data is contaminated by non-relevant files (such
-        as an automatically generated file which has many automatic changes which would otherwise be recognized as edits.)
-        This will be kind of like filter (and can probably call self.filter()) but will use much more complex matching
-        criteria (i.e. globs/regex).
+        Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
+        and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
+        :param pattern: A string/regular expression.
+        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "don't match", files not
+        matching pattern are ignored.
         :return: None
         """
-        # TODO Implement CommitLog.ignore() OR just implement a filter helper for Globs!!!
-        pass
+        for record in self.collection:
+            ignore_files = []
+            ignore_changes = []
+            if "files" in self.collection[record].keys():
+                for f in self.collection[record]["files"]:
+                    if filter_regex(f,pattern,mode="search") or \
+                                            ignoreif == "don't match" and not(filter_regex(f,pattern,mode="search")):
+                        ignore_files.append(f)
+                        self.collection[record]["files"].remove(f)
+                self.collection[record]["f_ignore"] = ignore_files
+            if "changes" in self.collection[record].keys():
+                for f in self.collection[record]["changes"]:
+                    if filter_regex(f, pattern, mode="search") or \
+                                            ignoreif == "don't match" and not (filter_regex(f, pattern, mode="search")):
+                        ignore_changes.append(f)
+                        self.collection[record]["changes"].remove(f)
+                self.collection[record]["ch_ignore"] = ignore_changes
+        summary = "Ignore files that {} the regular expression: {}".format(ignoreif,pattern)
+        self.filters.append(summary)
