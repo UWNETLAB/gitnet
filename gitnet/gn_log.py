@@ -6,6 +6,7 @@ import copy
 from gitnet.gn_helpers import \
     git_datetime, most_common, most_occurrences, before, beforex, since, sincex, filter_regex, filter_has, filter_equals
 
+
 class Log(object):
     """
     Log is the basic class for the back end of gitnet. The Log class, and other classes which inherit its features,
@@ -17,6 +18,13 @@ class Log(object):
         Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.
         Log objects should be passed a dictionary of dictionaries after initialization, or entries should be
         added to the empty dictionary in self.collection.
+
+        :param dofd: A dictionary of dictionaries, which becomes self.collection. Defaults to empty.
+        :param source: A string passed by the parser indicating the source of the data.
+        :param path: A string passed by the parser indicating the path from which the data was accessed.
+        :param key_type: A string passed by the parser indicating how data is keyed in the dicitonary (e.g. by hash.)
+        :param filters: A list of strings summarizing how the Log has been filtered (using filter and ignore methods.)
+        :var self.tags: Tags are generated using the get_tags method.
         """
         self.collection = dofd
         self.timestamp = str(dt.datetime.now())
@@ -53,6 +61,12 @@ class Log(object):
         return len(self.collection)
 
     def get_tags(self):
+        """
+        For the base Log class, tags defaults to an empty list. Log subclasses have alternate get_tags methods, which
+        specify the expected data points in their core data sets, and give a preferred order for displaying the data
+        (i.e. in a tabular format.)
+        :return: An empty list of tags.
+        """
         return []
 
     def attributes(self):
@@ -82,7 +96,8 @@ class Log(object):
 
     def describe(self):
         """
-        A method which provides a description of the contents of the log.
+        A method which provides a description of the contents of the log. More detailed descriptions are implemented
+        for individual subclasses.
         """
         print(self)
         print(self.path)
@@ -100,7 +115,8 @@ class Log(object):
         :param match: A string which the predicate function uses for comparison.
         :param negate: If negate is set to true, only entries which do not match will be kept.
         :param helper: Passing a function object over-rides 'fun'.
-        :param summary: An optional summary of the filter. Recommended when using a custom helper function.
+        :param summary: An optional summary string describing the filter operation. Recommended when using a custom
+        helper function.
         :return: A new Log object identical to self but with only matching records.
 
         Details:
@@ -123,7 +139,14 @@ class Log(object):
                 - "beforex" (Is the date before match? Exclusive.)
 
         Note that if a keyed value is a list, every item in the list is checked.
+
+        Examples:
+        my_log.filter("email", "equals", "bob@gmail.com")
+        my_log.filter("email", "has", "@gmail.com")
+        my_log.filter("email", "has", "@gmail.c[oa]m?")
+        my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")
         """
+        # This dictionary includes the currently built-in filtering predicates.
         fun_reference = {"equals" : filter_equals,
                          "has" : filter_has,
                          "<": lambda x, val: x < val,
@@ -134,18 +157,23 @@ class Log(object):
                          "sincex": sincex,
                          "before": before,
                          "beforex": beforex}
+        # Make a copy of self
         new_log = copy.deepcopy(self)
+        # Add filter summary to self.filters
         if summary is not None:
             filter_summary = summary
         else:
             filter_summary = "{} {} {} | Negate: {} | Helper: {}".format(tag,fun,match,negate,helper)
         new_log.filters.append(filter_summary)
+        # Get the predicate for filtering, from custom helper parameter or helper dictionary.
         if callable(helper):
             use_fun = helper
         else:
             use_fun = fun_reference[fun]
+        # Check every record for a match.
         for record in self.collection:
             keep = False
+            # Check all tags.
             if tag == "ALL":
                 for rkey in self.collection[record]:
                     if type(self.collection[record][rkey]) == list:
@@ -156,6 +184,7 @@ class Log(object):
                     if use_fun(self.collection[record][rkey],match):
                         keep = True
                         break
+            # Check a specific tag
             elif tag in self.collection[record].keys():
                 if type(self.collection[record][tag]) == list:
                     for item in self.collection[record][tag]:
@@ -164,8 +193,10 @@ class Log(object):
                             break
                 if use_fun(self.collection[record][tag], match):
                     keep = True
+            # Negate the check if required.
             if negate:
                 keep = not(keep)
+            # If the data point is not to be kept, remove the record from the copied collection.
             if not keep:
                 del new_log.collection[record]
         return new_log
@@ -173,11 +204,8 @@ class Log(object):
 
     def tsv(self, ignore = [], fname = None, empty_cols = False):
         """
-        Converts the Log to a tab-delimited string. Note that while the CSV method (NOT YET IMPLEMENTED) strips commas
-        from the data ( e.g. commit messages and file names), this option does not change the content strings. This
-        method will be preferrable when working with a large dataset (where efficiency is a concern), when intending to
-        perform linguistic analysis on the data, or if you prefer the TSV format for export. Because the CSV method
-        alters the dataset during export, TSV is our recommended format for output.
+        Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
+        does not change the content strings by removing commas).
         :param ignore: Tags included in this list of strings will be ignored.
         :param fname: If a file name is provided, the function will write to this file instead of to a string for output.
         :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
@@ -307,7 +335,6 @@ class CommitLog(Log):
     A Log class for holding Git commit logs.
     """
 
-
     def get_tags(self):
         """
         A Log's tags are automatically detected by the self.attributes() method. Attributes are produced in the order
@@ -329,13 +356,14 @@ class CommitLog(Log):
         Output items currently implemented (and their tag for exclusion):
             - "summary" : Prints the number of logs and creation date. Identical to str(self).
             - "authors" : Prints the number of authors who commit to the repository.
-            - "emails" : Prints the most common email address domain (not counting re-occurences of the same address).
+            - "emails" : Prints the 10 most common email address domains used by more than one user.
             - "dates" : Prints the date range for commits in the collection.
             - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
             - "merges" : Prints the number of merges in the collection.
             - "errors" : Prints the number of parsing errors in the collection.
 
         """
+        # Define included/excluded data summaries.
         if mode == "default":
             output = ["summary", "path", "filters", "authors", "files",
                       "emails", "dates","changes","merges","errors"]
@@ -344,15 +372,19 @@ class CommitLog(Log):
                       "emails", "dates","changes","merges","errors"]
         for i in exclude:
             output.remove(i)
+        # Print summary
         if "summary" in output:
             print(self)
+        # Print path
         if "path" in output:
             print("Origin: ", self.path)
+        # Print filter summaries
         if "filters" in output:
             if len(self.filters) != 0:
                 print("Filters:")
                 for f in self.filters:
                     print("\t", f)
+        # Print number of authors.
         if "authors" in output:
             author_dict = {}
             for record in self.collection:
@@ -362,9 +394,11 @@ class CommitLog(Log):
                 else:
                     author_dict[author] = 1
             print("Number of authors: {}".format(len(author_dict)))
+        # Print number of files.
         if "files" in output:
             num_files = len(set(self.vector("files")))
             print("Number of files: {}".format(num_files))
+        # Print most common email domains.
         if "emails" in output:
             def get_domain(s):
                 """
@@ -384,11 +418,10 @@ class CommitLog(Log):
             emails = set(self.vector("email"))
             emails = list(map(get_domain, emails))
             max_domain = most_common(emails)
-            max = most_occurrences(emails)
-            print_string = "Modal email address domain:"
-            for s in max_domain:
-                print_string = print_string + " " + s + " " + "[{} users]".format(max)
-            print(print_string)
+            print("Most common email address domains:")
+            for domain in max_domain:
+                print("\t {} [{} users]".format(domain[1],domain[0]))
+        # Print date range.
         if "dates" in output:
             early = None
             late = None
@@ -399,6 +432,7 @@ class CommitLog(Log):
                 if late == None or late < early:
                     late = date
             print("Date range: {} to {}".format(early,late))
+        # Print descriptive statistics of distribution of changes (number of file edits, inserts, and deletes.)
         if "changes" in output:
             file_lst = []
             insert_lst = []
@@ -418,17 +452,19 @@ class CommitLog(Log):
                                                                   round(np.std(insert_lst),3)))
             print("\t Line deletions: Mean = {}, SD = {}".format(round(np.mean(delete_lst),3),
                                                                  round(np.std(delete_lst),3)))
+        # Print number of merges.
         if "merges" in output:
             n_merge = 0
             for record in self.collection:
                 if "merge" in self.collection[record].keys():
                     n_merge += 1
             print("Number of merges: {}".format(n_merge))
+        # Print number of parsing errors.
         if "errors" in output:
             n_errors = 0
             for record in self.collection:
-                if "ER" in self.collection[record].keys():
-                    n_errors += len(self.collection[record]["ER"])
+                if "errors" in self.collection[record].keys():
+                    n_errors += len(self.collection[record]["errors"])
             print("Number of parsing errors: {}".format(n_errors))
 
     def ignore(self,pattern,ignoreif = "match"):
@@ -443,6 +479,7 @@ class CommitLog(Log):
         for record in self.collection:
             ignore_files = []
             ignore_changes = []
+            # Move files into f_ignore
             if "files" in self.collection[record].keys():
                 for f in self.collection[record]["files"]:
                     if filter_regex(f,pattern,mode="search") or \
@@ -450,6 +487,7 @@ class CommitLog(Log):
                         ignore_files.append(f)
                         self.collection[record]["files"].remove(f)
                 self.collection[record]["f_ignore"] = ignore_files
+            # Move change summaries into ch_ignore
             if "changes" in self.collection[record].keys():
                 for f in self.collection[record]["changes"]:
                     if filter_regex(f, pattern, mode="search") or \
@@ -457,5 +495,6 @@ class CommitLog(Log):
                         ignore_changes.append(f)
                         self.collection[record]["changes"].remove(f)
                 self.collection[record]["ch_ignore"] = ignore_changes
+        # Add a summary of the ignore to self.filters
         summary = "Ignore files that {} the regular expression: {}".format(ignoreif,pattern)
         self.filters.append(summary)

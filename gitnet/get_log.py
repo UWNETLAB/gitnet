@@ -100,7 +100,7 @@ def parse_commits(commit_str):
     files changed ("files").
 
     Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
-    matched during parse ("error").
+    matched during parse ("errors").
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
     print("TIMESTAMP: Log parsing started at {}".format(round(abs(time.time() - time_log), 3)))
@@ -134,13 +134,13 @@ def parse_commits(commit_str):
             collection[sha]["date"] = line[8:]
         # Message?
         elif id == "message":
-            if "CM" in collection[sha].keys():
+            if "message" in collection[sha].keys():
                 collection[sha]["message"] += " " + line[4:]
             else:
                 collection[sha]["message"] = line[4:]
         # File change record?
         elif id == "change":
-            if "CH" in collection[sha].keys():
+            if "changes" in collection[sha].keys():
                 collection[sha]["changes"].append(line[1:])
                 collection[sha]["files"].append(line.split("|")[0].replace(" ",""))
             else:

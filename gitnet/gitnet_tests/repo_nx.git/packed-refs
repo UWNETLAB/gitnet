@@ -1,0 +1,58 @@
+# pack-refs with: peeled fully-peeled 
+9fcaea9cae8beaf46cbb9df0576102de92bbc691 refs/remotes/origin/attrgraph
+5aefafab2f05b97b150c6bf681c21ba6465c8d10 refs/remotes/origin/master
+ec5e42ee87f64817767bb9fbda6ee3e51035e2a2 refs/remotes/origin/revert-1806-patch-numpy-compatible
+4d364bfcee7b24f3df137e8dcd36f7a547892e55 refs/remotes/origin/v1.10
+0b6f608d46601fb180a0f42eaa8a9a2ca9a42ecf refs/remotes/origin/v1.11
+0697c9f1b95bfe3175fcc3c00089b1770cda55e6 refs/remotes/origin/v1.9
+8ac796aba866ade1a56b83e30f25ed392ca3512c refs/remotes/origin/v1.9.1
+0b6f608d46601fb180a0f42eaa8a9a2ca9a42ecf refs/tags/help
+403cc382f28ecf1deb720e17be47ac09aabc007b refs/tags/networkx-0.23
+712b96d07ecd069b525cb2b2ed54eec052e12f19 refs/tags/networkx-0.24
+596d53366db5cd572a3f6b2c91be247cc4da8116 refs/tags/networkx-0.25
+a48afc41b9af691900f95221ac381efeebadff00 refs/tags/networkx-0.26
+71a49383d5cae628bf8454ff94b376e215568077 refs/tags/networkx-0.27
+6a338a2483873d43b90a67c5c17af14325d843d7 refs/tags/networkx-0.28
+6dd48244fa28bf11e5eac60d709daeb9038bba1b refs/tags/networkx-0.29
+36e373a42258cb8bb8593a6717a37cffa964927a refs/tags/networkx-0.30
+6532f6664e6d2a61a408db039df7171c42ab320a refs/tags/networkx-0.31
+4cecb041b5b126da9c3156a1bb45dde6118011ba refs/tags/networkx-0.32
+ebc987dd70122800e3126e780a3ee53b8c897a33 refs/tags/networkx-0.33
+5343aeec09dffd7ceaa52367ffbe35e521893dec refs/tags/networkx-0.34
+ecb603fd94319529ba1dcd9bff09521c2788531b refs/tags/networkx-0.35
+e86f8c81ab394579172e32b402dcb27e50a4cf05 refs/tags/networkx-0.36
+e60f2222974c18f70f68dc045263048d4e5669df refs/tags/networkx-0.37
+5a579545792363c0a1fc7b7785e72c98bd7c52b9 refs/tags/networkx-0.99
+a1cf434a8233935c4fe31468ab198df272c1e605 refs/tags/networkx-1.0
+50295c6cd0b9b6c440e8b94782a6022296944864 refs/tags/networkx-1.0.1
+1ca6e5aa872c1b95f362b7ee656eab4e681ded92 refs/tags/networkx-1.0rc1
+596b72ae4096e5fe2e877febeb6677e4b632b5cc refs/tags/networkx-1.1
+fb06e93c3b5413dbd992428781b2cddf811d6d8a refs/tags/networkx-1.10
+^4d364bfcee7b24f3df137e8dcd36f7a547892e55
+716863367f8528ecba09a5d0af004f5813def66b refs/tags/networkx-1.10rc1
+9b60352af32be887a1d806ec2b70031930b2a29c refs/tags/networkx-1.10rc2
+64557d56e047eff1e25aebf817e3619d59f96774 refs/tags/networkx-1.11
+^0b6f608d46601fb180a0f42eaa8a9a2ca9a42ecf
+0a05943c25125ced71f708c0564b0cef5ae8d89c refs/tags/networkx-1.11rc1
+c0dd9a121f19fea313a9bec3c5a389adda4da084 refs/tags/networkx-1.11rc2
+e8b4ab263fca6e4e4c0ec057210f7a72df26da1e refs/tags/networkx-1.2
+370f1ef9d30bfc72f4d01444fae60fea123f1370 refs/tags/networkx-1.3
+1c7dc32d73b348a038c014842be2301f15f9e1d7 refs/tags/networkx-1.4
+b83841c91a010eb131e62b99c77ec35422c0a529 refs/tags/networkx-1.4rc1
+736105480bfbf653d40ac02bf28c1a3833aa8c4e refs/tags/networkx-1.5
+f164eacd8f07413375287f9cca987819590a2b9b refs/tags/networkx-1.5rc1
+51c2b0db96f72d5229161f1528465fac775fdfb4 refs/tags/networkx-1.6
+e22a29c1f1e940b37b4ffd05aa57cb1864957ec1 refs/tags/networkx-1.6rc1
+1ec213801795bd3fa3e2e1a78ad174620fef97de refs/tags/networkx-1.7
+31090e268af7a886074c0d2f8686da2ceaf1dd12 refs/tags/networkx-1.7rc1
+eb8d235146b2cf1d8d5bd3ef8d4af0e95d9ddc54 refs/tags/networkx-1.8
+^7407bda23da3cb86cfb02dc3b1038bc7e5254e48
+fc921c4b078adf16485e36606363669d5105093f refs/tags/networkx-1.8.1
+^fc8e6d25a4e19bce1dc5736cd76c2873ad8898b9
+d690e0db79de760975269ab9325d88b63ae793cf refs/tags/networkx-1.8rc1
+^eba0d369c6ac8bbff199fc96954a2c8734b6e13f
+cf6ce260f7b2025fc048d076b88e98bb4ca2beee refs/tags/networkx-1.9
+f0efb46c8effede10e02337ba084228f96277b2e refs/tags/networkx-1.9.1
+^8ac796aba866ade1a56b83e30f25ed392ca3512c
+a24418de13812ac12e9d6377311c98fb67a77036 refs/tags/networkx-1.9.1rc1
+34cc4652fc1563d11810dbfc29c4b52768f4441b refs/tags/networkx-1.9rc1

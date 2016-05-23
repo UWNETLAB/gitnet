@@ -102,22 +102,20 @@ def most_common(lst):
     """
     Produces a list containing the most common entry in a list (more than one entry if there is a tie.)
     :param lst: A list of values.
-    :return: A list of the most common values.
+    :return: A list of tuples, each containing a frequency integer and a value.
     """
     occurances = {}
-    max = 0
-    m_common = []
+    # Count occurences
     for i in lst:
         if i in occurances:
             occurances[i] += 1
         else:
             occurances[i] = 1
-        if occurances[i] > max:
-            max = occurances[i]
-            m_common = [i]
-        elif occurances[i] == max:
-            m_common.append(i)
-    return m_common
+    s_list = []
+    for j in occurances:
+        if occurances[j] > 1:
+            s_list.append((occurances[j],j))
+    return sorted(s_list,reverse=True)
 
 def most_occurrences(lst):
     """

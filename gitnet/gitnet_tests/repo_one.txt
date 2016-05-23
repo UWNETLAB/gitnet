@@ -1,0 +1,28 @@
+commit 44b4c727133c69cffafc74bb65fd6f8639bc4287
+Author: Alice <alice@gmail.com>
+Date:   Fri May 6 15:41:25 2016 -0400
+
+    Recorded logs.
+
+ basic_logs.txt | 33 +++++++++++++++++++++++++++++++++
+ raw_logs.txt   | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ stat_logs.txt  | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 129 insertions(+)
+
+commit 51ba020a3fdc56d74d88306e507dd4e2d2db3543
+Author: Bob <bob@gmail.com>
+Date:   Fri May 6 14:50:22 2016 -0400
+
+    Edited readme.
+
+ readme.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit fc3527c0eb2e8ee314b551893c88889ad8647c1d
+Author: Alice <alice@gmail.com>
+Date:   Fri May 6 14:41:25 2016 -0400
+
+    Made readme.
+
+ readme.md | 5 +++++
+ 1 file changed, 5 insertions(+)
