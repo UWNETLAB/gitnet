@@ -3,7 +3,7 @@ import os
 import warnings
 import time
 from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
-from gitnet.gn_log import CommitLog
+from gitnet.gn_commit_log import CommitLog
 
 time_log = time.time()
 
