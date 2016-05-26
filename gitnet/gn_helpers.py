@@ -88,9 +88,10 @@ def filter_equals(x,match):
 def filter_has(x,match):
     if type(x) is str and type(match) is str:
         return filter_regex(x,match,mode="search")
-    else:
+    try:
         return match in x
-
+    except TypeError:
+        return False
 # Helper needed for .ignrore? Can probably do this in the method...
 def glob():
     pass
