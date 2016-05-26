@@ -231,7 +231,7 @@ class Log(object):
             types = self.tags
         else:
             types = self.attributes()
-        types = filter(lambda s: s not in ignore, types)
+        types = list(filter(lambda s: s not in ignore, types))
         # The number of items that were forced to strings. If > 1 at return, raise a warning.
         num_forced = 0
         # The string to be output
