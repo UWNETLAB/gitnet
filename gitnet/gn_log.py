@@ -324,11 +324,15 @@ class Log(object):
                     v.append(value)
         return v
 
-    def generate_edges(self,mode1,mode2,helper = simple_edge):
+    def generate_edges(self, mode1, mode2, helper = simple_edge, keep = ["author","hash","date","message"]):
+        # TODO: Once network generator method is coded, keep default should be [], and default should be implemented
+        #   at the subclass level. Perhaps special methods...
         """
-        Generates edges present in each Log record.
+        Generates bipartite edges present in each Log record.
         :param mode1: A record attribute, which becomes the first node type.
         :param mode2: A record attribute, which becomes the second node type.
+        :param helper: The function that computes the edges. Options are simple_edge (default) and fedits_edge.
+        :param keep: A list of attributes to keep as attributes of the edge. Default is author, hash, date, and message.
         :return: A generator object containing edges and their weights.
         """
         for record in self.collection:
@@ -345,4 +349,67 @@ class Log(object):
                 # Yield edges
                 for item1 in m1:
                     for item2 in m2:
-                        yield helper(item1,item2)
+                        yield helper(item1, item2, cur, keep)
+
+    def generate_nodes(self, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
+        """
+        Generates the bipartite nodes present in the Log object.
+        :param mode1:
+        :param mode2:
+        :param keep_atom1: Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
+        :param keep_vector1: Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
+        :param keep_atom2: Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
+        :param keep_vector2: Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
+        :return: A list of tuples, i.e. ("node_id", {attribute_dictionary}).
+
+        By default, each node should have a record in the following format:
+
+        { "id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn} }
+
+        With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
+
+        { "id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
+         atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
+         vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m]}
+        """
+        nodes = {}
+        for record in self.collection:
+            cur = self.collection[record]
+            if mode1 in cur.keys() and mode2 in cur.keys():
+                # Set up mode one data for this record
+                m1 = cur[mode1]
+                if type(m1) not in [list, dict, set]:
+                    m1 = [m1]
+                # Set up mode one data for this record
+                m2 = cur[mode2]
+                if type(m2) not in [list, dict, set]:
+                    m2 = [m2]
+                # Yield node attributes
+                for item1 in m1:
+                    if item1 in nodes.keys():
+                        nodes[item1]["records"].append(record)
+                        for tag in keep_vector1:
+                            nodes[item1][tag].append(cur[tag])
+                    else:
+                        nodes[item1] = {"id":item1,"type":mode1,"records":[record]}
+                        for tag in keep_atom1:
+                            nodes[item1][tag] = cur[tag]
+                        for tag in keep_vector1:
+                            nodes[item1][tag] = [cur[tag]]
+                for item2 in m2:
+                    if item2 in nodes.keys():
+                        nodes[item2]["records"].append(record)
+                        for tag in keep_vector2:
+                            nodes[item2][tag].append(cur[tag])
+                    else:
+                        nodes[item2] = {"id": item2, "type": mode2, "records": [record]}
+                        for tag in keep_atom2:
+                            nodes[item2][tag] = cur[tag]
+                        for tag in keep_vector2:
+                            nodes[item2][tag] = [cur[tag]]
+        if len(nodes) is 0:
+            warnings.warn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.")
+        node_tuple_list = []
+        for n in nodes:
+            node_tuple_list.append((n,nodes[n]))
+        return node_tuple_list

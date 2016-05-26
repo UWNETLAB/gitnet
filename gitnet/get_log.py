@@ -1,11 +1,8 @@
 import bash as sh
 import os
 import warnings
-import time
 from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
 from gitnet.gn_commit_log import CommitLog
-
-time_log = time.time()
 
 def retrieve_commits(path, mode = "stat"):
     """
@@ -17,7 +14,6 @@ def retrieve_commits(path, mode = "stat"):
     :return: Returns a large string containing the raw output from the repository's git log.
     """
     print("Attempting local git log retrieval...")
-    print("TIMESTAMP: Log retrieval started at {}".format(round(abs(time.time() - time_log),3)))
     # Log command modes, referenced by "mode" input.
     log_commands = {"basic": "git log", "raw": "git log --raw", "stat":"git log --stat"}
     if mode not in log_commands.keys():
@@ -38,7 +34,6 @@ def retrieve_commits(path, mode = "stat"):
     print("Got {} characters from: {}".format(len(raw_logs), path))
     # Record the retrieval mode.
     raw_logs = "Mode =\n{}\n".format(mode) + raw_logs
-    print("TIMESTAMP: Log retrieval ended at {}".format(round(abs(time.time() - time_log), 3)))
     return raw_logs
 
 
@@ -103,7 +98,6 @@ def parse_commits(commit_str):
     matched during parse ("errors").
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
-    print("TIMESTAMP: Log parsing started at {}".format(round(abs(time.time() - time_log), 3)))
     commit_list = list(filter(lambda s: s != "",commit_str.split("\n")))
     mode_list = ["basic","raw","stat"]
     # Get the mode signature and the mode string.
@@ -167,7 +161,6 @@ def parse_commits(commit_str):
                 collection[sha]["errors"] = [line]
         else:
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
-    print("TIMESTAMP: Log parsing ended at {}".format(round(abs(time.time() - time_log), 3)))
     return collection
 
 
@@ -180,7 +173,6 @@ def get_log(path,mode = "stat",commit_source = "local git"):
     :param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
     :return: A CommitLog object.
     """
-    print("TIMESTAMP: get_log started at {}".format(round(abs(time.time() - time_log), 3)))
     if commit_source == "local git":
         detect_key = "hash"
     else:
