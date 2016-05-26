@@ -190,7 +190,7 @@ class Log(object):
         for record in self.collection:
             keep = False
             # Check all tags.
-            if tag == "ALL":
+            if tag == "any":
                 for rkey in self.collection[record]:
                     if type(self.collection[record][rkey]) == list:
                         for item in self.collection[record][rkey]:
@@ -238,7 +238,7 @@ class Log(object):
         out = ""
         # If a filename is given, access the file.
         if fname != None:
-            f = open(fname, "w")
+            f = open(fname, "w", encoding="utf-8")
         # Add header line
         header = ""
         head_cur = 0
