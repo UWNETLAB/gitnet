@@ -28,8 +28,7 @@ def reference_datetime(s):
             ref_date = git_datetime(s)
         else:
             raise InputError("Unrecognized date format. match should be a Git formatted date string "
-                             "(e.g. 'Mon Apr 18 00:59:02 2016 -0400'), a date string (e.g. 2016-05-20) "
-                             "or a datetime object.")
+                             "(e.g. 'Mon Apr 18 00:59:02 2016 -0400') or a datetime object.")
     return ref_date
 
 

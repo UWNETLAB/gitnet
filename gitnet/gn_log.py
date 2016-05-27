@@ -3,7 +3,7 @@ import numpy as np
 import datetime as dt
 import warnings
 import copy
-from gitnet.gn_helpers import before, beforex, since, sincex, filter_has, filter_equals
+from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals
 from gitnet.gn_network import simple_edge
 
 
@@ -324,15 +324,13 @@ class Log(object):
                     v.append(value)
         return v
 
-    def generate_edges(self, mode1, mode2, helper = simple_edge, keep = ["author","hash","date","message"]):
-        # TODO: Once network generator method is coded, keep default should be [], and default should be implemented
-        #   at the subclass level. Perhaps special methods...
+    def generate_edges(self, mode1, mode2, helper = simple_edge, keep = []):
         """
         Generates bipartite edges present in each Log record.
         :param mode1: A record attribute, which becomes the first node type.
         :param mode2: A record attribute, which becomes the second node type.
-        :param helper: The function that computes the edges. Options are simple_edge (default) and fedits_edge.
-        :param keep: A list of attributes to keep as attributes of the edge. Default is author, hash, date, and message.
+        :param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.
+        :param keep: A list of attributes to keep as attributes of the edge.
         :return: A generator object containing edges and their weights.
         """
         for record in self.collection:
@@ -389,27 +387,134 @@ class Log(object):
                     if item1 in nodes.keys():
                         nodes[item1]["records"].append(record)
                         for tag in keep_vector1:
-                            nodes[item1][tag].append(cur[tag])
+                            if tag in cur.keys():
+                                if tag not in nodes[item1].keys():
+                                    nodes[item1][tag] = [cur[tag]]
+                                elif tag in cur.keys():
+                                    nodes[item1][tag].append(cur[tag])
                     else:
                         nodes[item1] = {"id":item1,"type":mode1,"records":[record]}
                         for tag in keep_atom1:
-                            nodes[item1][tag] = cur[tag]
+                            if tag in cur.keys():
+                                nodes[item1][tag] = cur[tag]
                         for tag in keep_vector1:
-                            nodes[item1][tag] = [cur[tag]]
+                            if tag in cur.keys():
+                                nodes[item1][tag] = [cur[tag]]
                 for item2 in m2:
                     if item2 in nodes.keys():
                         nodes[item2]["records"].append(record)
                         for tag in keep_vector2:
-                            nodes[item2][tag].append(cur[tag])
+                            if tag in cur.keys():
+                                if tag not in nodes[item2].keys():
+                                    nodes[item2][tag] = [cur[tag]]
+                                elif tag in cur.keys():
+                                    nodes[item2][tag].append(cur[tag])
                     else:
                         nodes[item2] = {"id": item2, "type": mode2, "records": [record]}
                         for tag in keep_atom2:
-                            nodes[item2][tag] = cur[tag]
+                            if tag in cur.keys():
+                                nodes[item2][tag] = cur[tag]
                         for tag in keep_vector2:
-                            nodes[item2][tag] = [cur[tag]]
+                            if tag in cur.keys():
+                                nodes[item2][tag] = [cur[tag]]
         if len(nodes) is 0:
             warnings.warn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.")
         node_tuple_list = []
         for n in nodes:
             node_tuple_list.append((n,nodes[n]))
         return node_tuple_list
+
+    def generate_network(self, mode1, mode2, helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
+                         mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vecotr_attrs = []):
+        pass
+
+    def write_edges(self, fname, mode1, mode2, helper = simple_edge, keep = []):
+        f = open(fname, "w", encoding="utf-8")
+        # Define attributes
+        attrs = ["id1", "id2", "weight", "date"] + keep
+        # Write header
+        cur = len(attrs)
+        for colname in attrs:
+            f.write(colname)
+            if cur > 1:
+                f.write(",")
+                cur -= 1
+            else:
+                f.write("\n")
+        # Write IDHash1,IDHash2,weight,month-day-year
+        for edge in self.generate_edges(mode1,mode2,helper,keep):
+            if "weight" in edge[2].keys():
+                weight = edge[2]["weight"]
+            else:
+                weight = "NA"
+            if "date" in edge[2].keys():
+                date = git_datetime(edge[2]["date"]).date()
+            f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
+            for tag in keep:
+                if tag in edge[2].keys():
+                    f.write(",{}".format(edge[2][tag]))
+                else:
+                    f.write(",NA")
+            f.write("\n")
+        # Close file and print summary.
+        f.close()
+        print("Wrote edgelist with attributes to {}.".format(fname))
+
+    def write_nodes(self, fname, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
+        # TODO update documentation
+        """
+
+        :param fname:
+        :param mode1:
+        :param mode2:
+        :param keep_atom1:
+        :param keep_vector1:
+        :param keep_atom2:
+        :param keep_vector2:
+        :return:
+        """
+        f = open(fname, "w", encoding="utf-8")
+        # Define attributes
+        attrs = ["hashid","id","type"] + keep_atom1 + keep_vector1 + keep_atom2 + keep_vector2
+        # Write header
+        cur = len(attrs)
+        for colname in attrs:
+            f.write(colname)
+            if cur > 1:
+                f.write(",")
+                cur -= 1
+            else:
+                f.write("\n")
+        # Write IDHash, Name, type, ... [data]
+        for node, values in self.generate_nodes(mode1,mode2,keep_atom1,keep_vector1,keep_atom2,keep_vector2):
+            values["hashid"] = hash(node)
+            ncur = len(attrs)
+            for tag in attrs:
+                if tag in values.keys():
+                    val = values[tag]
+                    if type(val) is int or type(val) is str:
+                        f.write(str(val))
+                    if type(val) is list:
+                        valstring = ""
+                        vcur = len(val)
+                        for i in val:
+                            valstring += str(i)
+                            if vcur > 1:
+                                valstring += ";"
+                            vcur -= 1
+                        f.write(valstring)
+                else:
+                    f.write("NA")
+                if ncur > 1:
+                    f.write(",")
+                    ncur -= 1
+                else:
+                    f.write("\n")
+        f.close()
+        print("Wrote node attributes to {}.".format(fname))
+
+    def write_graphml(self):
+        pass
+
+    def network(self):
+        pass
