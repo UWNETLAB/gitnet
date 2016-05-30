@@ -1,4 +1,5 @@
 import pandas as pd
+import networkx as nx
 import datetime as dt
 import warnings
 import copy
@@ -365,13 +366,13 @@ class Log(object):
 
         By default, each node should have a record in the following format:
 
-        { "id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn} }
+        ("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})
 
         With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
 
-        { "id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
+        ("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
          atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
-         vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m]}
+         vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])
         """
         nodes = {}
         for record in self.collection:
@@ -428,11 +429,16 @@ class Log(object):
         return node_tuple_list
 
     def generate_network(self, mode1, mode2, helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
-                         mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vecotr_attrs = []):
-        pass
-
-    def network(self):
-        pass
+                         mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vector_attrs = []):
+        GN = nx.MultiGraph()
+        nodes = self.generate_nodes(mode1, mode2, keep_atom1=mode1_atom_attrs, keep_vector1=mode1_vector_attrs,
+                                    keep_atom2=mode2_atom_attrs, keep_vector2=mode2_vector_attrs)
+        for node in nodes:
+            GN.add_node(node[0], node[1])
+        edges = self.generate_edges(mode1, mode2, helper=helper, keep=edge_attributes)
+        for edge in edges:
+            GN.add_edges_from([(edge[0], edge[1], edge[2])])
+        return GN
 
     def write_edges(self, fname, mode1, mode2, helper = simple_edge, keep = []):
         f = open(fname, "w", encoding="utf-8")
