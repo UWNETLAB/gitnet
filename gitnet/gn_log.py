@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import datetime as dt
 import warnings
 import copy
@@ -136,13 +135,17 @@ class Log(object):
         :return: A new Log object identical to self but with only matching records.
 
         Details:
-        Comparisons are usually made in the following way: fun(self.collection[sha][tag],match).
+        Comparisons are usually made in the following way: fun(self.collection[sha][tag],match). This pattern should
+        be followed when using custom helper functions.
+
         Predicates currently implemented:
             - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("author","equals","Jane"))
                 - If both values are strings, match can be a regular expression.
             - "has" (Is match "in" the [tag] value? e.g. self.filter("email","has","@gmail.com"))
                 - If both values are strings, match can be a regular expression.
-            - Numerical comparisons. The values of tag, and match, must be comparable with >, and <.
+            - Comparison operations. The values of tag, and match, must be comparable with >, and <. Note that unless
+            you have explicitly converted date strings to datetime objects (or something similar), these comparisons
+            are not valid for date strings.
                 - "<" tag value less than match.
                 - "<=" tag value less than or equal to match.
                 - ">" tag value greater than match.
@@ -327,8 +330,8 @@ class Log(object):
     def generate_edges(self, mode1, mode2, helper = simple_edge, keep = []):
         """
         Generates bipartite edges present in each Log record.
-        :param mode1: A record attribute, which becomes the first node type.
-        :param mode2: A record attribute, which becomes the second node type.
+        :param mode1: A record attribute (tag), which becomes the first node type.
+        :param mode2: A record attribute (tag), which becomes the second node type.
         :param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.
         :param keep: A list of attributes to keep as attributes of the edge.
         :return: A generator object containing edges and their weights.
@@ -428,6 +431,9 @@ class Log(object):
                          mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vecotr_attrs = []):
         pass
 
+    def network(self):
+        pass
+
     def write_edges(self, fname, mode1, mode2, helper = simple_edge, keep = []):
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
@@ -516,5 +522,3 @@ class Log(object):
     def write_graphml(self):
         pass
 
-    def network(self):
-        pass

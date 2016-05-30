@@ -91,6 +91,7 @@ def filter_has(x,match):
         return match in x
     except TypeError:
         return False
+
 # Helper needed for .ignrore? Can probably do this in the method...
 def glob():
     pass

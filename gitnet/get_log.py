@@ -37,7 +37,6 @@ def retrieve_commits(path, mode = "stat"):
     return raw_logs
 
 
-
 def identify(s):
     """
     identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry
@@ -77,7 +76,6 @@ def identify(s):
         warnings.warn("Unexpected parsing behaviour. <{}> did not match any input patterns during parsing,"
                       " so was identified as 'other'.".format(s))
         return "none"
-
 
 
 def parse_commits(commit_str):
@@ -162,8 +160,6 @@ def parse_commits(commit_str):
         else:
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
     return collection
-
-
 
 
 def get_log(path,mode = "stat",commit_source = "local git"):
