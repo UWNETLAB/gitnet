@@ -21,7 +21,7 @@ class CommitLog(Log):
         :return: A list of ordered reference hashshes.
         """
         return ["hash","author","email","date","mode","merge","summary",
-                "fedits","inserts","deletes","messages","files","changes"]
+                "fedits","inserts","deletes","message","files","changes"]
 
 
     def describe(self, mode = "default", exclude = []):

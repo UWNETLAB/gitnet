@@ -176,6 +176,8 @@ class Log(object):
                          "sincex": sincex,
                          "before": before,
                          "beforex": beforex}
+        if tag == "date" and fun in ("<", "<=", ">", ">="):
+            warnings.warn("Dates have been compared alphabetically with {}, use Datetime comparisons to compare dates by time.".format(fun))
         # Make a copy of self
         new_log = copy.deepcopy(self)
         # Add filter summary to self.filters
