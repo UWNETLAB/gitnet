@@ -6,7 +6,6 @@ import copy
 from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals
 from gitnet.gn_network import simple_edge
 
-
 class Log(object):
     """
     Log is the basic class for the back end of gitnet. The Log class, and other classes which inherit its features,
@@ -177,6 +176,8 @@ class Log(object):
                          "sincex": sincex,
                          "before": before,
                          "beforex": beforex}
+        if tag == "date" and fun in ("<", "<=", ">", ">="):
+            warnings.warn("Dates have been compared alphabetically with {}, use Datetime comparisons to compare dates by time.".format(fun))
         # Make a copy of self
         new_log = copy.deepcopy(self)
         # Add filter summary to self.filters
@@ -525,6 +526,7 @@ class Log(object):
         f.close()
         print("Wrote node attributes to {}.".format(fname))
 
-    def write_graphml(self):
-        pass
 
+def write_graphml(self, fname, mode1, mode2, helper=simple_edge, edge_attributes=[], mode1_atom_attrs=[],
+                  mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
+    pass
