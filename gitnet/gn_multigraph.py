@@ -1,6 +1,6 @@
 import networkx as nx
 import warnings
-
+import matplotlib.pyplot as plt
 
 class MultiGraphPlus(nx.MultiGraph):
     def write_graphml(self, fpath):
