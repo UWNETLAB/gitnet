@@ -4,7 +4,7 @@ import datetime as dt
 import warnings
 import copy
 from gitnet.gn_log import Log
-from gitnet.gn_helpers import git_datetime, most_common, filter_regex
+from gitnet.gn_helpers import git_datetime, most_common, filter_regex, changes_edge
 
 
 class CommitLog(Log):
