@@ -184,7 +184,3 @@ def changes_edge(v1, v2, record, keep):
         weight = "0"
     properties["weight"] = int(weight)
     return (v1,v2,properties)
-
-
-def write_graphml(graph, fname):
-    return nx.write_graphml(graph, fname)
