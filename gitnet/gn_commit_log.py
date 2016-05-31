@@ -4,7 +4,7 @@ import datetime as dt
 import warnings
 import copy
 from gitnet.gn_log import Log
-from gitnet.gn_helpers import git_datetime, most_common, filter_regex, changes_edge
+from gitnet.gn_helpers import git_datetime, most_common, filter_regex, simple_edge, changes_edge
 
 
 class CommitLog(Log):
@@ -175,3 +175,26 @@ class CommitLog(Log):
         # Add a summary of the ignore to self.filters
         summary = "Ignore files that {} the regular expression: {}".format(ignoreif,pattern)
         self.filters.append(summary)
+
+
+    def network(self, type):
+        """
+        A method for quickly creating preset networks using CommitLog data.
+        :param type: A string indicating which preset to use.
+        :return: A NetworkX object.
+        """
+        if type is "author/file":
+            return self.generate_network("author", "files",
+                                         edge_attributes=["author", "hash"],
+                                         mode1_atom_attrs=["email"],
+                                         mode2_atom_attrs=[],
+                                         mode1_vector_attrs=["hash", "fedits"],
+                                         mode2_vector_attrs=["date", "hash"])
+        if type is "author/file/weighted":
+            return self.generate_network("author", "files",
+                                         edge_attributes=["author", "hash"],
+                                         mode1_atom_attrs=["email"],
+                                         mode2_atom_attrs=[],
+                                         mode1_vector_attrs=["hash", "fedits"],
+                                         mode2_vector_attrs=["date", "hash"],
+                                         helper=changes_edge)

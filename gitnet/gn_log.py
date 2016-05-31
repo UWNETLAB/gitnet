@@ -3,8 +3,7 @@ import networkx as nx
 import datetime as dt
 import warnings
 import copy
-from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals
-from gitnet.gn_network import simple_edge
+from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge, changes_edge
 
 class Log(object):
     """
