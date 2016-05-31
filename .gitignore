@@ -1,3 +1,7 @@
+.xml
+.iml
+
+
 # .gitignore entried recommended for Python, from github/gitignore/Python.gitignore
 
 /build
