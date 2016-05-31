@@ -25,14 +25,21 @@ class MultiGraphPlus(nx.MultiGraph):
                     self.node[n][attr] = 'None'
         nx.write_graphml(self, fpath)
         if warning:
-            warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have "
-            "been converted to 'None'. To prevent this, remove vector attributes or convert them to atomic "
-            "attributes prior to calling .write_graphml"
-            .format(warning_list))
+            warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
+                          " been converted to 'None'. To prevent this, remove vector attributes or convert them to "
+                          "atomic attributes prior to calling .write_graphml"
+                          .format(warning_list))
+
 
     def node_merge(self, node1, node2):
         """
+        Combines node1 and node2, retaining all the node attributes of node1.
         :param node1:
         :param node2:
         :return:
         """
+        #TODO: 3 situations for n attr: 1 Lists (append) 2 Non-conflicting atomic(add) 3. Conflicting atomic (overwrite)
+        #TODO: retain edge attributes
+        for e in self.edges(node2):
+            self.add_edge(node1, e[1])
+            self.remove_edge(e[0], e[1])
