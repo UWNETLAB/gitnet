@@ -2,7 +2,9 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 
+
 class MultiGraphPlus(nx.MultiGraph):
+
     def write_graphml(self, fpath):
         """
         write_graphml converts a MultiGraphPlus object to a graphml file.
@@ -21,9 +23,16 @@ class MultiGraphPlus(nx.MultiGraph):
                     warning = True
                     warning_list = set([attr]) | warning_list
                     self.node[n][attr] = 'None'
-
         nx.write_graphml(self, fpath)
-        warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have "
-                      "been converted to 'None'. To prevent this, remove vector attributes or convert them to atomic "
-                      "attributes prior to calling .write_graphml"
-                      .format(warning_list))
+        if warning:
+            warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have "
+            "been converted to 'None'. To prevent this, remove vector attributes or convert them to atomic "
+            "attributes prior to calling .write_graphml"
+            .format(warning_list))
+
+    def node_merge(self, node1, node2):
+        """
+        :param node1:
+        :param node2:
+        :return:
+        """
