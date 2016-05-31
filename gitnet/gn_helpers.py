@@ -88,6 +88,12 @@ def filter_equals(x, match):
 
 
 def filter_has(x,match):
+    """
+    Determines whether match is "in" x. If x and match are both strings, match can be a regular expression.
+    :param x: An input value.
+    :param match: A reference value.
+    :return: Is match in x?
+    """
     if type(x) is str and type(match) is str:
         return filter_regex(x,match,mode="search")
     try:
@@ -145,24 +151,23 @@ def simple_edge(v1, v2, record, keep):
     Creates an edge between to vertices, with an associated dictionary of properties.
     :param v1: The first vertex, any type.
     :param v2: The second vertex, any type.
-    :param record:
-    :param keep:
-    :return:
+    :param record: The current record in edge generation.
+    :param keep: The edge attributes to be kept from the record.
+    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})
     """
     properties = {k:v for k,v in record.items() if k in keep}
     return (v1,v2, properties)
 
 
-# TODO: changes_edge is currently broken. Fix it. Make it work taking in "file" but still getting lines changed
 def changes_edge(v1, v2, record, keep):
     """
     Creates an edge between an "any" and a CommitLog file ("file"), weighted by the number of lines changed
-    in the file.
+    in the file. Is a helper for Log.generate_edges().
     :param v1: The first vertex, any type.
     :param v2: Must be a file string (e.g. "my_dir/my_file.txt") as in CommitLog "files"
-    :param record:
-    :param keep:
-    :return:
+    :param record: The current record in edge generation.
+    :param keep: The edge attributes to be kept from the record.
+    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})
     """
     properties = {k:v for k,v in record.items() if k in keep}
     # Get file name and change weight
@@ -175,12 +180,15 @@ def changes_edge(v1, v2, record, keep):
         return (v1,v2,properties)
     fname = split_change[0].replace(" ","")
     assert(fname == v2)
-    weight_str = record["changes"][1]
-    weight = ""
-    for char in weight_str:
-        if char.isnumeric():
-            weight += char
-    if weight == "":
-        weight = "0"
-    properties["weight"] = int(weight)
+    weight_str = split_change[1]
+    if "Bin" in weight_str:
+        properties["weight"] = 1
+    else:
+        weight = ""
+        for char in weight_str:
+            if char.isnumeric():
+                weight += char
+        if weight == "":
+            weight = "0"
+        properties["weight"] = int(weight)
     return (v1,v2,properties)

@@ -3,6 +3,7 @@ import networkx as nx
 import datetime as dt
 import warnings
 import copy
+from gitnet.gn_multigraph import MultiGraphPlus
 from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
 
 class Log(object):
@@ -430,7 +431,7 @@ class Log(object):
 
     def generate_network(self, mode1, mode2, helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
                          mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vector_attrs = []):
-        GN = nx.MultiGraph()
+        GN = MultiGraphPlus()
         nodes = self.generate_nodes(mode1, mode2, keep_atom1=mode1_atom_attrs, keep_vector1=mode1_vector_attrs,
                                     keep_atom2=mode2_atom_attrs, keep_vector2=mode2_vector_attrs)
         for node in nodes:
