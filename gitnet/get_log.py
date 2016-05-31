@@ -4,6 +4,7 @@ import warnings
 from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
 from gitnet.gn_commit_log import CommitLog
 
+
 def retrieve_commits(path, mode = "stat"):
     """
     retrieve_commits takes a file path string and a mode string and produces the  git log for the
@@ -162,11 +163,12 @@ def parse_commits(commit_str):
     return collection
 
 
-def get_log(path,mode = "stat",commit_source = "local git"):
+def get_log(path, mode="stat", commit_source="local git"):
     """
     A function for gathering data from a local Git repository.
     :param path: A string containing the path of the Git repository.
     :param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
+    :param commit_source: The source of the Git repository, local is currently the only option.
     :return: A CommitLog object.
     """
     if commit_source == "local git":
