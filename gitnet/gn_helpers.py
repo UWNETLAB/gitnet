@@ -1,10 +1,10 @@
 import datetime as dt
 import re
+import networkx as nx
 from gitnet.gn_exceptions import InputError
 
+
 # Working with Git Log date strings
-
-
 def git_datetime(s):
     """
     Turns a git date string into a datetime object.
@@ -32,10 +32,8 @@ def reference_datetime(s):
     return ref_date
 
 
-
 # Filtering functions.
-
-def since(s,match):
+def since(s, match):
     """
     A predicate determining if s is a date since match (inclusive).
     :param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).
@@ -45,19 +43,23 @@ def since(s,match):
     dt_match = reference_datetime(match)
     return git_datetime(s) >= dt_match
 
-def before(s,match):
+
+def before(s, match):
     dt_match = reference_datetime(match)
     return git_datetime(s) <= dt_match
 
-def sincex(s,match):
+
+def sincex(s, match):
     dt_match = reference_datetime(match)
     return git_datetime(s) > dt_match
 
-def beforex(s,match):
+
+def beforex(s, match):
     dt_match = reference_datetime(match)
     return git_datetime(s) < dt_match
 
-def filter_regex(s,match,mode = "match"):
+
+def filter_regex(s, match, mode="match"):
     """
     A predicate which determines whether "s" matches the regular expression "match".
     :param s: An input string which is compared to the regex pattern.
@@ -71,7 +73,8 @@ def filter_regex(s,match,mode = "match"):
     elif mode == "search":
         return bool(re.search(pattern,s))
 
-def filter_equals(x,match):
+
+def filter_equals(x, match):
     """
     Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.
     :param x: An input value.
@@ -83,6 +86,7 @@ def filter_equals(x,match):
     else:
         return x == match
 
+
 def filter_has(x,match):
     if type(x) is str and type(match) is str:
         return filter_regex(x,match,mode="search")
@@ -93,7 +97,6 @@ def filter_has(x,match):
 
 
 # Working with lists.
-
 def most_common(lst):
     """
     Produces a list containing the most common entry in a list (more than one entry if there is a tie.)
@@ -112,6 +115,7 @@ def most_common(lst):
         if occurances[j] > 1:
             s_list.append((occurances[j],j))
     return sorted(s_list,reverse=True)
+
 
 def most_occurrences(lst):
     """
@@ -134,17 +138,20 @@ def most_occurrences(lst):
             m_common.append(i)
     return max
 
-# Network Functions
 
+# Network Functions
 def simple_edge(v1, v2, record, keep):
     """
     Creates an edge between to vertices, with an associated dictionary of properties.
     :param v1: The first vertex, any type.
     :param v2: The second vertex, any type.
+    :param record:
+    :param keep:
     :return:
     """
     properties = {k:v for k,v in record.items() if k in keep}
     return (v1,v2, properties)
+
 
 # TODO: changes_edge is currently broken. Fix it. Make it work taking in "file" but still getting lines changed
 def changes_edge(v1, v2, record, keep):
@@ -153,6 +160,8 @@ def changes_edge(v1, v2, record, keep):
     in the file.
     :param v1: The first vertex, any type.
     :param v2: Must be a file string (e.g. "my_dir/my_file.txt") as in CommitLog "files"
+    :param record:
+    :param keep:
     :return:
     """
     properties = {k:v for k,v in record.items() if k in keep}
@@ -176,5 +185,6 @@ def changes_edge(v1, v2, record, keep):
     properties["weight"] = int(weight)
     return (v1,v2,properties)
 
+
 def write_graphml(graph, fname):
-    pass
+    return nx.write_graphml(graph, fname)
