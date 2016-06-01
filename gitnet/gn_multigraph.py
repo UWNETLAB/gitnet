@@ -171,3 +171,11 @@ class MultiGraphPlus(nx.MultiGraph):
                   "retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"
                   .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
         return merged_graph
+
+    def collapse_edge(self):
+        '''
+        This method collapses duplicate edges into one edge, whose attribute is the number of edges which were collapsed
+        :return:
+        '''
+        for e in self.edges():
+            pass
