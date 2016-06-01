@@ -41,7 +41,7 @@ my_log = gn.get_log("Users/localpath/my_repository")
 
 The core data class for all data collected by `gitnet` is a `Log`. `Logs` contain a core dataset of records, attributes documenting its retrieval, and a number of methods to explore, clean, and export the data it contains. In practice, users will generally use a subclass of the `Log` class, with extra features appropriate for the source of their data (e.g. the `Log` subclass for Git commit data is called `CommitLog`, and has methods for generating author-file networks, ignoring files by extension, and so on.)
 
-The core dataset is a dictionary of dictionaries, and held in log.collection. All `Logs` are subscriptable, so you can access individual records directly by their identifiers e.g. `log[record_id]`.
+The core dataset is a dictionary of dictionaries, and held in log.collection. All `Logs` are subscriptable, so you can access individual records directly by their identifiers (e.g. their commit hash).
 
 The basic methods available for `Log` and all its subclasses are as follows:
 
@@ -57,7 +57,7 @@ The basic methods available for `Log` and all its subclasses are as follows:
 | `.generate_edges()`   | Creates network edges by record.                                                  |
 | `.write_edges()`      | Writes an edgelist (with attributes) to a file.                                   |
 | `.generate_nodes()`   | Creates a dictionary of network nodes.                                            |
-| `.write_notes()`      | Writes a list of nodes (with attributes) to a file.                               |
+| `.write_nodes()`      | Writes a list of nodes (with attributes) to a file.                               |
 | `.generate_network()` | Creates a network model of the dataset producing a `MultiGraphPlus` object.       |
 
 ## The `CommitLog` Subclass
@@ -74,10 +74,28 @@ Git commit log datasets are stored as a `CommitLog`, which inherits all the feat
 
 When you create a network model using `gitnet`, it is represented as a `MultiGraphPlus` object, which is a subclass of the `networkx` class for undirected graphs with duplicate edges, the `MultiGraph`. `MultiGraphPlus` inherits all the features of a `MultiGraph`, and so can be used with all `networkx` functions that have `MultiGraph` support. However, `MultiGraphPlus` defines a number of new methods to make working with `gitnet` networks more convenient. The methods unique to `MultiGraph` are:
 
-| Method                | Purpose                                                                |
-|-----------------------|------------------------------------------------------------------------|
-| `.describe()`         | Description of the network.                                            |
-| `.quickplot()`        | Easily create network visualizations with one line of code.            |
-| `.node_attributes()`  | Add node attributes, with prebuilt or custom helper functions.         |
-| `.node_marge()`       | Merge two nodes.                                                       |
-| `.write_graphml()`    | Export the network as a GraphML file.                                  |
+| Method                | Purpose                                                                        |
+|-----------------------|--------------------------------------------------------------------------------|
+| `.describe()`         | A description of the network.                                                  |
+| `.quickplot()`        | Provides presets to easily create network visualizations with one line of code.|
+| `.node_attributes()`  | Adds node attributes, with prebuilt or custom helper functions.                |
+| `.node_merge()`       | Merges two nodes.                                                              |
+| `.write_graphml()`    | Exports the network as a GraphML file.                                         |
+
+## Custom Data Sources
+
+If you want to use the features of `gitnet` for an unsupported data source, it is easy to initialize a `Log` object with a custom dataset. First, convert your data into a dictionary of dictionaries, for example:
+
+```{python}
+{"id1":{"attr1":val1,...,"attrn":valn},
+ ...
+ "idm":{"attr1":val1,...,"attrn":valn}}
+```
+
+Then, you just initialize a `Log` with the dictionary of dictionaries.
+
+```{python}
+my_log = Log(dict_of_dict)
+```
+
+If you wish to request or contribute support for a new data source, please contact the developers.

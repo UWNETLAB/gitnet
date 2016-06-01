@@ -41,7 +41,7 @@ class MultiGraphPlus(nx.MultiGraph):
         for n in self.nodes():
             self.node[n][name] = helper(self.node[n])
 
-    def quickplot(self, layout = "spring", fname = None, size = 20):
+    def quickplot(self, fname, layout = "spring", size = 20):
         """
         Makes a quick visualization of the network.
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
@@ -64,7 +64,7 @@ class MultiGraphPlus(nx.MultiGraph):
                 colour_data[n] = "lightgrey"
         colour_list = [colour_data[node] for node in copy_net.nodes()]
         # Plot the network
-        if layout in ["dot", "neato", "fdp", "sfdp", "twopi", "circo"]:
+        if layout in ["dot", "neato", "fdp", "circo"]:
             nx.draw(copy_net,
                     pos = graphviz_layout(copy_net,prog=layout),
                     node_size = size,
@@ -73,8 +73,6 @@ class MultiGraphPlus(nx.MultiGraph):
                     linewidths = .5,
                     edge_color = "DarkGray",
                     width = .1)
-                    #k = .01,
-                    #iterations = 100)
         if layout == "spring":
             nx.draw_spring(copy_net,
                             node_size = size,
@@ -83,8 +81,7 @@ class MultiGraphPlus(nx.MultiGraph):
                             linewidths = .5,
                             edge_color = "DarkGray",
                             width = .1,
-                            k = .01,
-                            iterations=100)
+                            k = 1000)
         elif layout == "circular":
             nx.draw_circular(copy_net,
                             node_size = size,
