@@ -87,9 +87,9 @@ When you create a network model using `gitnet`, it is represented as a `MultiGra
 If you want to use the features of `gitnet` for an unsupported data source, it is easy to initialize a `Log` object with a custom dataset. First, convert your data into a dictionary of dictionaries, for example:
 
 ```{python}
-{"id1":{"attr1":val1,...,"attrn":valn},
- ...
- "idm":{"attr1":val1,...,"attrn":valn}}
+my_log = {"id1":{"attr1":val1,...,"attrn":valn},
+            ⋮
+          "idm":{"attr1":val1,...,"attrn":valn}}
 ```
 
 Then, you just initialize a `Log` with the dictionary of dictionaries.
