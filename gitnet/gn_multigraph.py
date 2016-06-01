@@ -2,6 +2,7 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
+from networkx.drawing.nx_agraph import graphviz_layout
 
 
 class MultiGraphPlus(nx.MultiGraph):
@@ -41,18 +42,42 @@ class MultiGraphPlus(nx.MultiGraph):
         for n in self.nodes():
             self.node[n][name] = helper(self.node[n])
 
-    def quickplot(self, layout = "spring", fname = None, size = 10):
+    def quickplot(self, layout = "spring", fname = None, size = 20):
+        """
+        Makes a quick visualization of the network.
+        :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
+        :param fname: If specified, a copy of the figure is saved using this file name.
+        :param size: The size of the nodes. Default is 20.
+        :return: None
+        """
+        # Make a copy
+        copy_net = copy.deepcopy(self)
+        # Remove isolates
+        copy_net.remove_nodes_from(nx.isolates(copy_net))
+        # Add detect colour attribute
         colour_data = {}
-        for n in self.nodes():
-            if "colour" in self.node[n].keys():
-                colour_data[n] = self.node[n]["colour"]
-            elif "color" in self.node[n].keys():
-                colour_data[n] = self.node[n]["color"]
+        for n in copy_net.nodes():
+            if "colour" in copy_net.node[n].keys():
+                colour_data[n] = copy_net.node[n]["colour"]
+            elif "color" in copy_net.node[n].keys():
+                colour_data[n] = copy_net.node[n]["color"]
             else:
                 colour_data[n] = "lightgrey"
-        colour_list = [colour_data[node] for node in self.nodes()]
+        colour_list = [colour_data[node] for node in copy_net.nodes()]
+        # Plot the network
+        if layout in ["dot", "neato", "fdp", "sfdp", "twopi", "circo"]:
+            nx.draw(copy_net,
+                    pos = graphviz_layout(copy_net,prog=layout),
+                    node_size = size,
+                    font_size = 5,
+                    node_color = colour_list,
+                    linewidths = .5,
+                    edge_color = "DarkGray",
+                    width = .1)
+                    #k = .01,
+                    #iterations = 100)
         if layout == "spring":
-            nx.draw_spring(self,
+            nx.draw_spring(copy_net,
                             node_size = size,
                             font_size = 5,
                             node_color =colour_list,
@@ -62,7 +87,7 @@ class MultiGraphPlus(nx.MultiGraph):
                             k = .01,
                             iterations=100)
         elif layout == "circular":
-            nx.draw_circular(self,
+            nx.draw_circular(copy_net,
                             node_size = size,
                             font_size = 5,
                             node_color =colour_list,
@@ -71,7 +96,7 @@ class MultiGraphPlus(nx.MultiGraph):
                             width = .1,
                             k = 1000)
         elif layout == "shell":
-            nx.draw_shell(self,
+            nx.draw_shell(copy_net,
                            node_size=size,
                            font_size=5,
                            node_color =colour_list,
@@ -80,7 +105,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            width=.1,
                            k=1000)
         elif layout == "spectral":
-            nx.draw_spectral(self,
+            nx.draw_spectral(copy_net,
                            node_size=size,
                            font_size=5,
                            node_color =colour_list,
@@ -89,7 +114,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            width=.1,
                            k=1000)
         elif layout == "random":
-            nx.draw_random(self,
+            nx.draw_random(copy_net,
                            node_size=size,
                            font_size=5,
                            node_color =colour_list,
@@ -97,9 +122,13 @@ class MultiGraphPlus(nx.MultiGraph):
                            edge_color="DarkGray",
                            width=.1,
                            k=1000)
+        # Save figure if applicable
         if fname is not None:
-            plt.savefig(fname)
+            plt.savefig(fname,bbox_inches="tight")
             print("Wrote file: {}".format(fname))
+
+    def describe(self):
+        print("A MultiGraphPlus object with {} nodes and {} edges.".format(len(self.nodes()), len(self.edges())))
 
     def node_merge(self, node1, node2):
         """

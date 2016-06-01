@@ -107,7 +107,7 @@ class Log(object):
 
     def browse(self):
         """
-        Interactively prints the contents of the Log collection, one commit at a time.
+        Interactively prints the contents of the Log collection, one record at a time.
         :return: None
         """
         for key in self.collection.keys():
@@ -526,7 +526,3 @@ class Log(object):
         f.close()
         print("Wrote node attributes to {}.".format(fname))
 
-
-def write_graphml(self, fname, mode1, mode2, helper=simple_edge, edge_attributes=[], mode1_atom_attrs=[],
-                  mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
-    pass

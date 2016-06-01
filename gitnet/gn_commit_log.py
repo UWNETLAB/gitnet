@@ -20,7 +20,6 @@ class CommitLog(Log):
         return ["hash","author","email","date","mode","merge","summary",
                 "fedits","inserts","deletes","message","files","changes"]
 
-
     def describe(self, mode = "default", exclude = []):
         """
         A method for creating an extended descriptive output for the CommitLog subclass.
@@ -169,7 +168,6 @@ class CommitLog(Log):
             ignore_note = "doesn't match"
         summary = "Ignore files that {} the regular expression: {}".format(ignore_note,pattern)
         self.filters.append(summary)
-
 
     def network(self, type):
         """

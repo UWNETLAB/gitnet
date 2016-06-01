@@ -2,7 +2,7 @@
 
 ## Overview
 
-`gitnet` is a Python 3 library with user friendly tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network models and visualizations. The primary purpose of `gitnet` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be use to organizations, project managers, and curious coders. 
+`gitnet` is a Python 3 library with user friendly tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network models and visualizations. The primary purpose of `gitnet` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be use to organizations, project managers, and curious coders.
 
 `gitnet` is currently under active development by the University of Waterloo's **NetLab**. The current build offers flexible tools for working with local Git repositories. Future iterations will include support for collecting and modelling issue report and pull request data from front-end version control systems, tools for analyzing contributors' communication networks, reproducible data collection, and more tools for increased flexibility. If you are curious about our project, want tips regarding how to use `gitnet`, find a bug, or wish to request a feature, please feel free to email a contributor or submit an issue report.
 
@@ -20,10 +20,64 @@ gn_log.ignore("\.py$",ignoreif = "no match")
 
 gn_net = gn_log.network("author/file")
 gn_net.node_attributes("colour", helper = gn.author_file_node_colours)
-gn_net.quickplot(layout = "spring", fname = "quick.pdf", size = 20)
+gn_net.quickplot(layout = "spring", fname = "quick.png", size = 40)
 ```
 
 <br />
 
 This snippet imports `gitnet`, creates a `CommitLog` from our local repository, uses a regular expression to ignore files with names that end with `.py`, creates a `MultiGraphPlus` using presets for a bipartite author/file network, adds default file colourings to the graph's node attributes, and saves a basic visualization of the network. The result looks like this:
 
+![](resources/gitnet_network.png)
+
+## Retrieving Data
+
+Currently, only local Git retrieval is supported. Use the `get_log()` function to create a `CommitLog` object, by passing a file path for the Git repository.
+
+```{python}
+my_log = gn.get_log("Users/localpath/my_repository")
+```
+
+## The `Log` Class
+
+The core data class for all data collected by `gitnet` is a `Log`. `Logs` contain a core dataset of records, attributes documenting its retrieval, and a number of methods to explore, clean, and export the data it contains. In practice, users will generally use a subclass of the `Log` class, with extra features appropriate for the source of their data (e.g. the `Log` subclass for Git commit data is called `CommitLog`, and has methods for generating author-file networks, ignoring files by extension, and so on.)
+
+The core dataset is a dictionary of dictionaries, and held in log.collection. All `Logs` are subscriptable, so you can access individual records directly by their identifiers e.g. `log[record_id]`.
+
+The basic methods available for `Log` and all its subclasses are as follows:
+
+| Method                | Purpose                                                                           |
+|-----------------------|-----------------------------------------------------------------------------------|
+| `.attributes()`       | Produces a list of all the tags in the collection.                                |
+| `.describe()`         | Prints a detailed, subclass-specific summary of the `Log`                         |
+| `.browse()`           | Interactively prints the content of each record in the collection.                |
+| `.filter()`           | Selectively remove records using some matching criteria.                          |
+| `.tsv()`              | Export a tab delimited spreadsheet containing the collected data.                 |
+| `.df()`               | Create a `Pandas` dataframe object using the collected data.                      |
+| `.vector()`           | Create a list of all values with a specified tag.                                 |
+| `.generate_edges()`   | Creates network edges by record.                                                  |
+| `.write_edges()`      | Writes an edgelist (with attributes) to a file.                                   |
+| `.generate_nodes()`   | Creates a dictionary of network nodes.                                            |
+| `.write_notes()`      | Writes a list of nodes (with attributes) to a file.                               |
+| `.generate_network()` | Creates a network model of the dataset producing a `MultiGraphPlus` object.       |
+
+## The `CommitLog` Subclass
+
+Git commit log datasets are stored as a `CommitLog`, which inherits all the features of a `Log` as well as the following methods:
+
+| Method                | Purpose                                                                |
+|-----------------------|------------------------------------------------------------------------|
+| `.describe()`         | A `CommitLog` specific summary, which overrides `Log` describe.        |
+| `.ignore()`           | Removes files matching a regular expression from all records.          |
+| `.network()`          | Contains preset options for generating networks from a `CommitLog`.    |
+
+## The `MultiGraphPlus` Class
+
+When you create a network model using `gitnet`, it is represented as a `MultiGraphPlus` object, which is a subclass of the `networkx` class for undirected graphs with duplicate edges, the `MultiGraph`. `MultiGraphPlus` inherits all the features of a `MultiGraph`, and so can be used with all `networkx` functions that have `MultiGraph` support. However, `MultiGraphPlus` defines a number of new methods to make working with `gitnet` networks more convenient. The methods unique to `MultiGraph` are:
+
+| Method                | Purpose                                                                |
+|-----------------------|------------------------------------------------------------------------|
+| `.describe()`         | Description of the network.                                            |
+| `.quickplot()`        | Easily create network visualizations with one line of code.            |
+| `.node_attributes()`  | Add node attributes, with prebuilt or custom helper functions.         |
+| `.node_marge()`       | Merge two nodes.                                                       |
+| `.write_graphml()`    | Export the network as a GraphML file.                                  |
