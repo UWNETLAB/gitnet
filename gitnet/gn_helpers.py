@@ -145,7 +145,7 @@ def most_occurrences(lst):
     return max
 
 
-# Network Functions
+# Network Edge Generator Functions
 def simple_edge(v1, v2, record, keep):
     """
     Creates an edge between to vertices, with an associated dictionary of properties.
@@ -192,3 +192,27 @@ def changes_edge(v1, v2, record, keep):
             weight = "0"
         properties["weight"] = int(weight)
     return (v1,v2,properties)
+
+# Network Attribute Helper Functions
+
+def author_file_node_colours(d):
+    if "type" not in d.keys():
+        return "lightgrey"
+    else:
+        type = d["type"]
+        if type == "author":
+            return "dodgerblue"
+        elif type == "files":
+            if "id" not in d.keys():
+                return "lightgrey"
+            id = d["id"]
+            if filter_regex(id,"\.py$",mode="search"):
+                return "tomato"
+            elif filter_regex(id,"\.cc$",mode="search"):
+                return "gold"
+            elif filter_regex(id, "\.h$", mode="search"):
+                return "goldenrod"
+            else:
+                return "lightgrey"
+        else:
+            return "lightgrey"

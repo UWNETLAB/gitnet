@@ -146,31 +146,28 @@ class CommitLog(Log):
         Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
         and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
         :param pattern: A string/regular expression.
-        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "don't match", files not
+        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
         matching pattern are ignored.
         :return: None
         """
         for record in self.collection:
-            ignore_files = []
-            ignore_changes = []
             # Move files into f_ignore
             if "files" in self.collection[record].keys():
-                for f in self.collection[record]["files"]:
-                    if filter_regex(f,pattern,mode="search") or \
-                                            ignoreif == "don't match" and not(filter_regex(f,pattern,mode="search")):
-                        ignore_files.append(f)
-                        self.collection[record]["files"].remove(f)
-                self.collection[record]["f_ignore"] = ignore_files
-            # Move change summaries into ch_ignore
-            if "changes" in self.collection[record].keys():
-                for f in self.collection[record]["changes"]:
-                    if filter_regex(f, pattern, mode="search") or \
-                                            ignoreif == "don't match" and not (filter_regex(f, pattern, mode="search")):
-                        ignore_changes.append(f)
-                        self.collection[record]["changes"].remove(f)
-                self.collection[record]["ch_ignore"] = ignore_changes
+                if ignoreif == "match":
+                    self.collection[record]["files"] = \
+                        list(filter(lambda f: not(filter_regex(f, pattern, mode="search")),
+                                    self.collection[record]["files"]))
+                elif ignoreif == "no match":
+                    self.collection[record]["files"] = \
+                        list(filter(lambda f: filter_regex(f, pattern, mode="search"),
+                                    self.collection[record]["files"]))
         # Add a summary of the ignore to self.filters
-        summary = "Ignore files that {} the regular expression: {}".format(ignoreif,pattern)
+        ignore_note = ""
+        if ignoreif == "matches":
+            ignore_note = "matches"
+        elif ignoreif == "no match":
+            ignore_note = "doesn't match"
+        summary = "Ignore files that {} the regular expression: {}".format(ignore_note,pattern)
         self.filters.append(summary)
 
 
