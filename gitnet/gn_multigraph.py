@@ -2,7 +2,7 @@ import networkx as nx
 import warnings
 import copy
 import matplotlib.pyplot as plt
-
+from networkx.drawing.nx_agraph import graphviz_layout
 
 class MultiGraphPlus(nx.MultiGraph):
 
@@ -64,6 +64,17 @@ class MultiGraphPlus(nx.MultiGraph):
                 colour_data[n] = "lightgrey"
         colour_list = [colour_data[node] for node in copy_net.nodes()]
         # Plot the network
+        if layout in ["dot", "neato", "fdp", "sfdp", "twopi", "circo"]:
+            nx.draw(copy_net,
+                    pos = graphviz_layout(copy_net,prog=layout),
+                    node_size = size,
+                    font_size = 5,
+                    node_color = colour_list,
+                    linewidths = .5,
+                    edge_color = "DarkGray",
+                    width = .1)
+                    #k = .01,
+                    #iterations = 100)
         if layout == "spring":
             nx.draw_spring(copy_net,
                             node_size = size,
@@ -114,6 +125,9 @@ class MultiGraphPlus(nx.MultiGraph):
         if fname is not None:
             plt.savefig(fname,bbox_inches="tight")
             print("Wrote file: {}".format(fname))
+
+    def describe(self):
+        print("A MultiGraphPlus object with {} nodes and {} edges.".format(len(self.nodes()), len(self.edges())))
 
     def node_merge(self, node1, node2):
         """
