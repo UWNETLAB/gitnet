@@ -1,8 +1,9 @@
 import networkx as nx
 import warnings
-import copy
 import matplotlib.pyplot as plt
+import copy
 from networkx.drawing.nx_agraph import graphviz_layout
+
 
 class MultiGraphPlus(nx.MultiGraph):
 
@@ -128,13 +129,50 @@ class MultiGraphPlus(nx.MultiGraph):
 
     def node_merge(self, node1, node2):
         """
-        Combines node1 and node2, retaining all the node attributes of node1.
-        :param node1:
-        :param node2:
-        :return:
+        Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2's edges will become
+            node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
+            identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the
+            two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic
+            attribute, node1's value will overwrite node2's value.
+        :param node1: The identifier for a node. This node's attributes will persist to the merged node.
+        :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
+        :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
+        gained node2's edges.
         """
-        #TODO: 3 situations for n attr: 1 Lists (append) 2 Non-conflicting atomic(add) 3. Conflicting atomic (overwrite)
-        #TODO: retain edge attributes
-        for e in self.edges(node2):
-            self.add_edge(node1, e[1])
-            self.remove_edge(e[0], e[1])
+        merged_graph = copy.deepcopy(self)
+
+        # Moves all edges from node2 to node1
+        print('Merging edges...')
+        for e in merged_graph.edges(node2, data=True):
+            merged_graph.add_edge(node1, e[1], attr_dict=e[2])
+            merged_graph.remove_edge(e[0], e[1])
+        # Adds node2's attributes to node1. There are three cases for this:
+            # 1. Vector attributes are joined to create one larger vector
+            # 2. Non-conflicting Atomic attributes are kept and preserved in the final node
+            # 3. Conflicting Atomic attributes are not added from node2 (node1 values persist)
+        node_merge_warn = False
+        node_merge_warn_list = []
+        print('Merging nodes...')
+        for na in merged_graph.node[node2]:
+            if na not in merged_graph.node[node1]:  # Deals with case 2
+                merged_graph.node[node1][na] = merged_graph.node[node2][na]
+            elif isinstance(merged_graph.node[node2][na], list):  # Deals with case 1
+                merged_graph.node[node1][na] = merged_graph.node[node1][na] + merged_graph.node[node2][na]
+            elif merged_graph.node[node1][na] != merged_graph.node[node2][na]:
+                node_merge_warn = True
+                node_merge_warn_list.append(na)
+        merged_graph.remove_node(node2) # Removes node2
+        if node_merge_warn:
+            print("Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, "
+                  "'{}' attribute values have been retained, while '{}' values have been ignored. If you would rather "
+                  "retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"
+                  .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
+        return merged_graph
+
+    def collapse_edge(self):
+        '''
+        This method collapses duplicate edges into one edge, whose attribute is the number of edges which were collapsed
+        :return:
+        '''
+        for e in self.edges():
+            pass
