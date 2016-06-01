@@ -20,11 +20,11 @@ gn_log.ignore("\.py$",ignoreif = "no match")
 
 gn_net = gn_log.network("author/file")
 gn_net.node_attributes("colour", helper = gn.author_file_node_colours)
-gn_net.quickplot(layout = "spring", fname = "quick.pdf", size = 20)
+gn_net.quickplot(layout = "spring", fname = "quick.svg", size = 20)
 ```
 
 <br />
 
 This snippet imports `gitnet`, creates a `CommitLog` from our local repository, uses a regular expression to ignore files with names that end with `.py`, creates a `MultiGraphPlus` using presets for a bipartite author/file network, adds default file colourings to the graph's node attributes, and saves a basic visualization of the network. The result looks like this:
 
-![](resources/gitnet_network.pdf)
+![](resources/gitnet_network.png)

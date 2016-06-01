@@ -112,7 +112,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            k=1000)
         # Save figure if applicable
         if fname is not None:
-            plt.savefig(fname)
+            plt.savefig(fname,bbox_inches="tight")
             print("Wrote file: {}".format(fname))
 
     def node_merge(self, node1, node2):
