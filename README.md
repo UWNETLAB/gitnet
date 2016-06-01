@@ -27,4 +27,4 @@ gn_net.quickplot(layout = "spring", fname = "quick.svg", size = 20)
 
 This snippet imports `gitnet`, creates a `CommitLog` from our local repository, uses a regular expression to ignore files with names that end with `.py`, creates a `MultiGraphPlus` using presets for a bipartite author/file network, adds default file colourings to the graph's node attributes, and saves a basic visualization of the network. The result looks like this:
 
-![](resources/gitnet_network.png)
+![](resources/gitnet_network.svg)
