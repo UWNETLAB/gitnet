@@ -171,14 +171,27 @@ class MultiGraphPlus(nx.MultiGraph):
 
     def collapse_edges(self, sum_weights = False):
         """
-        This method collapses duplicate edges into one edge, whose attribute is the number of edges which were collapsed
-        :return:
+        Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
+        assigned depends on the sum_weights parameter.
+
+        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges. If
+        False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of the
+        weights of collapsed edges.
+
+        :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
+        stores other edge data in lists.
+
+        Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
+        weight attribute, this method assumes the weight of the edge is 1.
+
         """
         gnew = MultiGraphPlus()
         for n1, n2, data in self.edges(data=True):
             if gnew.has_edge(n1,n2):
+                gnew_data = gnew.edge[n1][n2][0]
+                if 'weight' not in data:
+                    gnew_data['weight'] += 1
                 for k in data:
-                    gnew_data = gnew.edge[n1][n2][0]
                     if k in gnew_data:
                         if k == 'weight':
                             if sum_weights:
