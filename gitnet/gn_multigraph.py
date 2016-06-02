@@ -176,48 +176,32 @@ class MultiGraphPlus(nx.MultiGraph):
         """
         gnew = MultiGraphPlus()
         for n1, n2, data in self.edges(data=True):
-            if sum_weights:
-                if gnew.has_edge(n1,n2):
-                    for k in data:
-                        if k in gnew.edge[n1][n2][0]:
-                            if k == 'weight':
-                                gnew.edge[n1][n2][0][k] += data[k]
-                            elif isinstance(data[k], list):
-                                gnew.edge[n1][n2][0][k] += data[k]
-                            else:
-                                gnew.edge[n1][n2][0][k] += [data[k]]
-                        else:
-                            gnew.edge[n1][n2][0][k] = data[k]
-                else:
-                    dict = {}
-                    for k in data:
-                        if isinstance(data[k], list) or k == 'weight':
-                            dict[k] = data[k]
-                        else:
-                            dict[k] = [data[k]]
-                    gnew.add_edge(n1, n2, attr_dict=dict)
-            else:
-                if gnew.has_edge(n1, n2):
-                    for k in data:
-                        if k in gnew.edge[n1][n2][0]:
-                            if k == 'weight':
-                                print(gnew.edge[n1][n2][0][k])
-                                gnew.edge[n1][n2][0][k] += 1
-                            elif not isinstance(data[k], list):
-                                gnew.edge[n1][n2][0][k] += [data[k]]
-                            else:
-                                gnew.edge[n1][n2][0][k] += data[k]
-                        else:
-                            gnew.edge[n1][n2][0][k] = data[k]
-                else:
-                    dict = {'weight':1}
-                    for k in data:
+            if gnew.has_edge(n1,n2):
+                for k in data:
+                    gnew_data = gnew.edge[n1][n2][0]
+                    if k in gnew_data:
                         if k == 'weight':
-                            pass
+                            if sum_weights:
+                                gnew_data[k] += data[k]
+                            else:
+                                gnew_data[k] += 1
                         elif isinstance(data[k], list):
-                            dict[k] = data[k]
+                            gnew_data[k] += data[k]
                         else:
-                            dict[k] = [data[k]]
-                    gnew.add_edge(n1, n2, attr_dict=dict)
-
+                            gnew_data[k] += [data[k]]
+                    else:
+                        gnew_data[k] = data[k]
+            else:
+                edge_attr = {'weight': 1}
+                for k in data:
+                    if k == 'weight':
+                        if sum_weights:
+                            edge_attr[k] = data[k]
+                        else:
+                            pass
+                    elif isinstance(data[k], list):
+                        edge_attr[k] = data[k]
+                    else:
+                        edge_attr[k] = [data[k]]
+                gnew.add_edge(n1, n2, attr_dict=edge_attr)
         return gnew
