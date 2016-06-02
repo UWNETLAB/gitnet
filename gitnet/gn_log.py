@@ -329,6 +329,31 @@ class Log(object):
                     v.append(value)
         return v
 
+    def tag_replace(self, current_val, new_val, tag = "author"):
+        """Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.The main intention is to consolidate duplicate author names.
+        :param check_tag: lets the user specify which tag in the collection to check, author name is the default.
+        :param current_val: this is the value that the user wants to replace.
+        :param new_val: this is the value that the user wants to use in the Log Object.
+        """
+        selfcopy = copy.deepcopy(self)
+        status = 0
+        replaced_vals = 0
+        for record in selfcopy.collection:
+            if tag in selfcopy.collection[record].keys():
+                if selfcopy[record][tag] == current_val:
+                    selfcopy[record][tag] = new_val
+                    status = 2
+                    replaced_vals = replaced_vals + 1
+                elif current_val != selfcopy.collection[record][tag] and replaced_vals == 0:
+                    status = 1
+        if status == 0:
+            print("The tag requested does not appear in this collection.")
+        elif status == 1:
+            print("The value requested does not appear in any records in this collection.")
+        elif status == 2:
+            print("Success. You have replaced the " + tag + " value: " + str(current_val) + " " + str(replaced_vals) + " times.")
+        return selfcopy
+
     def generate_edges(self, mode1, mode2, helper = simple_edge, keep = []):
         """
         Generates bipartite edges present in each Log record.
@@ -525,4 +550,3 @@ class Log(object):
                     f.write("\n")
         f.close()
         print("Wrote node attributes to {}.".format(fname))
-
