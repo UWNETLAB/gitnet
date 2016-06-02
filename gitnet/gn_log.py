@@ -329,14 +329,23 @@ class Log(object):
                     v.append(value)
         return v
 
-    def generate_edges(self, mode1, mode2, helper = simple_edge, keep = []):
+    def generate_edges(self, mode1, mode2, helper = simple_edge, edge_attributes = []):
         """
         Generates bipartite edges present in each Log record.
         :param mode1: A record attribute (tag), which becomes the first node type.
         :param mode2: A record attribute (tag), which becomes the second node type.
         :param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.
-        :param keep: A list of attributes to keep as attributes of the edge.
+        :param edge_attributes: A list of attributes to keep as attributes of the edge.
         :return: A generator object containing edges and their weights.
+
+        Notes:
+        Currently, two edge_helper functions are available in gitnet.gn_helpers:
+        1. simple_edge
+            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+        2. changes_edge
+            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
+            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
+            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
         """
         for record in self.collection:
             cur = self.collection[record]
@@ -352,13 +361,13 @@ class Log(object):
                 # Yield edges
                 for item1 in m1:
                     for item2 in m2:
-                        yield helper(item1, item2, cur, keep)
+                        yield helper(item1, item2, cur, edge_attributes)
 
     def generate_nodes(self, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
         """
         Generates the bipartite nodes present in the Log object.
-        :param mode1:
-        :param mode2:
+        :param mode1: The tag string for the first mode type.
+        :param mode2: The tag string for the second mode type.
         :param keep_atom1: Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
         :param keep_vector1: Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
         :param keep_atom2: Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
@@ -429,22 +438,63 @@ class Log(object):
             node_tuple_list.append((n,nodes[n]))
         return node_tuple_list
 
-    def generate_network(self, mode1, mode2, helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
+    def generate_network(self, mode1, mode2, edge_helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
                          mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vector_attrs = []):
+        """
+        An abstract network generator.
+        :param mode1: The tag string for the first mode type.
+        :param mode2: The tag string for the second mode type.
+        :param edge_helper: The helper function used to compute an edge.
+        :param edge_attributes: The tag names of attributes to be saved for each edge.
+        :param mode1_atom_attrs: The tag names of attributes to be saved once for each node of mode1.
+        :param mode2_atom_attrs: The tag names of attributes to be saved repeatedly for each node of mode1.
+        :param mode1_vector_attrs: The tag names of attributes to be saved once for each node of mode2.
+        :param mode2_vector_attrs: The tag names of attributes to be saved repeatedly for each node of mode2.
+        :return: A MultiGraphPlus object, which inherits from the NetworkX MultiGraph class.
+
+        Notes:
+        Currently, two edge_helper functions are available in gitnet.gn_helpers:
+        1. simple_edge
+            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+        2. changes_edge
+            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
+            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
+            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
+        """
         GN = MultiGraphPlus()
+        # Make the nodes and add them to the MultiGraphPlus
         nodes = self.generate_nodes(mode1, mode2, keep_atom1=mode1_atom_attrs, keep_vector1=mode1_vector_attrs,
                                     keep_atom2=mode2_atom_attrs, keep_vector2=mode2_vector_attrs)
         for node in nodes:
             GN.add_node(node[0], node[1])
-        edges = self.generate_edges(mode1, mode2, helper=helper, keep=edge_attributes)
+        # Make the edges and add them to the MultiGraphPlus
+        edges = self.generate_edges(mode1, mode2, helper=edge_helper, edge_attributes=edge_attributes)
         for edge in edges:
             GN.add_edges_from([(edge[0], edge[1], edge[2])])
         return GN
 
-    def write_edges(self, fname, mode1, mode2, helper = simple_edge, keep = []):
+    def write_edges(self, fname, mode1, mode2, helper = simple_edge, edge_attribute = []):
+        """
+        Writes an edge list with attributes.
+        :param fname: The name of the output file.
+        :param mode1: The tag string for the first mode type.
+        :param mode2: The tag string for the second mode type.
+        :param helper: The helper function used to generate the edges.
+        :param edge_attribute: The tag names of attributes to be saved for each edge
+        :return: None
+
+        Notes:
+        Currently, two edge_helper functions are available in gitnet.gn_helpers:
+        1. simple_edge
+            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+        2. changes_edge
+            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
+            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
+            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
+        """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
-        attrs = ["id1", "id2", "weight", "date"] + keep
+        attrs = ["id1", "id2", "weight", "date"] + edge_attribute
         # Write header
         cur = len(attrs)
         for colname in attrs:
@@ -455,7 +505,7 @@ class Log(object):
             else:
                 f.write("\n")
         # Write IDHash1,IDHash2,weight,month-day-year
-        for edge in self.generate_edges(mode1,mode2,helper,keep):
+        for edge in self.generate_edges(mode1, mode2, helper, edge_attribute):
             if "weight" in edge[2].keys():
                 weight = edge[2]["weight"]
             else:
@@ -463,7 +513,7 @@ class Log(object):
             if "date" in edge[2].keys():
                 date = git_datetime(edge[2]["date"]).date()
             f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
-            for tag in keep:
+            for tag in edge_attribute:
                 if tag in edge[2].keys():
                     f.write(",{}".format(edge[2][tag]))
                 else:
@@ -474,17 +524,16 @@ class Log(object):
         print("Wrote edgelist with attributes to {}.".format(fname))
 
     def write_nodes(self, fname, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
-        # TODO update documentation
         """
-
-        :param fname:
-        :param mode1:
-        :param mode2:
-        :param keep_atom1:
-        :param keep_vector1:
-        :param keep_atom2:
-        :param keep_vector2:
-        :return:
+        Writes a list of nodes with attributes.
+        :param fname: The name of the output file.
+        :param mode1: The tag string for the first mode type.
+        :param mode2: The tag string for the second mode type.
+        :param keep_atom1: The tag names of attributes to be saved once for each node of mode1.
+        :param keep_vector1: The tag names of attributes to be repeatedly once for each node of mode1.
+        :param keep_atom2: The tag names of attributes to be saved once for each node of mode2.
+        :param keep_vector2: The tag names of attributes to be repeatedly once for each node of mode2.
+        :return: None
         """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes

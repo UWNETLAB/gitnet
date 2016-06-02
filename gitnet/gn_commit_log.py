@@ -184,11 +184,11 @@ class CommitLog(Log):
                                          mode2_vector_attrs=["date", "hash"])
         if type == "author/file/weighted":
             return self.generate_network("author", "files",
-                                         edge_attributes=["author", "hash"],
+                                         edge_attributes=["author", "hash", "date"],
                                          mode1_atom_attrs=["email"],
                                          mode2_atom_attrs=[],
                                          mode1_vector_attrs=["hash", "fedits"],
                                          mode2_vector_attrs=["date", "hash"],
-                                         helper=changes_edge)
+                                         edge_helper=changes_edge)
         else:
             raise InputError("{} is not a valid network preset.".format(type))
