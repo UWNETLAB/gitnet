@@ -169,10 +169,55 @@ class MultiGraphPlus(nx.MultiGraph):
                   .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
         return merged_graph
 
-    def collapse_edge(self):
-        '''
+    def collapse_edges(self, sum_weights = False):
+        """
         This method collapses duplicate edges into one edge, whose attribute is the number of edges which were collapsed
         :return:
-        '''
-        for e in self.edges():
-            pass
+        """
+        gnew = MultiGraphPlus()
+        for n1, n2, data in self.edges(data=True):
+            if sum_weights:
+                if gnew.has_edge(n1,n2):
+                    for k in data:
+                        if k in gnew.edge[n1][n2][0]:
+                            if k == 'weight':
+                                gnew.edge[n1][n2][0][k] += data[k]
+                            elif isinstance(data[k], list):
+                                gnew.edge[n1][n2][0][k] += data[k]
+                            else:
+                                gnew.edge[n1][n2][0][k] += [data[k]]
+                        else:
+                            gnew.edge[n1][n2][0][k] = data[k]
+                else:
+                    dict = {}
+                    for k in data:
+                        if isinstance(data[k], list) or k == 'weight':
+                            dict[k] = data[k]
+                        else:
+                            dict[k] = [data[k]]
+                    gnew.add_edge(n1, n2, attr_dict=dict)
+            else:
+                if gnew.has_edge(n1, n2):
+                    for k in data:
+                        if k in gnew.edge[n1][n2][0]:
+                            if k == 'weight':
+                                print(gnew.edge[n1][n2][0][k])
+                                gnew.edge[n1][n2][0][k] += 1
+                            elif not isinstance(data[k], list):
+                                gnew.edge[n1][n2][0][k] += [data[k]]
+                            else:
+                                gnew.edge[n1][n2][0][k] += data[k]
+                        else:
+                            gnew.edge[n1][n2][0][k] = data[k]
+                else:
+                    dict = {'weight':1}
+                    for k in data:
+                        if k == 'weight':
+                            pass
+                        elif isinstance(data[k], list):
+                            dict[k] = data[k]
+                        else:
+                            dict[k] = [data[k]]
+                    gnew.add_edge(n1, n2, attr_dict=dict)
+
+        return gnew
