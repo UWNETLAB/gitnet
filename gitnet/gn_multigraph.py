@@ -2,11 +2,16 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
+import numpy as np
 from gitnet.gn_helpers import git_datetime
 from networkx.drawing.nx_agraph import graphviz_layout
 
 
 class MultiGraphPlus(nx.MultiGraph):
+
+    mode1 = ""
+
+    mode2 = ""
 
     def write_graphml(self, fpath):
         """
@@ -113,7 +118,7 @@ class MultiGraphPlus(nx.MultiGraph):
         for n in self.nodes():
             self.node[n][name] = helper(self.node[n])
 
-    def quickplot(self, fname, k = 1, iterations = 50, layout = "spring", size = 20, default_colour = "lightgrey"):
+    def quickplot(self, fname, k = "4/sqrt(n)", iterations = 50, layout = "neato", size = 20, default_colour = "lightgrey"):
         """
         Makes a quick visualization of the network.
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
@@ -121,6 +126,8 @@ class MultiGraphPlus(nx.MultiGraph):
         :param size: The size of the nodes. Default is 20.
         :return: None
         """
+        if type(k) is str:
+            k = 4/np.sqrt(self.number_of_nodes())
         # Make a copy
         copy_net = copy.deepcopy(self)
         # Remove isolates
@@ -136,6 +143,7 @@ class MultiGraphPlus(nx.MultiGraph):
                 colour_data[n] = default_colour
         colour_list = [colour_data[node] for node in copy_net.nodes()]
         # Plot the network
+        print("Plotting...")
         if layout in ["dot", "neato", "fdp", "circo"]:
             nx.draw(copy_net,
                     pos = graphviz_layout(copy_net,prog=layout),
