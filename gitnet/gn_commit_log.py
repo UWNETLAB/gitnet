@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from gitnet.gn_log import Log
 from gitnet.gn_exceptions import InputError
 from gitnet.gn_helpers import git_datetime, most_common, filter_regex, simple_edge, changes_edge
@@ -147,33 +148,35 @@ class CommitLog(Log):
         :param pattern: A string/regular expression.
         :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
         matching pattern are ignored.
-        :return: None
+        :return: A new CommitLog object, same as self but with the appropriate files removed.
         """
-        for record in self.collection:
+        self_copy = copy.deepcopy(self)
+        for record in self_copy.collection:
             # Move files into f_ignore
-            if "files" in self.collection[record].keys():
+            if "files" in self_copy.collection[record].keys():
                 if ignoreif == "match":
-                    self.collection[record]["files"] = \
+                    self_copy.collection[record]["files"] = \
                         list(filter(lambda f: not(filter_regex(f, pattern, mode="search")),
-                                    self.collection[record]["files"]))
+                                    self_copy.collection[record]["files"]))
                 elif ignoreif == "no match":
-                    self.collection[record]["files"] = \
+                    self_copy.collection[record]["files"] = \
                         list(filter(lambda f: filter_regex(f, pattern, mode="search"),
-                                    self.collection[record]["files"]))
-        # Add a summary of the ignore to self.filters
+                                    self_copy.collection[record]["files"]))
+        # Add a summary of the ignore to self_copy.filters
         ignore_note = ""
         if ignoreif == "matches":
             ignore_note = "matches"
         elif ignoreif == "no match":
             ignore_note = "doesn't match"
         summary = "Ignore files that {} the regular expression: {}".format(ignore_note,pattern)
-        self.filters.append(summary)
+        self_copy.filters.append(summary)
+        return self_copy
 
     def network(self, type):
         """
         A method for quickly creating preset networks using CommitLog data.
         :param type: A string indicating which preset to use.
-        :return: A MultiGraphPlus object.
+        :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.
         """
         if type == "author/file":
             return self.generate_network("author", "files",

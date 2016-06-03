@@ -329,11 +329,14 @@ class Log(object):
                     v.append(value)
         return v
 
-    def tag_replace(self, current_val, new_val, tag = "author"):
-        """Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.The main intention is to consolidate duplicate author names.
-        :param check_tag: lets the user specify which tag in the collection to check, author name is the default.
+    def replace_val(self, tag, current_val, new_val):
+        """
+        Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.
+        :param tag: The record tag string whose values will be checked (and replaced when appropriate.)
         :param current_val: this is the value that the user wants to replace.
         :param new_val: this is the value that the user wants to use in the Log Object.
+
+        Note: This method is particularly useful for combining duplicate names for the same author.
         """
         selfcopy = copy.deepcopy(self)
         status = 0
