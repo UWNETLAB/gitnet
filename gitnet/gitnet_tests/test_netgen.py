@@ -29,13 +29,13 @@ class TestEdgeGeneratorSmall(unittest.TestCase):
         self.assertEqual(set(hashes),set(manual))
 
     def test_edge_weight(self):
-        weights = [e[2]["weight"] for e in self.my_log.generate_edges("author","files",helper=gitnet.gn_helpers.changes_edge)]
+        weights = [e[2]["weight"] for e in self.my_log.generate_edges("author","files", helper=gitnet.helpers.changes_edge)]
         manual = [33,45,51,1,5]
         self.assertEqual(set(weights),set(manual))
 
     def test_edge_attr_dict(self):
-        edges = self.my_log.generate_edges("author","files",helper=gitnet.gn_helpers.changes_edge,
-                                               edge_attributes=["hash","date"])
+        edges = self.my_log.generate_edges("author","files", helper=gitnet.helpers.changes_edge,
+                                           edge_attributes=["hash","date"])
         attr_dict = [e[2] for e in edges if e[2]["hash"] == "51ba020a3fdc56d74d88306e507dd4e2d2db3543"][0]
         manual_dict = {"weight":1,"hash":"51ba020a3fdc56d74d88306e507dd4e2d2db3543","date":"Fri May 6 14:50:22 2016 -0400"}
         print("Attr Dict:",attr_dict)

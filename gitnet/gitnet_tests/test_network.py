@@ -1,23 +1,23 @@
 import unittest
-from gitnet import gn_multigraph
+from gitnet import multigraph
 
 
 class CollapseEdgesTest(unittest.TestCase):
-    """Tests for the collapse_edges() method within gn_multigraph.py"""
+    """Tests for the collapse_edges() method within multigraph.py"""
     # A simple graph with weights
-    mgw = gn_multigraph.MultiGraphPlus()
+    mgw = multigraph.MultiGraphPlus()
     mgw.add_edge(1, 2, weight=3)
     mgw.add_edge(1, 2, weight=2)
     mgw.add_edge(2, 3, weight=4)
 
     # A graph with no weights, but other similar attributes
-    now = gn_multigraph.MultiGraphPlus()
+    now = multigraph.MultiGraphPlus()
     now.add_edge('Alice', 'file01', type='commit', date='Jan 3', changed_lines=[5,18,38,44])
     now.add_edge('file01', 'Alice', type='commit', date='Jan 5', changed_lines=[3,5,23,67])
     now.add_edge('file01', 'Bob', type='issue', date='Jan 16', importance='high')
 
     # A graph whose edges have weights and other different attributes
-    diff = gn_multigraph.MultiGraphPlus()
+    diff = multigraph.MultiGraphPlus()
     diff.add_edge('Charlie', 'file02', weight=2, type='commit', date='Jan 1', changed_lines=[1, 2])
     diff.add_edge('Charlie', 'file02', weight=1, type='issue', date='Jan 2', importance='high')
     diff.add_edge('Charlie', 'file02', weight=4, type='review', date='Jan 5', status='PASS')
@@ -33,7 +33,7 @@ class CollapseEdgesTest(unittest.TestCase):
         """When sum_weights==False, or isn't provided, are weights calculated by adding number of edges?"""
         # sum_weights is made explicit
         sumwf_explicit = self.mgw.collapse_edges(sum_weights=False)
-        self.assertIsInstance(sumwf_explicit, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(sumwf_explicit, multigraph.MultiGraphPlus)
         self.assertEqual(sumwf_explicit.edge[1][2][0]['weight'], 2)
         self.assertEqual(sumwf_explicit.edge[2][3][0]['weight'], 1)
         self.assertEqual(len(sumwf_explicit.edge[1]), 1)
@@ -42,7 +42,7 @@ class CollapseEdgesTest(unittest.TestCase):
 
         # sum_weights is left to the default
         sumwf = self.mgw.collapse_edges()
-        self.assertIsInstance(sumwf, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(sumwf, multigraph.MultiGraphPlus)
         self.assertEqual(sumwf.edge[1][2][0]['weight'], 2)
         self.assertEqual(sumwf.edge[2][3][0]['weight'], 1)
         self.assertEqual(len(sumwf.edge[1]), 1)
@@ -52,7 +52,7 @@ class CollapseEdgesTest(unittest.TestCase):
     def test_simple_sum_weights(self):
         """When sum_weights==True, are weights added?"""
         sumwt = self.mgw.collapse_edges(sum_weights=True)
-        self.assertIsInstance(sumwt, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(sumwt, multigraph.MultiGraphPlus)
         self.assertEqual(sumwt.edge[1][2][0]['weight'], 5)
         self.assertEqual(sumwt.edge[2][3][0]['weight'], 4)
         self.assertEqual(len(sumwt.edge[1]), 1)
@@ -63,7 +63,7 @@ class CollapseEdgesTest(unittest.TestCase):
         """Is the absence of a weight attribute handled correctly? (Default to 1)?"""
         # Summing the weights
         sum = self.now.collapse_edges(sum_weights=True)
-        self.assertIsInstance(sum, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(sum, multigraph.MultiGraphPlus)
         self.assertEqual(sum.edge['Alice']['file01'][0]['weight'], 2)
         self.assertEqual(sum.edge['file01']['Bob'][0]['weight'], 1)
         self.assertEqual(len(sum.edge['Alice']), 1)
@@ -71,7 +71,7 @@ class CollapseEdgesTest(unittest.TestCase):
         self.assertEqual(len(sum.edge['Bob']), 1)
         # Not summing weights
         nosum = self.now.collapse_edges()
-        self.assertIsInstance(nosum, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(nosum, multigraph.MultiGraphPlus)
         self.assertEqual(nosum.edge['Alice']['file01'][0]['weight'], 2)
         self.assertEqual(nosum.edge['file01']['Bob'][0]['weight'], 1)
         self.assertEqual(len(nosum.edge['Alice']), 1)
@@ -84,20 +84,20 @@ class CollapseEdgesTest(unittest.TestCase):
         mgw.add_edge(2,3) # Add non-weighted edge
         # Sum weights
         somew_sum = mgw.collapse_edges(sum_weights=True)
-        self.assertIsInstance(somew_sum, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(somew_sum, multigraph.MultiGraphPlus)
         self.assertEqual(somew_sum.edge[1][2][0]['weight'],5)
         self.assertEqual(somew_sum.edge[2][3][0]['weight'],5)
 
         # Don't sum weights
         somew_nosum = mgw.collapse_edges(sum_weights=False)
-        self.assertIsInstance(somew_nosum, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(somew_nosum, multigraph.MultiGraphPlus)
         self.assertEqual(somew_nosum.edge[1][2][0]['weight'], 2)
         self.assertEqual(somew_nosum.edge[2][3][0]['weight'], 2)
 
     def test_eattr(self):
         """Are edge attributes retained?"""
         mg = self.now.collapse_edges()
-        self.assertIsInstance(mg, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(mg, multigraph.MultiGraphPlus)
         # Looking at Alice, contains a list attribute
         self.assertIsInstance(mg.edge['Alice'], dict)
         AD = {'file01': {0: {'weight': 2,
@@ -121,7 +121,7 @@ class CollapseEdgesTest(unittest.TestCase):
         """Are edge attributes retained properly, even when they aren't the same?"""
         # Sum the weights
         diff_attr = self.diff.collapse_edges(sum_weights=True)
-        self.assertIsInstance(diff_attr, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(diff_attr, multigraph.MultiGraphPlus)
         # Looking at Charlie, contains 3 unique attributes
         cd = {'file02': {0: {'weight': 7,
                              'type': ['commit', 'issue', 'review'],
@@ -158,8 +158,8 @@ class CollapseEdgesTest(unittest.TestCase):
 
 
 class NodeMergeTest(unittest.TestCase):
-    """Tests for the node_merge() method within gn_multigraph.py"""
-    mg = gn_multigraph.MultiGraphPlus()
+    """Tests for the node_merge() method within multigraph.py"""
+    mg = multigraph.MultiGraphPlus()
     mg.add_node('Alice', attr_dict={'id': 'a01',
                                     'email': 'alice@gmail.com',
                                     'phone': '1(888)123-4567',
@@ -183,7 +183,7 @@ class NodeMergeTest(unittest.TestCase):
         """Ensures the results of the method are appropriate"""
         mg_merged = self.mg_merged
         # Checking Return Value
-        self.assertIsInstance(mg_merged, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
         # Checking Nodes
         self.assertEqual(self.mg.number_of_nodes(), 4) # Checking before
         self.assertEqual(mg_merged.number_of_nodes(), 3)
@@ -202,7 +202,7 @@ class NodeMergeTest(unittest.TestCase):
     def test_list_attr(self):
         """Are list attributes combined by node_merge?"""
         mg_merged = self.mg_merged
-        self.assertIsInstance(mg_merged, gn_multigraph.MultiGraphPlus)
+        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
         self.assertEqual(len(mg_merged.node['Alice Smith']['records']), 4)
         self.assertSetEqual(set(mg_merged.node['Alice Smith']['records']), {'hash1', 'hash2', 'hash3', 'hash4'})
 

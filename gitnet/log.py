@@ -3,8 +3,8 @@ import networkx as nx
 import datetime as dt
 import warnings
 import copy
-from gitnet.gn_multigraph import MultiGraphPlus
-from gitnet.gn_helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
+from gitnet.multigraph import MultiGraphPlus
+from gitnet.helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
 
 class Log(object):
     """

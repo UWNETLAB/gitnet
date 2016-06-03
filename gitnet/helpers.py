@@ -1,7 +1,7 @@
 import datetime as dt
 import re
 import networkx as nx
-from gitnet.gn_exceptions import InputError
+from gitnet.exceptions import InputError
 
 
 # Working with Git Log date strings

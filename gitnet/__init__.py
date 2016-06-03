@@ -1,5 +1,5 @@
 from .get_log import get_log
-from .gn_exceptions import RepositoryError, ParseError, InputError
-from .gn_log import Log
-from .gn_commit_log import CommitLog
-from .gn_helpers import simple_edge, changes_edge, author_file_node_colours
+from .exceptions import RepositoryError, ParseError, InputError
+from .log import Log
+from .commit_log import CommitLog
+from .helpers import simple_edge, changes_edge, author_file_node_colours

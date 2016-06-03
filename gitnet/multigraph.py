@@ -2,12 +2,8 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
-<<<<<<< HEAD
-import numpy
-=======
 import numpy as np
->>>>>>> f7e086e092c968931362dde4bfd04759655e3857
-from gitnet.gn_helpers import git_datetime
+from gitnet.helpers import git_datetime
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms import bipartite
 
@@ -227,14 +223,14 @@ class MultiGraphPlus(nx.MultiGraph):
             degree_mode2 = bipartite.degree_centrality(self, bipartite.sets(self)[1])
             degree_mode1 = list(degree_mode1.values())
             degree_mode2 = list(degree_mode2.values())
-            degree_mode1 = numpy.mean(degree_mode1)
-            degree_mode2 = numpy.mean(degree_mode2)
+            degree_mode1 = np.mean(degree_mode1)
+            degree_mode2 = np.mean(degree_mode2)
             betweenness_mode1 = bipartite.betweenness_centrality(self, bipartite.sets(self)[0])
             betweenness_mode1 = list(betweenness_mode1.values())
-            betweenness_mode1 = numpy.mean(betweenness_mode1)
+            betweenness_mode1 = np.mean(betweenness_mode1)
             betweenness_mode2 = bipartite.betweenness_centrality(self, bipartite.sets(self)[1])
             betweenness_mode2 = list(betweenness_mode2.values())
-            betweenness_mode2 = numpy.mean(betweenness_mode2)
+            betweenness_mode2 = np.mean(betweenness_mode2)
             G = nx.Graph(self)
             projection = bipartite.projected_graph(G, bipartite.sets(G)[0])
             transitivity = nx.transitivity(projection)

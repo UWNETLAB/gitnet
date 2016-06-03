@@ -1,8 +1,8 @@
 import bash as sh
 import os
 import warnings
-from gitnet.gn_exceptions import RepositoryError, ParseError, InputError
-from gitnet.gn_commit_log import CommitLog
+from gitnet.exceptions import RepositoryError, ParseError, InputError
+from gitnet.commit_log import CommitLog
 
 
 def retrieve_commits(path, mode = "stat"):
