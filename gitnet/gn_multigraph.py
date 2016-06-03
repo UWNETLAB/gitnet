@@ -2,6 +2,7 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
+from gitnet.gn_helpers import git_datetime
 from networkx.drawing.nx_agraph import graphviz_layout
 
 
@@ -32,6 +33,76 @@ class MultiGraphPlus(nx.MultiGraph):
                           "atomic attributes prior to calling .write_graphml"
                           .format(warning_list))
 
+    def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
+                   weight_string='weight'):
+        """
+        A function to write an edgelist formatted for the tnet library for network analysis in R.
+        :param fname: The name of the tnet file to be created.
+        :param mode_string: The name string of the mode node attribute.
+        :param weighted: Do the edges have weights? True or false.
+        :param time_string: the name string of the date/time node attribute.
+        :param node_index_string: Creates a new integer id attribute.
+        :param weight_string: The name of the weight node attribute.
+        :return: None
+
+        Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
+        """
+        modes = []
+        mode1Set = set()
+        for node_index, node in enumerate(self.nodes_iter(data=True), start=1):
+            try:
+                nMode = node[1][mode_string]
+            except KeyError:
+                # too many modes so will fail
+                modes = [1, 2, 3]
+                nMode = 4
+            if nMode not in modes:
+                if len(modes) < 2:
+                    modes.append(nMode)
+                else:
+                    raise ValueError(
+                        "Too many modes of '{}' found in the network or one of the nodes was missing its mode. There must be exactly 2 modes.".format(
+                            mode_string))
+            if nMode == modes[0]:
+                mode1Set.add(node[0])
+            node[1][node_index_string] = node_index
+        if len(modes) != 2:
+            raise ValueError(
+                "Too few modes of '{}' found in the network. There must be exactly 2 modes.".format(mode_string))
+        with open(fname, 'w', encoding='utf-8') as f:
+            for n1, n2, eDict in self.edges_iter(data=True):
+                if n1 in mode1Set:
+                    if n2 in mode1Set:
+                        raise ValueError(
+                            "The nodes '{}' and '{}' have an edge and the same type. The network must be purely 2-mode.".format(
+                                n1, n2))
+                elif n2 in mode1Set:
+                    n1, n2 = n2, n1
+                else:
+                    raise ValueError(
+                        "The nodes '{}' and '{}' have an edge and the same type. The network must be purely 2-mode.".format(
+                            n1, n2))
+                if time_string is not None and time_string in eDict:
+                    edt = eDict[time_string]
+                    if type(edt) is str:
+                        edt = git_datetime(eDict[time_string])
+                    e_time_string = edt.strftime("\"%y-%m-%d %H:%M:%S\"")
+                else:
+                    e_time_string = ''
+                # Write to file
+                node1 = self.node[n1][node_index_string]
+                node2 = self.node[n2][node_index_string]
+                weight = eDict[weight_string]
+                if time_string != None:
+                    f.write("{} {} {}".format(e_time_string,node1,node2))
+                else:
+                    f.write("{} {}".format(node1,node2))
+                if weighted:
+                    f.write(" {}\n".format(weight))
+                else:
+                    f.write("\n")
+
+
     def node_attributes(self,name,helper):
         """
         Creates a new node attribute.
@@ -42,7 +113,7 @@ class MultiGraphPlus(nx.MultiGraph):
         for n in self.nodes():
             self.node[n][name] = helper(self.node[n])
 
-    def quickplot(self, fname, layout = "spring", size = 20):
+    def quickplot(self, fname, k = 1, iterations = 50, layout = "spring", size = 20, default_colour = "lightgrey"):
         """
         Makes a quick visualization of the network.
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
@@ -62,7 +133,7 @@ class MultiGraphPlus(nx.MultiGraph):
             elif "color" in copy_net.node[n].keys():
                 colour_data[n] = copy_net.node[n]["color"]
             else:
-                colour_data[n] = "lightgrey"
+                colour_data[n] = default_colour
         colour_list = [colour_data[node] for node in copy_net.nodes()]
         # Plot the network
         if layout in ["dot", "neato", "fdp", "circo"]:
@@ -75,14 +146,14 @@ class MultiGraphPlus(nx.MultiGraph):
                     edge_color = "DarkGray",
                     width = .1)
         if layout == "spring":
-            nx.draw_spring(copy_net,
-                            node_size = size,
-                            font_size = 5,
-                            node_color =colour_list,
-                            linewidths = .5,
-                            edge_color = "DarkGray",
-                            width = .1,
-                            k = 1000)
+            nx.draw(copy_net,
+                    pos=nx.spring_layout(copy_net,k=k,iterations=iterations),
+                    node_size=size,
+                    font_size=5,
+                    node_color=colour_list,
+                    linewidths=.5,
+                    edge_color="DarkGray",
+                    width=.1)
         elif layout == "circular":
             nx.draw_circular(copy_net,
                             node_size = size,
@@ -90,8 +161,7 @@ class MultiGraphPlus(nx.MultiGraph):
                             node_color =colour_list,
                             linewidths = .5,
                             edge_color = "DarkGray",
-                            width = .1,
-                            k = 1000)
+                            width = .1)
         elif layout == "shell":
             nx.draw_shell(copy_net,
                            node_size=size,
@@ -99,8 +169,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            node_color =colour_list,
                            linewidths=.5,
                            edge_color="DarkGray",
-                           width=.1,
-                           k=1000)
+                           width=.1)
         elif layout == "spectral":
             nx.draw_spectral(copy_net,
                            node_size=size,
@@ -108,8 +177,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            node_color =colour_list,
                            linewidths=.5,
                            edge_color="DarkGray",
-                           width=.1,
-                           k=1000)
+                           width=.1)
         elif layout == "random":
             nx.draw_random(copy_net,
                            node_size=size,
@@ -117,8 +185,7 @@ class MultiGraphPlus(nx.MultiGraph):
                            node_color =colour_list,
                            linewidths=.5,
                            edge_color="DarkGray",
-                           width=.1,
-                           k=1000)
+                           width=.1)
         # Save figure if applicable
         if fname is not None:
             plt.savefig(fname,bbox_inches="tight")

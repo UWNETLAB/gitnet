@@ -92,7 +92,7 @@ my_log = {"id1":{"attr1":val1,...,"attrn":valn},
           "idm":{"attr1":val1,...,"attrn":valn}}
 ```
 
-Then, you just initialize a `Log` with the dictionary of dictionaries.
+Then, initialize a `Log` with the dictionary of dictionaries.
 
 ```{python}
 my_log = Log(dict_of_dict)
