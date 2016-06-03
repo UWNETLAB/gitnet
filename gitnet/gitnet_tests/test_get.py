@@ -19,7 +19,6 @@ class TestGetLog(unittest.TestCase):
         sh.bash("cp -R repo_one.git .git")
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
-        sh.bash("git log --stat > templog.txt")
 
     # Basic test in default mode.
     def test_basic(self):
@@ -61,8 +60,9 @@ class TestGetLog(unittest.TestCase):
         self.assertEqual(len(self.my_log.collection["44b4c72"]["files"]), 3)
 
     def test_ignore(self):
-        self.my_log.ignore("\w\w\w\w.txt")
-        self.assertEqual(len(self.my_log.collection["44b4c72"]["files"]), 1)
+        self.assertEqual(len(self.my_log.ignore("\w\w\w\w.txt")["44b4c72"]["files"]), 0)
+        self.assertEqual(len(self.my_log.ignore("\w\w\w\w_")["44b4c72"]["files"]), 1)
+        self.assertEqual(len(self.my_log.ignore("\.md$")["fc3527c"]["files"]), 0)
 
     def tearDown(self):
         sh.bash("rm -rf .git")
