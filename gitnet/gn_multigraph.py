@@ -201,7 +201,10 @@ class MultiGraphPlus(nx.MultiGraph):
                         elif isinstance(data[k], list):
                             gnew_data[k] += data[k]
                         else:
-                            gnew_data[k] += [data[k]]
+                            if isinstance(gnew_data[k], list):
+                                gnew_data[k] += [data[k]]
+                            else:
+                                gnew_data[k] = [gnew_data[k], data[k]]
                     else:
                         gnew_data[k] = data[k]
             else:
@@ -215,6 +218,6 @@ class MultiGraphPlus(nx.MultiGraph):
                     elif isinstance(data[k], list):
                         edge_attr[k] = data[k]
                     else:
-                        edge_attr[k] = [data[k]]
+                        edge_attr[k] = data[k]
                 gnew.add_edge(n1, n2, attr_dict=edge_attr)
         return gnew
