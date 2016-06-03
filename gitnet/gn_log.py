@@ -487,6 +487,8 @@ class Log(object):
             corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
         """
         GN = MultiGraphPlus()
+        GN.mode1 = mode1
+        GN.mode2 = mode2
         # Make the nodes and add them to the MultiGraphPlus
         nodes = self.generate_nodes(mode1, mode2, keep_atom1=mode1_atom_attrs, keep_vector1=mode1_vector_attrs,
                                     keep_atom2=mode2_atom_attrs, keep_vector2=mode2_vector_attrs)

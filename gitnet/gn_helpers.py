@@ -196,6 +196,18 @@ def changes_edge(v1, v2, record, keep):
 # Network Attribute Helper Functions
 
 def author_file_node_colours(d):
+    """
+    Creates default colourings for an author/file bipartite network.
+    :param d: The attribute dictionary for the node.
+    :return: A colour string.
+
+    Colours:
+        Default: lightgrey
+        Author: dodgerblue
+        Python: tomato
+        C (code): gold
+        C (interface): goldenrod
+    """
     if "type" not in d.keys():
         return "lightgrey"
     else:
