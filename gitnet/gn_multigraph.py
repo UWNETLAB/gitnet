@@ -2,8 +2,10 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
+import numpy
 from gitnet.gn_helpers import git_datetime
 from networkx.drawing.nx_agraph import graphviz_layout
+from networkx.algorithms import bipartite
 
 
 class MultiGraphPlus(nx.MultiGraph):
@@ -191,8 +193,46 @@ class MultiGraphPlus(nx.MultiGraph):
             plt.savefig(fname,bbox_inches="tight")
             print("Wrote file: {}".format(fname))
 
-    def describe(self):
-        print("A MultiGraphPlus object with {} nodes and {} edges.".format(len(self.nodes()), len(self.edges())))
+    def describe(self, describe_extra = False):
+        """
+        Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,
+        denstiy, and the average degree for one mode.
+        Prints a string that contains each of the items that make up the summary.
+        Density is calculated using one of the modes of the original bipartite network graph.
+
+        :param describe_extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended maximum network size for the low efficiency algorithms is around 100 nodes.
+        """
+        density = bipartite.density(self, bipartite.sets(self)[0])
+        nodes = self.number_of_nodes()
+        edges = self.number_of_edges()
+        mode1 = len(bipartite.sets(self)[1])
+        descriptives = ""
+        descriptives1 = ""
+        descriptives2 = ""
+        if describe_extra == True:
+            # Note: for each mode of the bipartite graph, degree and betweenness centrality are the same.
+            # Keeping them both makes it easy to compare them and make sure they are the same.
+            degree_mode1 = bipartite.degree_centrality(self, bipartite.sets(self)[0])
+            degree_mode2 = bipartite.degree_centrality(self, bipartite.sets(self)[1])
+            degree_mode1 = list(degree_mode1.values())
+            degree_mode2 = list(degree_mode2.values())
+            degree_mode1 = numpy.mean(degree_mode1)
+            degree_mode2 = numpy.mean(degree_mode2)
+            betweenness_mode1 = bipartite.betweenness_centrality(self, bipartite.sets(self)[0])
+            betweenness_mode1 = list(betweenness_mode1.values())
+            betweenness_mode1 = numpy.mean(betweenness_mode1)
+            betweenness_mode2 = bipartite.betweenness_centrality(self, bipartite.sets(self)[1])
+            betweenness_mode2 = list(betweenness_mode2.values())
+            betweenness_mode2 = numpy.mean(betweenness_mode2)
+            G = nx.Graph(self)
+            projection = bipartite.projected_graph(G, bipartite.sets(G)[0])
+            transitivity = nx.transitivity(projection)
+            descriptives1 = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + ".\nTransitivity: " + str(transitivity) + ".\nMean Degree Centrality for Mode 1:  " + str(degree_mode1) + ".\nMean Degree Centrality for Mode 2: " + str(degree_mode2) + ".\n"
+            descriptives2 = "Mean Betweenness Centrality for Mode 1: " + str(betweenness_mode1) + ".\nMean Betweenness Centrality for Mode 2: " + str(betweenness_mode2) + ".\n"
+            descriptives = descriptives1 + descriptives2
+        elif describe_extra == False:
+            descriptives = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + "."
+        print(descriptives)
 
     def node_merge(self, node1, node2):
         """
