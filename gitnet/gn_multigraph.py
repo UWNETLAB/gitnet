@@ -2,13 +2,21 @@ import networkx as nx
 import warnings
 import matplotlib.pyplot as plt
 import copy
+<<<<<<< HEAD
 import numpy
+=======
+import numpy as np
+>>>>>>> f7e086e092c968931362dde4bfd04759655e3857
 from gitnet.gn_helpers import git_datetime
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms import bipartite
 
 
 class MultiGraphPlus(nx.MultiGraph):
+
+    mode1 = ""
+
+    mode2 = ""
 
     def write_graphml(self, fpath):
         """
@@ -115,7 +123,7 @@ class MultiGraphPlus(nx.MultiGraph):
         for n in self.nodes():
             self.node[n][name] = helper(self.node[n])
 
-    def quickplot(self, fname, k = 1, iterations = 50, layout = "spring", size = 20, default_colour = "lightgrey"):
+    def quickplot(self, fname, k = "4/sqrt(n)", iterations = 50, layout = "neato", size = 20, default_colour = "lightgrey"):
         """
         Makes a quick visualization of the network.
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
@@ -123,6 +131,8 @@ class MultiGraphPlus(nx.MultiGraph):
         :param size: The size of the nodes. Default is 20.
         :return: None
         """
+        if type(k) is str:
+            k = 4/np.sqrt(self.number_of_nodes())
         # Make a copy
         copy_net = copy.deepcopy(self)
         # Remove isolates
@@ -138,6 +148,7 @@ class MultiGraphPlus(nx.MultiGraph):
                 colour_data[n] = default_colour
         colour_list = [colour_data[node] for node in copy_net.nodes()]
         # Plot the network
+        print("Plotting...")
         if layout in ["dot", "neato", "fdp", "circo"]:
             nx.draw(copy_net,
                     pos = graphviz_layout(copy_net,prog=layout),
@@ -234,7 +245,7 @@ class MultiGraphPlus(nx.MultiGraph):
             descriptives = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + "."
         print(descriptives)
 
-    def node_merge(self, node1, node2):
+    def node_merge(self, node1, node2, show_warning=True):
         """
         Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2's edges will become
             node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
@@ -243,23 +254,23 @@ class MultiGraphPlus(nx.MultiGraph):
             attribute, node1's value will overwrite node2's value.
         :param node1: The identifier for a node. This node's attributes will persist to the merged node.
         :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
+        :param show_warning:
         :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
         gained node2's edges.
         """
         merged_graph = copy.deepcopy(self)
 
         # Moves all edges from node2 to node1
-        print('Merging edges...')
         for e in merged_graph.edges(node2, data=True):
             merged_graph.add_edge(node1, e[1], attr_dict=e[2])
             merged_graph.remove_edge(e[0], e[1])
+
         # Adds node2's attributes to node1. There are three cases for this:
             # 1. Vector attributes are joined to create one larger vector
             # 2. Non-conflicting Atomic attributes are kept and preserved in the final node
             # 3. Conflicting Atomic attributes are not added from node2 (node1 values persist)
         node_merge_warn = False
         node_merge_warn_list = []
-        print('Merging nodes...')
         for na in merged_graph.node[node2]:
             if na not in merged_graph.node[node1]:  # Deals with case 2
                 merged_graph.node[node1][na] = merged_graph.node[node2][na]
@@ -269,14 +280,14 @@ class MultiGraphPlus(nx.MultiGraph):
                 node_merge_warn = True
                 node_merge_warn_list.append(na)
         merged_graph.remove_node(node2) # Removes node2
-        if node_merge_warn:
+        if node_merge_warn and show_warning:
             print("Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, "
                   "'{}' attribute values have been retained, while '{}' values have been ignored. If you would rather "
                   "retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"
                   .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
         return merged_graph
 
-    def collapse_edges(self, sum_weights = False):
+    def collapse_edges(self, sum_weights=False):
         """
         Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
         assigned depends on the sum_weights parameter.
@@ -308,7 +319,10 @@ class MultiGraphPlus(nx.MultiGraph):
                         elif isinstance(data[k], list):
                             gnew_data[k] += data[k]
                         else:
-                            gnew_data[k] += [data[k]]
+                            if isinstance(gnew_data[k], list):
+                                gnew_data[k] += [data[k]]
+                            else:
+                                gnew_data[k] = [gnew_data[k], data[k]]
                     else:
                         gnew_data[k] = data[k]
             else:
@@ -322,6 +336,6 @@ class MultiGraphPlus(nx.MultiGraph):
                     elif isinstance(data[k], list):
                         edge_attr[k] = data[k]
                     else:
-                        edge_attr[k] = [data[k]]
+                        edge_attr[k] = data[k]
                 gnew.add_edge(n1, n2, attr_dict=edge_attr)
         return gnew

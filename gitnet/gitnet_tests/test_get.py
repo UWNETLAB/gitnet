@@ -58,8 +58,11 @@ class TestGetLog(unittest.TestCase):
         self.assertEqual(sorted(self.my_log.vector("inserts")), [1, 5, 129])
         self.assertEqual(sorted(self.my_log.vector("deletes")), [])
         self.assertEqual(len(self.my_log.collection["44b4c72"]["files"]), 3)
-        self.my_log.ignore("\w\w\w\w.txt")
-        self.assertEqual(len(self.my_log.collection["44b4c72"]["files"]), 1)
+
+    def test_ignore(self):
+        self.assertEqual(len(self.my_log.ignore("\w\w\w\w.txt")["44b4c72"]["files"]), 0)
+        self.assertEqual(len(self.my_log.ignore("\w\w\w\w_")["44b4c72"]["files"]), 1)
+        self.assertEqual(len(self.my_log.ignore("\.md$")["fc3527c"]["files"]), 0)
 
     def tearDown(self):
         sh.bash("rm -rf .git")
@@ -75,7 +78,7 @@ class TestBigGit(unittest.TestCase):
 
     def test_get_big(self):
         self.assertEqual(len(self.nx_log), 4881)
-        self.assertEqual(len(self.nx_log.vector("errors")), 2)
+        self.assertEqual(len(self.nx_log.vector("errors")), 0)
 
     def test_big_tsv(self):
         tabs = self.nx_log.tsv()
@@ -84,12 +87,11 @@ class TestBigGit(unittest.TestCase):
         self.nx_log.tsv(fname = "nx_test.tsv")
         f = open("nx_test.tsv","r")
         nx_lines = f.readlines()
-        self.assertEquals(len(nx_lines),4882)
-        self.assertEquals(re.sub('[\s+]', '',nx_lines[0]), "hashauthoremaildatemodemergesummaryfedits"
-                                                           "insertsdeletesfileschangeserrorsmessage")
+        self.assertEqual(len(nx_lines),4882)
+        self.assertEqual(re.sub('[\s+]', '',nx_lines[0]), "hashauthoremaildatemodemergesummaryfedits"
+                                                           "insertsdeletesmessagefileschanges")
         f.close()
         sh.bash("rm nx_test.tsv")
-
 
     def tearDown(self):
         sh.bash("rm -rf .git")
