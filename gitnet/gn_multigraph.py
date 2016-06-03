@@ -194,7 +194,7 @@ class MultiGraphPlus(nx.MultiGraph):
     def describe(self):
         print("A MultiGraphPlus object with {} nodes and {} edges.".format(len(self.nodes()), len(self.edges())))
 
-    def node_merge(self, node1, node2):
+    def node_merge(self, node1, node2, show_warning=True):
         """
         Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2's edges will become
             node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
@@ -203,23 +203,23 @@ class MultiGraphPlus(nx.MultiGraph):
             attribute, node1's value will overwrite node2's value.
         :param node1: The identifier for a node. This node's attributes will persist to the merged node.
         :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
+        :param show_warning:
         :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
         gained node2's edges.
         """
         merged_graph = copy.deepcopy(self)
 
         # Moves all edges from node2 to node1
-        print('Merging edges...')
         for e in merged_graph.edges(node2, data=True):
             merged_graph.add_edge(node1, e[1], attr_dict=e[2])
             merged_graph.remove_edge(e[0], e[1])
+
         # Adds node2's attributes to node1. There are three cases for this:
             # 1. Vector attributes are joined to create one larger vector
             # 2. Non-conflicting Atomic attributes are kept and preserved in the final node
             # 3. Conflicting Atomic attributes are not added from node2 (node1 values persist)
         node_merge_warn = False
         node_merge_warn_list = []
-        print('Merging nodes...')
         for na in merged_graph.node[node2]:
             if na not in merged_graph.node[node1]:  # Deals with case 2
                 merged_graph.node[node1][na] = merged_graph.node[node2][na]
@@ -229,14 +229,14 @@ class MultiGraphPlus(nx.MultiGraph):
                 node_merge_warn = True
                 node_merge_warn_list.append(na)
         merged_graph.remove_node(node2) # Removes node2
-        if node_merge_warn:
+        if node_merge_warn and show_warning:
             print("Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, "
                   "'{}' attribute values have been retained, while '{}' values have been ignored. If you would rather "
                   "retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"
                   .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
         return merged_graph
 
-    def collapse_edges(self, sum_weights = False):
+    def collapse_edges(self, sum_weights=False):
         """
         Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
         assigned depends on the sum_weights parameter.

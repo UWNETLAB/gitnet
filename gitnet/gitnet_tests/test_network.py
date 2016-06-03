@@ -156,5 +156,125 @@ class CollapseEdgesTest(unittest.TestCase):
         self.assertDictEqual(diff_attr.edge['file02'], f2d)
         self.assertIsInstance(diff_attr.edge['file02'], dict)
 
+
+class NodeMergeTest(unittest.TestCase):
+    """Tests for the node_merge() method within gn_multigraph.py"""
+    mg = gn_multigraph.MultiGraphPlus()
+    mg.add_node('Alice', attr_dict={'id': 'a01',
+                                    'email': 'alice@gmail.com',
+                                    'phone': '1(888)123-4567',
+                                    'type': 'author',
+                                    'records': ['hash1', 'hash2'],
+                                    'affiliations': ['Uwaterloo', 'Networks Lab']})
+    mg.add_node('Alice Smith', attr_dict={'id': 'a02',
+                                          'email': 'alice@gmail.ca',
+                                          'type': 'author',
+                                          'colour': 'blue',
+                                          'records':['hash3', 'hash4'],
+                                          'languages': ['Python', 'C']})
+    mg.add_edge('Alice', 'file01', date='Jan 1', style='dotted')
+    mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
+    mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+
+    def setUp(self):
+        pass
+
+    def test_basic_res(self):
+        """Ensures the results of the method are appropriate"""
+        mg_merged = self.mg_merged
+        # Checking Return Value
+        self.assertIsInstance(mg_merged, gn_multigraph.MultiGraphPlus)
+        # Checking Nodes
+        self.assertEqual(self.mg.number_of_nodes(), 4) # Checking before
+        self.assertEqual(mg_merged.number_of_nodes(), 3)
+        self.assertEqual(set(mg_merged.nodes()), {'Alice Smith', 'file01', 'file02'})
+        self.assertNotIn('Alice', mg_merged.nodes())
+        # Checking Edges
+        self.assertEqual(self.mg.number_of_edges(), 2) # Checking before
+        self.assertEqual(mg_merged.number_of_edges(), 2)
+        self.assertIn('file01', mg_merged.edge['Alice Smith'])
+        self.assertIn('file02', mg_merged.edge['Alice Smith'])
+        self.assertIn('Alice Smith', mg_merged.edge['file01'])
+        self.assertIn('Alice Smith', mg_merged.edge['file02'])
+        self.assertNotIn('Alice', mg_merged.edge['file01'])
+        self.assertNotIn('Alice', mg_merged.edge['file02'])
+
+    def test_list_attr(self):
+        """Are list attributes combined by node_merge?"""
+        mg_merged = self.mg_merged
+        self.assertIsInstance(mg_merged, gn_multigraph.MultiGraphPlus)
+        self.assertEqual(len(mg_merged.node['Alice Smith']['records']), 4)
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['records']), {'hash1', 'hash2', 'hash3', 'hash4'})
+
+    def test_ncon_attr(self):
+        """Are the nodes' non-conflicting attributes present in the final node?"""
+        mg_merged = self.mg_merged
+        self.assertEqual(len(mg_merged.node['Alice Smith']), 8)
+        self.assertEqual(mg_merged.node['Alice Smith']['phone'], '1(888)123-4567')
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['affiliations']), {'Uwaterloo', 'Networks Lab'})
+        self.assertEqual(mg_merged.node['Alice Smith']['colour'], 'blue')
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['languages']), {'Python', 'C'})
+
+    def test_conf_attr(self):
+        """When conflicting atomic attributes are present, are node1's retained?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        # Checking that all atomic attributes in node1 are retained
+        for a in mg.node['Alice Smith']:
+            if not isinstance(mg.node['Alice Smith'][a], list):
+                self.assertEqual(mg.node['Alice Smith'][a], mg_merged.node['Alice Smith'][a])
+        # Checking conflicting attributes from node2 have been overwritten
+        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['email'])
+        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['id'])
+
+    def test_node_gone(self):
+        """Does the method delete node2, and keep node1?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        self.assertNotEqual(mg.number_of_nodes(), mg_merged.number_of_nodes())
+        self.assertEqual(mg.number_of_nodes()-1, mg_merged.number_of_nodes())
+        self.assertEqual(mg_merged.number_of_nodes(), 3)
+        with self.assertRaises(KeyError):
+            mg_merged.node['Alice']  # Delete node2?
+        self.assertIsNotNone(mg_merged.node['Alice Smith']) # Keep node1?
+
+    def test_edge_attr(self):
+        """Does the method retain edge attributes?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        # Checking if each in the original graph has the same edges as its corresponding edge in the merged graph
+        for n1, n2, data in mg.edges(data=True):
+            if n1 == node2:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[node1][n2])
+            elif n2 == node2:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][node1])
+            else:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][n2])
+        # Checking an edge explicitly to ensure
+        self.assertDictEqual(mg.edge['Alice']['file01'], mg_merged.edge['Alice Smith']['file01'])
+
+    def test_edge_tran(self):
+        """Are all of node2's edges transferred to node1?"""
+        pass
+
+    def test_mult_edge(self):
+        """Are multiple edges handled correctly?
+         Ex. A1->B, A2->B. Then merge A1 and A2. """
+        pass
+
+    def test_show_warn(self):
+        """Does the show_warning parameter act as anticipated"""
+        pass
+
+    def test_warn_owrt(self):
+        """Is the overwrite warning(print statement) printed at the right time?"""
+        pass
+
+    def test_errors(self):
+        """Are errors being raised at the correct times?"""
+        pass
+
 if __name__ == '__main__':
     unittest.main()
