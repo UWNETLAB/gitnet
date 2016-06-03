@@ -5,12 +5,6 @@ import numpy as np
 import bash as sh
 import gitnet
 
-cur_dir = os.getcwd()
-if input("Currently working in {}."
-         " .git files in this directory will be destroyed."
-         " Continue? [y/n]".format(cur_dir)) != "y":
-    print("Quitting.")
-    exit()
 
 class TestGetLog(unittest.TestCase):
 

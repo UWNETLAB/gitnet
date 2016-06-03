@@ -156,5 +156,7 @@ class CollapseEdgesTest(unittest.TestCase):
         self.assertDictEqual(diff_attr.edge['file02'], f2d)
         self.assertIsInstance(diff_attr.edge['file02'], dict)
 
+
+
 if __name__ == '__main__':
     unittest.main()
