@@ -114,10 +114,12 @@ class MultiGraphPlus(nx.MultiGraph):
         Creates a new node attribute.
         :param name: The name of the new attribute.
         :param helper: A helper function, which takes an attribute dict and produces the new attribute.
-        :return: None
+        :return: A new MultiGraphPlus object, identical to self but with the desired attribute.
         """
-        for n in self.nodes():
-            self.node[n][name] = helper(self.node[n])
+        self_copy = copy.deepcopy(self)
+        for n in self_copy.nodes():
+            self_copy.node[n][name] = helper(self_copy.node[n])
+        return self_copy
 
     def quickplot(self, fname, k = "4/sqrt(n)", iterations = 50, layout = "neato", size = 20, default_colour = "lightgrey"):
         """

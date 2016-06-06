@@ -178,6 +178,8 @@ class CommitLog(Log):
         :param type: A string indicating which preset to use.
         :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.
         """
+        if type == "author/file/simple":
+            return self.generate_network("author", "files")
         if type == "author/file":
             return self.generate_network("author", "files",
                                          edge_attributes=["author", "hash"],
