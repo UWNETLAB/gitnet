@@ -46,5 +46,79 @@ class TestEdgeGeneratorSmall(unittest.TestCase):
         sh.bash("rm -rf .git")
 
 
+class TestNodeGeneratorSmall(unittest.TestCase):
+
+    def setUp(self):
+        # Set up Repo One
+        sh.bash("cp -R repo_one.git .git")
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+    # Small time node generation.
+    def test_node_gen(self):
+        nodes = [n[0] for n in self.my_log.generate_nodes("author","files")]
+        files = ["basic_logs.txt","raw_logs.txt","stat_logs.txt","readme.md"]
+        authors = ["Alice", "Bob"]
+        for f in files:
+            self.assertIn(f,nodes)
+        for a in authors:
+            self.assertIn(a,nodes)
+        self.assertEqual(set(nodes),set(files).union(set(authors)))
+
+    # An exhaustive test of node attributes for a small number of nodes.
+    def test_node_attr(self):
+        nodes = self.my_log.generate_nodes("author","files",
+                                           keep_atom1=["email"],keep_vector1=["date","fedits"],
+                                           keep_vector2=["author","date"])
+        node_dict = {}
+        for n in nodes:
+            node_dict[n[0]] = n[1]
+            for key in node_dict[n[0]]:
+                if type(node_dict[n[0]][key]) is list:
+                    node_dict[n[0]][key] = set(node_dict[n[0]][key])
+        self.assertEqual(node_dict["Alice"],
+                    {"email":"alice@gmail.com",
+                     "date":{"Fri May 6 15:41:25 2016 -0400","Fri May 6 14:41:25 2016 -0400"},
+                     "fedits":{3,1},
+                     "type":"author",
+                     "id":"Alice",
+                     "records":{"44b4c72","fc3527c"}})
+        self.assertEqual(node_dict["Bob"],
+                    {"email":"bob@gmail.com",
+                     "date":{"Fri May 6 14:50:22 2016 -0400"},
+                     "fedits":{1},
+                     "type":"author",
+                     "id":"Bob",
+                     "records":{"51ba020"}})
+        self.assertEqual(node_dict["readme.md"],
+                    {"author":{"Alice","Bob"},
+                     "date":{"Fri May 6 14:50:22 2016 -0400","Fri May 6 14:41:25 2016 -0400"},
+                     "type":"files",
+                     "id":"readme.md",
+                     "records":{"51ba020","fc3527c"}})
+        self.assertEqual(node_dict["basic_logs.txt"],
+                    {"author":{"Alice"},
+                     "date":{"Fri May 6 15:41:25 2016 -0400"},
+                     "type":"files",
+                     "id":"basic_logs.txt",
+                     "records":{"44b4c72"}})
+        self.assertEqual(node_dict["stat_logs.txt"],
+                    {"author":{"Alice"},
+                     "date":{"Fri May 6 15:41:25 2016 -0400"},
+                     "type":"files",
+                     "id":"stat_logs.txt",
+                     "records":{"44b4c72"}})
+        self.assertEqual(node_dict["raw_logs.txt"],
+                    {"author":{"Alice"},
+                     "date":{"Fri May 6 15:41:25 2016 -0400"},
+                     "type":"files",
+                     "id":"raw_logs.txt",
+                     "records":{"44b4c72"}})
+
+    def tearDown(self):
+        sh.bash("rm -rf .git")
+
+
+
 if __name__ == '__main__':
     unittest.main()
