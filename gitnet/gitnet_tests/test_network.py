@@ -1,4 +1,8 @@
 import unittest
+import gitnet
+import os
+import networkx as nx
+import bash as sh
 from gitnet import multigraph
 
 
@@ -275,6 +279,37 @@ class NodeMergeTest(unittest.TestCase):
     def test_errors(self):
         """Are errors being raised at the correct times?"""
         pass
+
+class TestNetworkStats(unittest.TestCase):
+    """Testing of the describe method in the MultiGraphPlus class."""
+    # A small network containing 11 nodes and 11 edges, 4 authors and 7 files.
+    # Has a rough density of around 0.39.
+
+    def setUp(self):
+        # Prepare small network repo for testing.
+        sh.bash("cp -R small_network_repo.git .git")
+        path = os.getcwd()
+        mylogs = gitnet.get_log(path)
+        graph = gitnet.generate_network('author', 'files')
+
+    def stats_check(self):
+        description = self.describe()
+        status = "Fail"
+        if "11 nodes" in description:
+            status = "Pass"
+        elif "11 edges" in description:
+            status = "Pass"
+        elif "Density: 0.39285" in description:
+            status = "Pass"
+        if status == "Fail":
+            self.fail('Description does not match the network.')
+
+    def type_check(self):
+        self.assertIsInstance(MultiGraphPlus)
+
+    def tearDown(self):
+        sh.bash("rm -rf .git")
+
 
 if __name__ == '__main__':
     unittest.main()
