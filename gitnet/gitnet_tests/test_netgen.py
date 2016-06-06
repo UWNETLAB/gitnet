@@ -1,5 +1,6 @@
 import unittest
 import os
+import warnings
 import bash as sh
 import gitnet
 
@@ -38,8 +39,6 @@ class TestEdgeGeneratorSmall(unittest.TestCase):
                                            edge_attributes=["hash","date"])
         attr_dict = [e[2] for e in edges if e[2]["hash"] == "51ba020a3fdc56d74d88306e507dd4e2d2db3543"][0]
         manual_dict = {"weight":1,"hash":"51ba020a3fdc56d74d88306e507dd4e2d2db3543","date":"Fri May 6 14:50:22 2016 -0400"}
-        print("Attr Dict:",attr_dict)
-        print("Manual Dict:",manual_dict)
         self.assertEqual(attr_dict,manual_dict)
 
     def tearDown(self):
@@ -118,7 +117,70 @@ class TestNodeGeneratorSmall(unittest.TestCase):
     def tearDown(self):
         sh.bash("rm -rf .git")
 
+class TestNetworkGeneratorSmall(unittest.TestCase):
 
+    def setUp(self):
+        # Set up Repo One
+        sh.bash("cp -R repo_one.git .git")
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+    def test_tag_warning(self):
+        with self.assertWarns(Exception):
+            net = self.my_log.generate_network("author","file")
+
+    def test_hash_author(self):
+        net = self.my_log.generate_network("hash","author")
+        self.assertEqual(net.number_of_nodes(),5)
+        self.assertEqual(net.number_of_edges(),3)
+
+    def test_file_author(self):
+        net = self.my_log.generate_network("files","author")
+        self.assertEqual(net.number_of_nodes(),6)
+        self.assertEqual(net.number_of_edges(),5)
+
+    def test_author_file(self):
+        net = self.my_log.generate_network("author","files",
+                                           mode1_atom_attrs=["email"],
+                                           mode1_vector_attrs=["fedits"],
+                                           mode2_atom_attrs=[],
+                                           mode2_vector_attrs=["date"],
+                                           edge_helper=gitnet.changes_edge,
+                                           edge_attributes=["hash"])
+        self.assertEqual(net.number_of_nodes(),6)
+        self.assertEqual(net.number_of_edges(),5)
+        net2 = gitnet.MultiGraphPlus()
+        net2.add_node("Alice",email="alice@gmail.com",fedits=[3,1],
+                      records=["44b4c72","fc3527c"],type="author",id="Alice")
+        net2.add_node("Bob",email="bob@gmail.com",fedits=[1],
+                      records=["51ba020"],type="author",id="Bob")
+        net2.add_node("basic_logs.txt",date=["Fri May 6 15:41:25 2016 -0400"],
+                      records=["44b4c72"],id="basic_logs.txt",type="files")
+        net2.add_node("stat_logs.txt",date=["Fri May 6 15:41:25 2016 -0400"],
+                      records=["44b4c72"],id="stat_logs.txt",type="files")
+        net2.add_node("raw_logs.txt",date=["Fri May 6 15:41:25 2016 -0400"],
+                      records=["44b4c72"],id="raw_logs.txt",type="files")
+        net2.add_node("readme.md",date=["Fri May 6 14:50:22 2016 -0400","Fri May 6 14:41:25 2016 -0400"],
+                      records=["51ba020","fc3527c"],id="readme.md",type="files")
+        net2.add_edge("Alice","basic_logs.txt",weight=33,hash="44b4c727133c69cffafc74bb65fd6f8639bc4287")
+        net2.add_edge("Alice","raw_logs.txt",weight=45,hash="44b4c727133c69cffafc74bb65fd6f8639bc4287")
+        net2.add_edge("Alice","stat_logs.txt",weight=51,hash="44b4c727133c69cffafc74bb65fd6f8639bc4287")
+        net2.add_edge("Alice","readme.md",weight=5,hash="fc3527c0eb2e8ee314b551893c88889ad8647c1d")
+        net2.add_edge("Bob","readme.md",weight=1,hash="51ba020a3fdc56d74d88306e507dd4e2d2db3543")
+        for n in net.nodes(data=True):
+            for attr in n[1]:
+                if type(n[1][attr]) is list:
+                    n[1][attr] = set(n[1][attr])
+        for n in net2.nodes(data=True):
+            for attr in n[1]:
+                if type(n[1][attr]) is list:
+                    n[1][attr] = set(n[1][attr])
+        for n in net.nodes(data=True):
+            self.assertEqual(n[1],net2.node[n[0]])
+        self.assertEqual(len(net),len(net2))
+
+    def tearDown(self):
+        sh.bash("rm -rf .git")
 
 if __name__ == '__main__':
     unittest.main()
