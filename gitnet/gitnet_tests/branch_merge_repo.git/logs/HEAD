@@ -1,0 +1,4 @@
+0000000000000000000000000000000000000000 819f0d61a82f0a35e3851a93ed766b7c4f20ebfe Steve McColl <s2mccoll@uwaterloo.ca> 1465233550 -0400	commit (initial): created the base file.
+819f0d61a82f0a35e3851a93ed766b7c4f20ebfe 819f0d61a82f0a35e3851a93ed766b7c4f20ebfe Steve McColl <s2mccoll@uwaterloo.ca> 1465233551 -0400	checkout: moving from master to newbranch
+819f0d61a82f0a35e3851a93ed766b7c4f20ebfe 0e3ab84f73e570da5c8c3611085c14fc85ff7a05 Steve McColl <s2mccoll@uwaterloo.ca> 1465233551 -0400	commit: edited base on new branch.
+0e3ab84f73e570da5c8c3611085c14fc85ff7a05 819f0d61a82f0a35e3851a93ed766b7c4f20ebfe Steve McColl <s2mccoll@uwaterloo.ca> 1465233551 -0400	checkout: moving from newbranch to master
