@@ -11,7 +11,7 @@ class RepositoryError(gitnetException):
 
 class ParseError(gitnetException):
     """
-    Exception given when an error occurs duing parsing.
+    Exception given when an error occurs during parsing.
     """
     pass
 
@@ -19,5 +19,11 @@ class ParseError(gitnetException):
 class InputError(gitnetException):
     """
     Exception given when the user gives an invalid input.
+    """
+    pass
+
+class MergeError(gitnetException):
+    """
+    Exception given when the user provides nodes to node_merge() which do not meet the initial checks
     """
     pass

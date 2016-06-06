@@ -1,5 +1,8 @@
-import unittest
 from gitnet import multigraph
+from gitnet.exceptions import MergeError
+import unittest
+from unittest.mock import patch
+from io import StringIO
 
 
 class CollapseEdgesTest(unittest.TestCase):
@@ -170,8 +173,10 @@ class NodeMergeTest(unittest.TestCase):
                                           'email': 'alice@gmail.ca',
                                           'type': 'author',
                                           'colour': 'blue',
-                                          'records':['hash3', 'hash4'],
+                                          'records': ['hash3', 'hash4'],
                                           'languages': ['Python', 'C']})
+    mg.add_node('file02', attr_dict={'id': 'f02',
+                                     'type': 'file'})
     mg.add_edge('Alice', 'file01', date='Jan 1', style='dotted')
     mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
     mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
@@ -236,7 +241,7 @@ class NodeMergeTest(unittest.TestCase):
         self.assertEqual(mg_merged.number_of_nodes(), 3)
         with self.assertRaises(KeyError):
             mg_merged.node['Alice']  # Delete node2?
-        self.assertIsNotNone(mg_merged.node['Alice Smith']) # Keep node1?
+        self.assertIsNotNone(mg_merged.node['Alice Smith']) # Kept node1?
 
     def test_edge_attr(self):
         """Does the method retain edge attributes?"""
@@ -257,24 +262,112 @@ class NodeMergeTest(unittest.TestCase):
 
     def test_edge_tran(self):
         """Are all of node2's edges transferred to node1?"""
-        pass
+        mg = self.mg
+        mg_merged = self.mg_merged
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        # Check that node1's edges now include node2's old edges
+        self.assertEqual(len(mg_merged.edge[node1]), len(mg.edge[node1])+len(mg.edge[node2]))
+        self.assertEqual(len(mg_merged.edge[node1]), 2)
+        # Check that the edges to node2 no longer exist
+        with self.assertRaises(KeyError):
+            mg_merged.edge['Alice']
 
     def test_mult_edge(self):
         """Are multiple edges handled correctly?
          Ex. A1->B, A2->B. Then merge A1 and A2. """
-        pass
+        mg = self.mg
+        mg.add_edge("Alice", "file02", date='Jan 17')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+        # Check all edges are retained
+        self.assertEqual(len(mg_merged.edges()),3)
+        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
+        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Check Before
+        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 2)  # Check After
+        # Make sure duplicate edges within mg are kept
+        mg.add_edge('Alice', 'file02', date='Jan 21')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+        self.assertEqual(len(mg_merged.edges()), 4)
+        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
+        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Before
+        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 3)  # After
 
     def test_show_warn(self):
-        """Does the show_warning parameter act as anticipated"""
-        pass
+        """Does the show_warning parameter act as anticipated?"""
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        warn_msg1 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
+                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
+                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"\
+                    .format(node1, node2, ['email','id'], node1, node2, node2, node2, node1)
+        warn_msg2 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
+                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
+                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n" \
+                    .format(node1, node2, ['id', 'email'], node1, node2, node2, node2, node1)
 
-    def test_warn_owrt(self):
+        # Checking if the default show_warning parameter prints a message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2)
+            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
+
+        # Checking if the explicit show_warning = True prints a message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2)
+            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
+
+        # Checking if the false show_warning parameter  doesn't print message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2, show_warning=False)
+            self.assertEqual(fake_out.getvalue(), "")
+
+    def test_warn_ovrt(self):
         """Is the overwrite warning(print statement) printed at the right time?"""
-        pass
+
+        # Merging when no shared attributes -> No output
+        mg = self.mg
+        mg.add_node('Alice S')
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg_merged = mg.node_merge("Alice S", "Alice")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when shared but non-conflicting attributes -> No output
+        mg = self.mg
+        mg.add_node('Alice S', attr_dict={'email': 'alice@gmail.ca'})
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg_merged = mg.node_merge("Alice Smith", "Alice S")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when shared list attributes -> No Output
+        mg = self.mg
+        mg.add_node('Alice S', attr_dict={'records': ['hash5', 'hash6']})
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg_merged = mg.node_merge("Alice Smith", "Alice S")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when conflicting atomic attributes -> Output
+        mg = self.mg
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg_merged = mg.node_merge("Alice Smith", "Alice")
+            self.assertNotEqual(fake_out.getvalue(), "")
+            self.assertIn("Note: nodes 'Alice Smith' and 'Alice", fake_out.getvalue())
 
     def test_errors(self):
         """Are errors being raised at the correct times?"""
-        pass
+        mg = self.mg
+
+        # Is there an error when nodes aren't in the graph?
+        with self.assertRaises(MergeError):
+            mg.node_merge('Bob', 'Alice')
+        with self.assertRaises(MergeError):
+            mg.node_merge('Alice', 'Bob')
+        with self.assertRaises(MergeError):
+            mg.node_merge('Bob', 'Bobby')
+
+        # Error raised when trying to merge nodes of different types?
+        with self.assertRaises(MergeError):
+            mg.node_merge('Alice', 'file02')
+        with self.assertRaises(MergeError):
+            mg.node_merge('file02', 'Alice')
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(buffer=True)
