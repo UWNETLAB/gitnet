@@ -33,9 +33,6 @@ class CollapseEdgesTest(unittest.TestCase):
     diff.add_edge('Dawn', 'file02', weight=2, type='issue', date='Jan 23', importance='high')
     diff.add_edge('Elise', 'file02', weight=2, type='commit', date='Jan 30', changed_lines=[4, 5])
 
-    def setup(self):
-        pass
-
     def test_simple(self):
         """When sum_weights==False, or isn't provided, are weights calculated by adding number of edges?"""
         # sum_weights is made explicit
@@ -166,27 +163,26 @@ class CollapseEdgesTest(unittest.TestCase):
 
 class NodeMergeTest(unittest.TestCase):
     """Tests for the node_merge() method within multigraph.py"""
-    mg = multigraph.MultiGraphPlus()
-    mg.add_node('Alice', attr_dict={'id': 'a01',
-                                    'email': 'alice@gmail.com',
-                                    'phone': '1(888)123-4567',
-                                    'type': 'author',
-                                    'records': ['hash1', 'hash2'],
-                                    'affiliations': ['Uwaterloo', 'Networks Lab']})
-    mg.add_node('Alice Smith', attr_dict={'id': 'a02',
-                                          'email': 'alice@gmail.ca',
-                                          'type': 'author',
-                                          'colour': 'blue',
-                                          'records': ['hash3', 'hash4'],
-                                          'languages': ['Python', 'C']})
-    mg.add_node('file02', attr_dict={'id': 'f02',
-                                     'type': 'file'})
-    mg.add_edge('Alice', 'file01', date='Jan 1', style='dotted')
-    mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
-    mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
 
     def setUp(self):
-        pass
+        self.mg = multigraph.MultiGraphPlus()
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'email': 'alice@gmail.com',
+                                             'phone': '1(888)123-4567',
+                                             'type': 'author',
+                                             'records': ['hash1', 'hash2'],
+                                             'affiliations': ['Uwaterloo', 'Networks Lab']})
+        self.mg.add_node('Alice Smith', attr_dict={'id': 'a02',
+                                                   'email': 'alice@gmail.ca',
+                                                   'type': 'author',
+                                                   'colour': 'blue',
+                                                   'records': ['hash3', 'hash4'],
+                                                   'languages': ['Python', 'C']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file'})
+        self.mg.add_edge('file01', 'Alice', date='Jan 1', style='dotted')
+        self.mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
+        self.mg_merged = self.mg.node_merge('Alice Smith', 'Alice', show_warning=False)
 
     def test_basic_res(self):
         """Ensures the results of the method are appropriate"""
@@ -250,10 +246,11 @@ class NodeMergeTest(unittest.TestCase):
     def test_edge_attr(self):
         """Does the method retain edge attributes?"""
         mg = self.mg
-        mg_merged = self.mg_merged
+        mg.add_edge('Alice','file04', date='Jan 19')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice')
         node1 = 'Alice Smith'
         node2 = 'Alice'
-        # Checking if each in the original graph has the same edges as its corresponding edge in the merged graph
+        # Checking if each edge in the original graph has the same attr as its corresponding edge in the merged graph
         for n1, n2, data in mg.edges(data=True):
             if n1 == node2:
                 self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[node1][n2])
