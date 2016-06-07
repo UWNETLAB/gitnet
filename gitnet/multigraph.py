@@ -344,8 +344,6 @@ class MultiGraphPlus(nx.MultiGraph):
                     if k == 'weight':
                         if sum_weights:
                             edge_attr[k] = data[k]
-                        else:
-                            pass
                     elif isinstance(data[k], list):
                         edge_attr[k] = data[k]
                     else:
