@@ -1,5 +1,6 @@
 import networkx as nx
 import warnings
+from gitnet.exceptions import MergeError
 import matplotlib.pyplot as plt
 import copy
 import numpy as np
@@ -107,7 +108,6 @@ class MultiGraphPlus(nx.MultiGraph):
                     f.write(" {}\n".format(weight))
                 else:
                     f.write("\n")
-
 
     def node_attributes(self,name,helper):
         """
@@ -252,11 +252,22 @@ class MultiGraphPlus(nx.MultiGraph):
             attribute, node1's value will overwrite node2's value.
         :param node1: The identifier for a node. This node's attributes will persist to the merged node.
         :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
-        :param show_warning:
+        :param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed
         :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
         gained node2's edges.
         """
         merged_graph = copy.deepcopy(self)
+
+        # Check: Both node1 and node2 exist in merged_graph
+        if node1 not in merged_graph.nodes():
+            raise MergeError(node1 + " is not a valid node")
+        if node2 not in merged_graph.nodes():
+            raise MergeError(node2 + " is not a valid node")
+
+        # Check: node1 and node2's types are the same
+        if 'type' in merged_graph.node[node1] and 'type' in merged_graph.node[node2]:
+            if merged_graph.node[node1]['type'] != merged_graph.node[node2]['type']:
+                raise MergeError("node1 and node2's types do not match")
 
         # Moves all edges from node2 to node1
         for e in merged_graph.edges(node2, data=True):
@@ -269,6 +280,7 @@ class MultiGraphPlus(nx.MultiGraph):
             # 3. Conflicting Atomic attributes are not added from node2 (node1 values persist)
         node_merge_warn = False
         node_merge_warn_list = []
+
         for na in merged_graph.node[node2]:
             if na not in merged_graph.node[node1]:  # Deals with case 2
                 merged_graph.node[node1][na] = merged_graph.node[node2][na]
@@ -277,12 +289,15 @@ class MultiGraphPlus(nx.MultiGraph):
             elif merged_graph.node[node1][na] != merged_graph.node[node2][na]:
                 node_merge_warn = True
                 node_merge_warn_list.append(na)
+
         merged_graph.remove_node(node2) # Removes node2
+
         if node_merge_warn and show_warning:
             print("Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, "
                   "'{}' attribute values have been retained, while '{}' values have been ignored. If you would rather "
-                  "retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"
+                  "retain '{}' attributes, set '{}' to node1 and '{}' to node2."
                   .format(node1, node2, node_merge_warn_list, node1, node2, node2, node2, node1))
+
         return merged_graph
 
     def collapse_edges(self, sum_weights=False):
