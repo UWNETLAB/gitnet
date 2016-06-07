@@ -22,7 +22,7 @@ def retrieve_commits(path, mode = "stat"):
     # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
     work_dir = os.getcwd()
     os.chdir(path)
-    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8")#.replace("\\n","\n").replace("\\t","\t")
+    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8")
     os.chdir(work_dir)
     # If the retrieval was unsuccessful, raise an error.
     if len(raw_logs) == 0:
