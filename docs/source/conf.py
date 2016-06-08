@@ -18,10 +18,9 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
-# Not sure why this path won't work, because it is only going up one level. 
+# Not sure why this path won't work, because it is only going up one level.
 import os
 import sys
-sys.path.insert(0, sys.path.abspath("./."))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -37,8 +36,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
+    'sphinx.ext.viewcode'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

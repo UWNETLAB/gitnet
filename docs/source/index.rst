@@ -3,15 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Gitnet's documentation!
+.. image:: gitnet.png
+  :height: 200px
+  :width: 200 px
+  :align: center
+
+**gitnet**
 ==================================
+
+``gitnet`` is a Python 3 library with user friendly tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network models and visualizations. The primary purpose of `gitnet` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be of use to organizations, project managers, and curious coders.
+
+``gitnet`` is currently under active development by the University of Waterloo's **NetLab**. The current build offers flexible tools for working with local Git repositories. Future iterations will include support for collecting and modelling issue report and pull request data, tools for analyzing contributors' communication networks, reproducible data collection, and more tools for increased flexibility. If you are curious about our project, want tips regarding how to use ``gitnet``, find a bug, or wish to request a feature, please feel free to email a contributor or submit an issue report.
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+.. automodule:: gitnet
+  :members:
 
+.. autoclass:: CommitLog
+  :members:
 
 Indices and tables
 ==================
@@ -19,4 +32,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
+* :ref:`gitnet`

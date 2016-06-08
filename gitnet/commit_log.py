@@ -16,6 +16,7 @@ class CommitLog(Log):
         specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,
         the attributes method will produce the tags in sorted order. The most important consequence of this ordering
         is the order of columns in TSV output.
+
         :return: A list of ordered reference hashshes.
         """
         return ["hash","author","email","date","mode","merge","summary",
@@ -24,6 +25,7 @@ class CommitLog(Log):
     def describe(self, mode = "default", exclude = []):
         """
         A method for creating an extended descriptive output for the CommitLog subclass.
+
         :param mode: Indicate an output mode. Currently implemented: "default"
         :param exclude: A list of output tag strings to exclude from the pringin. Default is an empty list.
         :return: None
@@ -145,6 +147,7 @@ class CommitLog(Log):
         """
         Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
         and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
+
         :param pattern: A string/regular expression.
         :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
         matching pattern are ignored.
@@ -175,6 +178,7 @@ class CommitLog(Log):
     def network(self, type):
         """
         A method for quickly creating preset networks using CommitLog data.
+
         :param type: A string indicating which preset to use.
         :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.
         """
