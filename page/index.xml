@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>gitnet</title>
-    <link>http://networkslab.org/</link>
-    <description>Recent content on gitnet</description>
+    <title>Pages on gitnet</title>
+    <link>http://networkslab.org/page/</link>
+    <description>Recent content in Pages on gitnet</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <managingEditor>john.mclevey@uwaterloo.ca (John McLevey)</managingEditor>
     <webMaster>john.mclevey@uwaterloo.ca (John McLevey)</webMaster>
-    <lastBuildDate>Wed, 08 Jun 2016 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://networkslab.org/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Using blog posts for tutorials</title>
-      <link>http://networkslab.org/post/2016-06-08-test/</link>
-      <pubDate>Wed, 08 Jun 2016 00:00:00 +0000</pubDate>
-      <author>john.mclevey@uwaterloo.ca (John McLevey)</author>
-      <guid>http://networkslab.org/post/2016-06-08-test/</guid>
-      <description>&lt;p&gt;We can use this blog to write a series of &amp;ldquo;how to&amp;rdquo; posts. I think that might be a bit better than a page of tutorials. We can write them during development, and update them if things change.&lt;/p&gt;
-</description>
-    </item>
+    <atom:link href="http://networkslab.org/page/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>About</title>

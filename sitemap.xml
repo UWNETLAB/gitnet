@@ -2,29 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.johnmclevey.com/</loc>
-    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+    <loc>http://networkslab.org/</loc>
+    <lastmod>2016-06-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.johnmclevey.com/2014/04/02/hugo-template-primer</loc>
-    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+    <loc>http://networkslab.org/post/2016-06-08-test/</loc>
+    <lastmod>2016-06-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://www.johnmclevey.com/2014/04/02/getting-started-with-hugo</loc>
-    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+    <loc>http://networkslab.org/page/about/</loc>
   </url>
   
   <url>
-    <loc>http://www.johnmclevey.com/2014/09/28/creating-a-new-theme</loc>
-    <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+    <loc>http://networkslab.org/page/documentation/</loc>
   </url>
   
   <url>
-    <loc>http://www.johnmclevey.com/2014/03/10/migrate-to-hugo-from-jekyll</loc>
-    <lastmod>2014-03-10T00:00:00+00:00</lastmod>
+    <loc>http://networkslab.org/page/install/</loc>
   </url>
   
 </urlset>
