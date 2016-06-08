@@ -2,23 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on gitnet</title>
-    <link>http://syui.github.io/hugo-theme-air/post/</link>
+    <link>http://networkslab.org/gitnet/post/</link>
     <description>Recent content in Posts on gitnet</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-US</language>
-    <copyright>John McLevey</copyright>
-    <lastBuildDate>Tue, 10 May 2016 11:12:45 +0900</lastBuildDate>
-    <atom:link href="http://syui.github.io/hugo-theme-air/post/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <managingEditor>john.mclevey@uwaterloo.ca (Dr. John McLevey)</managingEditor>
+    <webMaster>john.mclevey@uwaterloo.ca (Dr. John McLevey)</webMaster>
+    <lastBuildDate>Wed, 08 Jun 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://networkslab.org/gitnet/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title></title>
-      <link>http://syui.github.io/hugo-theme-air/post/profile/</link>
-      <pubDate>Tue, 10 May 2016 11:12:45 +0900</pubDate>
-      
-      <guid>http://syui.github.io/hugo-theme-air/post/profile/</guid>
-      <description>
-
-&lt;h1 id=&#34;coming-soon:3e19b1a3ed52dcfc9895143fe9bdc719&#34;&gt;Coming soon&amp;hellip;&lt;/h1&gt;
+      <title>Introducing gitnet</title>
+      <link>http://networkslab.org/gitnet/post/2016-06-08-first-post/</link>
+      <pubDate>Wed, 08 Jun 2016 00:00:00 +0000</pubDate>
+      <author>john.mclevey@uwaterloo.ca (Dr. John McLevey)</author>
+      <guid>http://networkslab.org/gitnet/post/2016-06-08-first-post/</guid>
+      <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis animi perferendis, quos assumenda. In rem laudantium iure reprehenderit consequatur libero harum. Magnam iste fugit, quod itaque, maiores beatae quasi voluptatum?&lt;/p&gt;
 </description>
     </item>
     

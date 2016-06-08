@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>gitnet</title>
-    <link>http://networkslab.org/gitnet/</link>
-    <description>Recent content on gitnet</description>
+    <title>Pages on gitnet</title>
+    <link>http://networkslab.org/gitnet/page/</link>
+    <description>Recent content in Pages on gitnet</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <managingEditor>john.mclevey@uwaterloo.ca (Dr. John McLevey)</managingEditor>
     <webMaster>john.mclevey@uwaterloo.ca (Dr. John McLevey)</webMaster>
-    <lastBuildDate>Wed, 08 Jun 2016 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://networkslab.org/gitnet/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Introducing gitnet</title>
-      <link>http://networkslab.org/gitnet/post/2016-06-08-first-post/</link>
-      <pubDate>Wed, 08 Jun 2016 00:00:00 +0000</pubDate>
-      <author>john.mclevey@uwaterloo.ca (Dr. John McLevey)</author>
-      <guid>http://networkslab.org/gitnet/post/2016-06-08-first-post/</guid>
-      <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis animi perferendis, quos assumenda. In rem laudantium iure reprehenderit consequatur libero harum. Magnam iste fugit, quod itaque, maiores beatae quasi voluptatum?&lt;/p&gt;
-</description>
-    </item>
+    <atom:link href="http://networkslab.org/gitnet/page/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Documentation</title>

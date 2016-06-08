@@ -2,14 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://syui.github.io/hugo-theme-air/</loc>
-    <lastmod>2016-05-10T11:12:45+09:00</lastmod>
+    <loc>http://networkslab.org/gitnet/</loc>
+    <lastmod>2016-06-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://syui.github.io/hugo-theme-air/post/profile/</loc>
-    <lastmod>2016-05-10T11:12:45+09:00</lastmod>
+    <loc>http://networkslab.org/gitnet/post/2016-06-08-first-post/</loc>
+    <lastmod>2016-06-08T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://networkslab.org/gitnet/page/documentation/</loc>
+  </url>
+  
+  <url>
+    <loc>http://networkslab.org/gitnet/page/tutorials/</loc>
   </url>
   
 </urlset>
