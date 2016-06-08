@@ -2,28 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://replace-this-with-your-domain.com/</loc>
+    <loc>/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://replace-this-with-your-domain.com/2014/04/02/hugo-template-primer</loc>
+    <loc>/2014/04/02/hugo-template-primer</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://replace-this-with-your-domain.com/2014/04/02/getting-started-with-hugo</loc>
+    <loc>/2014/04/02/getting-started-with-hugo</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://replace-this-with-your-domain.com/2014/09/28/creating-a-new-theme</loc>
+    <loc>/2014/09/28/creating-a-new-theme</loc>
     <lastmod>2014-09-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://replace-this-with-your-domain.com/2014/03/10/migrate-to-hugo-from-jekyll</loc>
+    <loc>/2014/03/10/migrate-to-hugo-from-jekyll</loc>
     <lastmod>2014-03-10T00:00:00+00:00</lastmod>
   </url>
   
