@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on My New Hugo Site</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 08 Jun 2016 09:25:22 -0230</lastBuildDate>
+    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>about</title>
+      <link>/post/about/</link>
+      <pubDate>Wed, 08 Jun 2016 09:25:22 -0230</pubDate>
+      
+      <guid>/post/about/</guid>
+      <description>&lt;p&gt;This is an example post, just to check and make sure it works.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
