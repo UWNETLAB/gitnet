@@ -32,7 +32,7 @@ class CommitLog(Log):
         Output items currently implemented (and their tag for exclusion):
             - "summary" : Prints the number of logs and creation date. Identical to str(self).
             - "authors" : Prints the number of authors who commit to the repository.
-            - "emails" : Prints the 10 most common email address domains used by more than one user.
+            - "emails" : Prints the ten most common email address domains used by more than one user.
             - "dates" : Prints the date range for commits in the collection.
             - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
             - "merges" : Prints the number of merges in the collection.
@@ -149,8 +149,7 @@ class CommitLog(Log):
         and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
 
         :param pattern: A string/regular expression.
-        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
-        matching pattern are ignored.
+        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not matching pattern are ignored.
         :return: A new CommitLog object, same as self but with the appropriate files removed.
         """
         self_copy = copy.deepcopy(self)
