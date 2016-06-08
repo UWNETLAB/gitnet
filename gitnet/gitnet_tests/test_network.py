@@ -7,6 +7,7 @@ import os
 import networkx as nx
 import bash as sh
 from io import StringIO
+import warnings
 
 
 class GraphMLTests(unittest.TestCase):
@@ -31,10 +32,10 @@ class GraphMLTests(unittest.TestCase):
                                               'type': 'file',
                                               'records': ['hash4']})
 
-        self.mg.add_edge('Alice', 'file01', key='e01', sha='hash1')
-        self.mg.add_edge('Alice', 'file02', key='e02', sha='hash2')
-        self.mg.add_edge('Bobby', 'file01', key='e03', sha='hash3')
-        self.mg.add_edge('Bobby', 'file03', key='e04', sha='hash4')
+        self.mg.add_edge('Alice', 'file01', key='e01', sha='hash1', changed_lines=[1, 2, 3])
+        self.mg.add_edge('Alice', 'file02', key='e02', sha='hash2', changed_lines=[1, 2, 3])
+        self.mg.add_edge('Bobby', 'file01', key='e03', sha='hash3', changed_lines=[2, 4, 5])
+        self.mg.add_edge('Bobby', 'file03', key='e04', sha='hash4', changed_lines=[1, 2, 3])
 
         self.made_gml = False
         try:
@@ -67,47 +68,112 @@ class GraphMLTests(unittest.TestCase):
         self.assertSetEqual({'Bobby'}, set(rev.edge['file03']))
 
     def test_rev_node_attr(self):
+        """Are node attr preserved when we convert the graphml back to a network?"""
         rev = nx.read_graphml(self.path)
-
+        mg = self.mg
         # Check that node attributes still exist
-        for n in self.mg.nodes():
+        for n in mg.nodes():
             self.assertIn('id', rev.node[n])
             self.assertIn('type', rev.node[n])
             self.assertIn('records', rev.node[n])
-            self.assertEqual(rev.node[n]['records'], "None")
-            if rev.node[n] == 'author':
+            self.assertIsInstance(rev.node[n]['records'], str)
+            if rev.node[n]['type'] == 'author':
                 self.assertIn('email', rev.node[n])
 
-    def test_rev_edge_attr(self):
-        rev = nx.read_graphml(self.path)
+        # Check that node attributes haven't been added
+        for n in rev.nodes():
+            self.assertEqual(len(mg.node[n]), len(rev.node[n]))
 
+        # Check that node attribute values are the same
+        for n in rev.nodes():
+            for k in rev.node[n]:
+                if not isinstance(mg.node[n][k], list):
+                    self.assertEqual(mg.node[n][k], rev.node[n][k])
+                else:
+                    self.assertEqual(";".join(mg.node[n][k]), rev.node[n][k])
+
+    def test_rev_edge_attr(self):
+        """Are edge attr preserved when we convert the graphml back to a network?"""
+        rev = nx.read_graphml(self.path)
+        mg = self.mg
         # Check that edge attributes still exist
         for n1,n2,data in self.mg.edges(data=True):
-            self.assertIn("sha", rev.edge[n1][n2])
-           # self.assertEqual(rev.edge[n1][n2]["sha"], self.mg.edge[n1][n2]["sha"])
+            self.assertIn('sha', rev.edge[n1][n2])
 
-
-    def test_vector_attr(self):
-        """Are vector attributes being dropped?"""
-        # Maybe I could use the networkx method to convert it back and then check!
-        pass
-
-    def test_atomic_attr(self):
-        """Are atomic attributes being handled correctly?"""
-        rev = nx.read_graphml(self.path)
-        self.assertIn('Alice', rev.nodes())
-
-    def test_final_outpt(self):
-        """Is the method's final output correct?"""
-        pass
+        # Check that edge attributes are correct (atomic and vector)
+        for n1, n2, data in mg.edges(data=True):
+            for k in data:
+                if not isinstance(data[k], list):
+                    self.assertEqual(data[k], rev.edge[n1][n2][k])
+                else:
+                    self.assertEqual(gitnet.helpers.list_scd_str(data[k]), rev.edge[n1][n2][k])
 
     def test_warnings(self):
         """Are appropriate warnings being raised iff they should be?"""
-        pass
+        mg = self.mg
 
-    def test_errors(self):
-        """Are appropriate errors being raised?"""
-        pass
+        # Warning occurs when vector edge and node attributes are provided
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            mg.write_graphml(self.path)
+            # Check Warning occurred
+            self.assertEqual(len(w),1)
+            self.assertIn("'n:records'", str(w[-1].message))
+            self.assertIn("'e:changed_lines'", str(w[-1].message))
+
+        # Warning occurs when vector edge attributes are provided
+        mg_edge = multigraph.MultiGraphPlus()
+        mg_edge.add_edge("A", "B", changed_lines=[1, 2, 3])
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            mg_edge.write_graphml(self.path)
+            # Check Warning occurred
+            self.assertEqual(len(w), 1)
+            self.assertIn("e:changed_lines'", str(w[-1].message))
+
+        # Warning includes correct list of vector attributes
+        mg.add_node("Charles", attr_dict={'id': 'a03',
+                                          'email': 'charles@gmail.com',
+                                          'affiliations': ['Uwaterloo', 'Netlab']})
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            mg.write_graphml(self.path)
+            # Check Warning occurred properly
+            self.assertEqual(len(w), 1)
+            self.assertIn("'n:records'", str(w[-1].message))
+            self.assertIn("'n:affiliations'", str(w[-1].message))
+            self.assertIn("'e:changed_lines'", str(w[-1].message))
+
+        # Warning doesn't occur when no attributes are present
+        mg_nowarn = multigraph.MultiGraphPlus()
+        mg_nowarn.add_edge('Charlie', 'filea')
+        mg_nowarn.add_edge('Charlie', 'fileb')
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            mg_nowarn.write_graphml(self.path)
+            # Check Warning didn't occurred
+            self.assertEqual(len(w), 0)
+
+        # Warning doesn't occur when only atomic attributes are present
+        mg_atomic = multigraph.MultiGraphPlus()
+        mg_atomic.add_node('Dawn', attr_dict={'id': 'a04','email': 'dawn@yahoo.ca'})
+        mg_atomic.add_node('filec', attr_dict={'id': 'f0c'})
+        mg_atomic.add_edge('Dawn', 'filec', date='Jan 4')
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            mg_atomic.write_graphml(self.path)
+            # Check Warning didn't occurred
+            self.assertEqual(len(w), 0)
 
 
 class CollapseEdgesTest(unittest.TestCase):

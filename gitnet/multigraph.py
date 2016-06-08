@@ -1,6 +1,7 @@
 import networkx as nx
 import warnings
 from gitnet.exceptions import MergeError
+from gitnet.helpers import list_scd_str
 import matplotlib.pyplot as plt
 import copy
 import numpy as np
@@ -22,23 +23,36 @@ class MultiGraphPlus(nx.MultiGraph):
         :param fpath: A string indicating the path or file name to write. File names which end in .gz or .bz2 will be compressed.
         :return: None
         This method will have the side effect of creating a file, specified by fpath.
-        This method cannot use vector attributes within the graphml file. Instead, it replaces the attribute values with
-            the dummy value 'None'. When this occurs, a warning is raised indicating the vector attributes in self.
+        This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
+            a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
+            attributes are preceded by 'n:' while edge attributes are preceded by 'e:'.
         """
+
+        graph = copy.deepcopy(self)
+
         warning = False
-        warning_list = set([])
-        for n in self.nodes():
-            for attr in self.node[n].keys():
-                if isinstance(self.node[n][attr], list):
+        warning_set = set([])
+        for n in graph.nodes():
+            for attr in graph.node[n].keys():
+                if isinstance(graph.node[n][attr], list):
                     warning = True
-                    warning_list = set([attr]) | warning_list
-                    self.node[n][attr] = 'None'
-        nx.write_graphml(self, fpath)
+                    warning_set = {'n:'+ attr} | warning_set
+                    graph.node[n][attr] = list_scd_str(graph.node[n][attr])
+
+        for n1, n2, data in graph.edges(data=True):
+            for k in data:
+                if isinstance(data[k], list):
+                    warning = True
+                    warning_set = {'e:'+k} | warning_set
+                    data[k] = list_scd_str(data[k])
+
         if warning:
             warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
-                          " been converted to 'None'. To prevent this, remove vector attributes or convert them to "
-                          "atomic attributes prior to calling .write_graphml"
-                          .format(warning_list))
+                          " been converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
+                          " convert them to atomic attributes prior to calling .write_graphml"
+                          .format(warning_set))
+
+        nx.write_graphml(graph, fpath)
 
     def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
                    weight_string='weight'):
@@ -121,7 +135,7 @@ class MultiGraphPlus(nx.MultiGraph):
             self_copy.node[n][name] = helper(self_copy.node[n])
         return self_copy
 
-    def quickplot(self, fname, k = "4/sqrt(n)", iterations = 50, layout = "neato", size = 20, default_colour = "lightgrey"):
+    def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
         """
         Makes a quick visualization of the network.
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
