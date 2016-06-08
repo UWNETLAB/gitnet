@@ -145,6 +145,26 @@ def most_occurrences(lst):
     return max
 
 
+def list_scd_str(lst):
+    """
+    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings
+    prior to joining.
+    :param lst: of items which are either strings, or objects which can be converted to strings using str()
+    :return: A String which includes each item within lst separated using semicolons.
+    """
+    new_lst = []
+    for i in lst:
+        if not isinstance(i, str):
+            new_lst.append(str(i))
+        else:
+            new_lst.append(i)
+
+    string = ';'.join(new_lst)
+
+    return string
+
+
+
 # Network Edge Generator Functions
 def simple_edge(v1, v2, record, keep):
     """
