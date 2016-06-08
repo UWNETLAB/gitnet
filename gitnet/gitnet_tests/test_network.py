@@ -9,29 +9,131 @@ import bash as sh
 from io import StringIO
 
 
+class GraphMLTests(unittest.TestCase):
+    def setUp(self):
+        """Setup to occur before each method executes"""
+        self.mg = multigraph.MultiGraphPlus()
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'type': 'author',
+                                             'email': 'alice@gmail.com',
+                                             'records': ['hash1', 'hash2']})
+        self.mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                             'type': 'author',
+                                             'email': 'bob@gmail.com',
+                                             'records': ['hash3', 'hash4']})
+        self.mg.add_node('file01', attr_dict={'id': 'f01',
+                                              'type': 'file',
+                                              'records': ['hash1', 'hash3']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file',
+                                              'records': ['hash2']})
+        self.mg.add_node('file03', attr_dict={'id': 'f03',
+                                              'type': 'file',
+                                              'records': ['hash4']})
+
+        self.mg.add_edge('Alice', 'file01', key='e01', sha='hash1')
+        self.mg.add_edge('Alice', 'file02', key='e02', sha='hash2')
+        self.mg.add_edge('Bobby', 'file01', key='e03', sha='hash3')
+        self.mg.add_edge('Bobby', 'file03', key='e04', sha='hash4')
+
+        self.made_gml = False
+        try:
+            os.mkdir('temp')
+            self.path = os.getcwd() + '/temp/ABgml.txt'
+            self.graphml = self.mg.write_graphml(self.path)
+        finally:
+            self.made_gml = True
+
+    def tearDown(self):
+        if self.made_gml:
+            os.remove(self.path)
+            os.rmdir('temp')
+
+    def test_basic_res(self):
+        """Was basic functionality of the method achieved?"""
+        # Check that the method doesn't return a value
+        self.assertIsNone(self.mg.write_graphml(self.path))
+        # Check that a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_rev(self):
+        """Test if taking turning the graphml back into networkx yields the expected edges and nodes"""
+        rev = nx.read_graphml(self.path)
+        self.assertSetEqual({'Alice', 'Bobby', 'file01', 'file02', 'file02', 'file03'}, set(rev.nodes()))
+        self.assertSetEqual({'file01', 'file02'}, set(rev.edge['Alice']))
+        self.assertSetEqual({'file01', 'file03'}, set(rev.edge['Bobby']))
+        self.assertSetEqual({'Alice', 'Bobby'}, set(rev.edge['file01']))
+        self.assertSetEqual({'Alice'}, set(rev.edge['file02']))
+        self.assertSetEqual({'Bobby'}, set(rev.edge['file03']))
+
+    def test_rev_node_attr(self):
+        rev = nx.read_graphml(self.path)
+
+        # Check that node attributes still exist
+        for n in self.mg.nodes():
+            self.assertIn('id', rev.node[n])
+            self.assertIn('type', rev.node[n])
+            self.assertIn('records', rev.node[n])
+            self.assertEqual(rev.node[n]['records'], "None")
+            if rev.node[n] == 'author':
+                self.assertIn('email', rev.node[n])
+
+    def test_rev_edge_attr(self):
+        rev = nx.read_graphml(self.path)
+
+        # Check that edge attributes still exist
+        for n1,n2,data in self.mg.edges(data=True):
+            self.assertIn("sha", rev.edge[n1][n2])
+           # self.assertEqual(rev.edge[n1][n2]["sha"], self.mg.edge[n1][n2]["sha"])
+
+
+    def test_vector_attr(self):
+        """Are vector attributes being dropped?"""
+        # Maybe I could use the networkx method to convert it back and then check!
+        pass
+
+    def test_atomic_attr(self):
+        """Are atomic attributes being handled correctly?"""
+        rev = nx.read_graphml(self.path)
+        self.assertIn('Alice', rev.nodes())
+
+    def test_final_outpt(self):
+        """Is the method's final output correct?"""
+        pass
+
+    def test_warnings(self):
+        """Are appropriate warnings being raised iff they should be?"""
+        pass
+
+    def test_errors(self):
+        """Are appropriate errors being raised?"""
+        pass
+
+
 class CollapseEdgesTest(unittest.TestCase):
     """Tests for the collapse_edges() method within multigraph.py"""
-    # A simple graph with weights
-    mgw = multigraph.MultiGraphPlus()
-    mgw.add_edge(1, 2, weight=3)
-    mgw.add_edge(1, 2, weight=2)
-    mgw.add_edge(2, 3, weight=4)
+    def setUp(self):
+        # A simple graph with weights
+        self.mgw = multigraph.MultiGraphPlus()
+        self.mgw.add_edge(1, 2, weight=3)
+        self.mgw.add_edge(1, 2, weight=2)
+        self.mgw.add_edge(2, 3, weight=4)
 
-    # A graph with no weights, but other similar attributes
-    now = multigraph.MultiGraphPlus()
-    now.add_edge('Alice', 'file01', type='commit', date='Jan 3', changed_lines=[5,18,38,44])
-    now.add_edge('file01', 'Alice', type='commit', date='Jan 5', changed_lines=[3,5,23,67])
-    now.add_edge('file01', 'Bob', type='issue', date='Jan 16', importance='high')
+        # A graph with no weights, but other similar attributes
+        self.now = multigraph.MultiGraphPlus()
+        self.now.add_edge('Alice', 'file01', type='commit', date='Jan 3', changed_lines=[5,18,38,44])
+        self.now.add_edge('file01', 'Alice', type='commit', date='Jan 5', changed_lines=[3,5,23,67])
+        self.now.add_edge('file01', 'Bob', type='issue', date='Jan 16', importance='high')
 
-    # A graph whose edges have weights and other different attributes
-    diff = multigraph.MultiGraphPlus()
-    diff.add_edge('Charlie', 'file02', weight=2, type='commit', date='Jan 1', changed_lines=[1, 2])
-    diff.add_edge('Charlie', 'file02', weight=1, type='issue', date='Jan 2', importance='high')
-    diff.add_edge('Charlie', 'file02', weight=4, type='review', date='Jan 5', status='PASS')
-    diff.add_edge('Dawn', 'file02', weight=3, type='commit', date='Jan 3', changed_lines=[1, 2, 3])
-    diff.add_edge('Dawn', 'file02', weight=1, type='issue', date='Jan 12', importance='low')
-    diff.add_edge('Dawn', 'file02', weight=2, type='issue', date='Jan 23', importance='high')
-    diff.add_edge('Elise', 'file02', weight=2, type='commit', date='Jan 30', changed_lines=[4, 5])
+        # A graph whose edges have weights and other different attributes
+        self.diff = multigraph.MultiGraphPlus()
+        self.diff.add_edge('Charlie', 'file02', weight=2, type='commit', date='Jan 1', changed_lines=[1, 2])
+        self.diff.add_edge('Charlie', 'file02', weight=1, type='issue', date='Jan 2', importance='high')
+        self.diff.add_edge('Charlie', 'file02', weight=4, type='review', date='Jan 5', status='PASS')
+        self.diff.add_edge('Dawn', 'file02', weight=3, type='commit', date='Jan 3', changed_lines=[1, 2, 3])
+        self.diff.add_edge('Dawn', 'file02', weight=1, type='issue', date='Jan 12', importance='low')
+        self.diff.add_edge('Dawn', 'file02', weight=2, type='issue', date='Jan 23', importance='high')
+        self.diff.add_edge('Elise', 'file02', weight=2, type='commit', date='Jan 30', changed_lines=[4, 5])
 
     def test_simple(self):
         """When sum_weights==False, or isn't provided, are weights calculated by adding number of edges?"""
