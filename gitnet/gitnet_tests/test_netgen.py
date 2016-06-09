@@ -1,7 +1,7 @@
 import unittest
 import os
 import warnings
-import bash as sh
+import subprocess as sub
 import gitnet
 
 
@@ -9,7 +9,7 @@ class TestEdgeGeneratorSmall(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_one.git .git")
+        sub.call(["cp","-R","repo_one.git",".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
 
@@ -42,14 +42,14 @@ class TestEdgeGeneratorSmall(unittest.TestCase):
         self.assertEqual(attr_dict,manual_dict)
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 
 class TestNodeGeneratorSmall(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_one.git .git")
+        sub.call(["cp","-R","repo_one.git",".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
 
@@ -115,13 +115,13 @@ class TestNodeGeneratorSmall(unittest.TestCase):
                      "records":{"44b4c72"}})
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 class TestNetworkGeneratorSmall(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_one.git .git")
+        sub.call(["cp","-R","repo_one.git",".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
 
@@ -187,7 +187,7 @@ class TestNetworkGeneratorSmall(unittest.TestCase):
         self.assertEqual(len(net),len(net2))
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 if __name__ == '__main__':
     unittest.main()

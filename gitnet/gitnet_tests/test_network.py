@@ -5,7 +5,7 @@ from gitnet import multigraph
 from gitnet.exceptions import MergeError
 import os
 import networkx as nx
-import bash as sh
+import subprocess as sub
 from io import StringIO
 import warnings
 
@@ -546,7 +546,7 @@ class TestNetworkStats(unittest.TestCase):
 
     def setUp(self):
         # Prepare small network repo for testing.
-        sh.bash("cp -R small_network_repo.git .git")
+        sub.call(["cp","-R","small_network_repo.git",".git"])
         self.path = os.getcwd()
         self.mylogs = gitnet.get_log(self.path)
         self.graph = self.mylogs.generate_network('author', 'files')
@@ -562,7 +562,7 @@ class TestNetworkStats(unittest.TestCase):
 
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 
 if __name__ == '__main__':
