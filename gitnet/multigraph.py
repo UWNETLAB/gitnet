@@ -256,6 +256,7 @@ class MultiGraphPlus(nx.MultiGraph):
         elif extra == False:
             descriptives = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + "."
         print(descriptives)
+        return descriptives
 
     def node_merge(self, node1, node2, show_warning=True):
         """
