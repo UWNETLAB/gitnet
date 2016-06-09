@@ -547,12 +547,12 @@ class TestNetworkStats(unittest.TestCase):
     def setUp(self):
         # Prepare small network repo for testing.
         sh.bash("cp -R small_network_repo.git .git")
-        path = os.getcwd()
-        mylogs = gitnet.get_log(path)
-        graph = gitnet.generate_network('author', 'files')
+        self.path = os.getcwd()
+        self.mylogs = gitnet.get_log(self.path)
+        self.graph = self.mylogs.generate_network('author', 'files')
 
-    def stats_check(self):
-        description = self.describe()
+    def test_stats(self):
+        description = self.graph.describe()
         status = "Fail"
         if "11 nodes" in description:
             status = "Pass"
