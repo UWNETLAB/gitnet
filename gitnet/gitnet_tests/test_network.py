@@ -551,20 +551,15 @@ class TestNetworkStats(unittest.TestCase):
         self.mylogs = gitnet.get_log(self.path)
         self.graph = self.mylogs.generate_network('author', 'files')
 
+    def test_type_check(self):
+        self.assertIsInstance(self.graph, multigraph.MultiGraphPlus)
+
     def test_stats(self):
         description = self.graph.describe()
-        status = "Fail"
-        if "11 nodes" in description:
-            status = "Pass"
-        elif "11 edges" in description:
-            status = "Pass"
-        elif "Density: 0.39285" in description:
-            status = "Pass"
-        if status == "Fail":
-            self.fail('Description does not match the network.')
+        self.assertIn("11 nodes", description)
+        self.assertIn("11 edges", description)
+        self.assertIn("Density: 0.39285", description)
 
-    def type_check(self):
-        self.assertIsInstance(MultiGraphPlus)
 
     def tearDown(self):
         sh.bash("rm -rf .git")
