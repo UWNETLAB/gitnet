@@ -97,7 +97,7 @@ class GraphMLTests(unittest.TestCase):
         rev = nx.read_graphml(self.path)
         mg = self.mg
         # Check that edge attributes still exist
-        for n1,n2,data in self.mg.edges(data=True):
+        for n1, n2, data in self.mg.edges(data=True):
             self.assertIn('sha', rev.edge[n1][n2])
 
         # Check that edge attributes are correct (atomic and vector)
@@ -119,7 +119,7 @@ class GraphMLTests(unittest.TestCase):
             # Trigger Warning
             mg.write_graphml(self.path)
             # Check Warning occurred
-            self.assertEqual(len(w),1)
+            self.assertEqual(len(w), 1)
             self.assertIn("'n:records'", str(w[-1].message))
             self.assertIn("'e:changed_lines'", str(w[-1].message))
 
@@ -164,7 +164,7 @@ class GraphMLTests(unittest.TestCase):
 
         # Warning doesn't occur when only atomic attributes are present
         mg_atomic = multigraph.MultiGraphPlus()
-        mg_atomic.add_node('Dawn', attr_dict={'id': 'a04','email': 'dawn@yahoo.ca'})
+        mg_atomic.add_node('Dawn', attr_dict={'id': 'a04', 'email': 'dawn@yahoo.ca'})
         mg_atomic.add_node('filec', attr_dict={'id': 'f0c'})
         mg_atomic.add_edge('Dawn', 'filec', date='Jan 4')
         with warnings.catch_warnings(record=True) as w:
@@ -187,8 +187,8 @@ class CollapseEdgesTest(unittest.TestCase):
 
         # A graph with no weights, but other similar attributes
         self.now = multigraph.MultiGraphPlus()
-        self.now.add_edge('Alice', 'file01', type='commit', date='Jan 3', changed_lines=[5,18,38,44])
-        self.now.add_edge('file01', 'Alice', type='commit', date='Jan 5', changed_lines=[3,5,23,67])
+        self.now.add_edge('Alice', 'file01', type='commit', date='Jan 3', changed_lines=[5, 18, 38, 44])
+        self.now.add_edge('file01', 'Alice', type='commit', date='Jan 5', changed_lines=[3, 5, 23, 67])
         self.now.add_edge('file01', 'Bob', type='issue', date='Jan 16', importance='high')
 
         # A graph whose edges have weights and other different attributes
@@ -234,13 +234,13 @@ class CollapseEdgesTest(unittest.TestCase):
     def test_no_weight(self):
         """Is the absence of a weight attribute handled correctly? (Default to 1)?"""
         # Summing the weights
-        sum = self.now.collapse_edges(sum_weights=True)
-        self.assertIsInstance(sum, multigraph.MultiGraphPlus)
-        self.assertEqual(sum.edge['Alice']['file01'][0]['weight'], 2)
-        self.assertEqual(sum.edge['file01']['Bob'][0]['weight'], 1)
-        self.assertEqual(len(sum.edge['Alice']), 1)
-        self.assertEqual(len(sum.edge['file01']), 2)
-        self.assertEqual(len(sum.edge['Bob']), 1)
+        summ = self.now.collapse_edges(sum_weights=True)
+        self.assertIsInstance(summ, multigraph.MultiGraphPlus)
+        self.assertEqual(summ.edge['Alice']['file01'][0]['weight'], 2)
+        self.assertEqual(summ.edge['file01']['Bob'][0]['weight'], 1)
+        self.assertEqual(len(summ.edge['Alice']), 1)
+        self.assertEqual(len(summ.edge['file01']), 2)
+        self.assertEqual(len(summ.edge['Bob']), 1)
         # Not summing weights
         nosum = self.now.collapse_edges()
         self.assertIsInstance(nosum, multigraph.MultiGraphPlus)
@@ -253,12 +253,12 @@ class CollapseEdgesTest(unittest.TestCase):
     def test_some_weight(self):
         """Does the method perform correctly when some edges have weights, while others don't?"""
         mgw = self.mgw
-        mgw.add_edge(2,3) # Add non-weighted edge
+        mgw.add_edge(2, 3)  # Add non-weighted edge
         # Sum weights
         somew_sum = mgw.collapse_edges(sum_weights=True)
         self.assertIsInstance(somew_sum, multigraph.MultiGraphPlus)
-        self.assertEqual(somew_sum.edge[1][2][0]['weight'],5)
-        self.assertEqual(somew_sum.edge[2][3][0]['weight'],5)
+        self.assertEqual(somew_sum.edge[1][2][0]['weight'], 5)
+        self.assertEqual(somew_sum.edge[2][3][0]['weight'], 5)
 
         # Don't sum weights
         somew_nosum = mgw.collapse_edges(sum_weights=False)
@@ -272,22 +272,22 @@ class CollapseEdgesTest(unittest.TestCase):
         self.assertIsInstance(mg, multigraph.MultiGraphPlus)
         # Looking at Alice, contains a list attribute
         self.assertIsInstance(mg.edge['Alice'], dict)
-        AD = {'file01': {0: {'weight': 2,
+        ad = {'file01': {0: {'weight': 2,
                              'type': ['commit', 'commit'],
-                             'date':['Jan 3', 'Jan 5'],
+                             'date': ['Jan 3', 'Jan 5'],
                              'changed_lines': [5, 18, 38, 44, 3, 5, 23, 67]}}}
-        self.assertDictEqual(mg.edge['Alice'], AD)
+        self.assertDictEqual(mg.edge['Alice'], ad)
         # Looking at Bob, contains a unique attribute
-        BD = {'file01': {0: {'weight': 1,
-                             'type': 'issue', # Is this what we want ?? Should they just be stored atomically?
-                             'date':'Jan 16',
+        bd = {'file01': {0: {'weight': 1,
+                             'type': 'issue',  # Is this what we want ?? Should they just be stored atomically?
+                             'date': 'Jan 16',
                              'importance': 'high'}}}
         self.assertIsInstance(mg.edge['Bob'], dict)
-        self.assertDictEqual(mg.edge['Bob'],BD)
+        self.assertDictEqual(mg.edge['Bob'], bd)
         # Looking at file01, contains multiple edges
-        FD = {'Alice':  AD['file01'], 'Bob': BD['file01']}
+        fd = {'Alice':  ad['file01'], 'Bob': bd['file01']}
         self.assertIsInstance(mg.edge['file01'], dict)
-        self.assertDictEqual(mg.edge['file01'], FD)
+        self.assertDictEqual(mg.edge['file01'], fd)
 
     def test_diff_attr(self):
         """Are edge attributes retained properly, even when they aren't the same?"""
@@ -298,7 +298,7 @@ class CollapseEdgesTest(unittest.TestCase):
         cd = {'file02': {0: {'weight': 7,
                              'type': ['commit', 'issue', 'review'],
                              'date': ['Jan 1', 'Jan 2', 'Jan 5'],
-                             'changed_lines': [1,2],
+                             'changed_lines': [1, 2],
                              'importance': 'high',
                              'status': 'PASS'}}}
         self.assertIsInstance(diff_attr.edge['Charlie'], dict)
@@ -314,10 +314,10 @@ class CollapseEdgesTest(unittest.TestCase):
         self.assertDictEqual(diff_attr.edge['Dawn'], dd)
 
         # Look at Elise, where not all attributes will be in lists
-        ed = {'file02': {0: {'weight':2,
+        ed = {'file02': {0: {'weight': 2,
                              'type': 'commit',
                              'date': 'Jan 30',
-                             'changed_lines': [4,5]}}}
+                             'changed_lines': [4, 5]}}}
         self.assertIsInstance(diff_attr.edge['Elise'], dict)
         self.assertDictEqual(diff_attr.edge['Elise'], ed)
 
@@ -358,12 +358,12 @@ class NodeMergeTest(unittest.TestCase):
         # Checking Return Value
         self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
         # Checking Nodes
-        self.assertEqual(self.mg.number_of_nodes(), 4) # Checking before
+        self.assertEqual(self.mg.number_of_nodes(), 4)  # Checking before
         self.assertEqual(mg_merged.number_of_nodes(), 3)
         self.assertEqual(set(mg_merged.nodes()), {'Alice Smith', 'file01', 'file02'})
         self.assertNotIn('Alice', mg_merged.nodes())
         # Checking Edges
-        self.assertEqual(self.mg.number_of_edges(), 2) # Checking before
+        self.assertEqual(self.mg.number_of_edges(), 2)  # Checking before
         self.assertEqual(mg_merged.number_of_edges(), 2)
         self.assertIn('file01', mg_merged.edge['Alice Smith'])
         self.assertIn('file02', mg_merged.edge['Alice Smith'])
@@ -408,7 +408,7 @@ class NodeMergeTest(unittest.TestCase):
         self.assertEqual(mg.number_of_nodes()-1, mg_merged.number_of_nodes())
         self.assertEqual(mg_merged.number_of_nodes(), 3)
         with self.assertRaises(KeyError):
-            mg_merged.node['Alice']  # Delete node2?
+            w = mg_merged.node['Alice']  # Delete node2?
         self.assertIsNotNone(mg_merged.node['Alice Smith']) # Kept node1?
 
     def test_edge_attr(self):
