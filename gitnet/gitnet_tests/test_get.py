@@ -2,17 +2,17 @@ import unittest
 import os
 import re
 import numpy as np
-import bash as sh
 import gitnet
-
+import subprocess as sub
 
 class TestGetLog(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_one.git .git")
+        sub.call(["cp","-R","repo_one.git",".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
+        self.my_log.describe()
 
     # Basic test in default mode.
     def test_basic(self):
@@ -59,14 +59,14 @@ class TestGetLog(unittest.TestCase):
         self.assertEqual(len(self.my_log.ignore("\.md$")["fc3527c"]["files"]), 0)
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 
 class TestBigGit(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_nx.git .git")
+        sub.call(["cp","-R","repo_nx.git",".git"])
         self.good_path = os.getcwd()
         self.nx_log = gitnet.get_log(self.good_path)
 
@@ -85,17 +85,17 @@ class TestBigGit(unittest.TestCase):
         self.assertEqual(re.sub('[\s+]', '',nx_lines[0]), "hashauthoremaildatemodemergesummaryfedits"
                                                            "insertsdeletesmessagefileschanges")
         f.close()
-        sh.bash("rm nx_test.tsv")
+        sub.call(["rm","nx_test.tsv"])
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 
 class TestGetError(unittest.TestCase):
 
     def setUp(self):
         # Set up Repo One
-        sh.bash("cp -R repo_zero.git .git")
+        sub.call(["cp","-R","repo_zero.git",".git"])
         self.bad_path = os.getcwd()
 
     # Test that a RepositoryError is raised when accessing a repository with no commits.
@@ -114,7 +114,7 @@ class TestGetError(unittest.TestCase):
             gitnet.get_log("/")
 
     def tearDown(self):
-        sh.bash("rm -rf .git")
+        sub.call(["rm","-rf",".git"])
 
 if __name__ == '__main__':
     unittest.main()
