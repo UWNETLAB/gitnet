@@ -126,8 +126,15 @@ class TestNetworkGeneratorSmall(unittest.TestCase):
         self.my_log = gitnet.get_log(self.good_path)
 
     def test_tag_warning(self):
-        with self.assertWarns(Exception):
-            net = self.my_log.generate_network("author","file")
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            net = self.my_log.generate_network("author", "file")
+            # Check Warning occurred
+            self.assertEqual(len(w), 1)
+            self.assertIn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.",
+                          str(w[-1].message))
 
     def test_hash_author(self):
         net = self.my_log.generate_network("hash","author")
