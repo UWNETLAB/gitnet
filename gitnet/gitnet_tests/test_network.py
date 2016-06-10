@@ -3,6 +3,7 @@ from unittest.mock import patch
 import gitnet
 from gitnet import multigraph
 from gitnet.exceptions import MergeError
+from gitnet.exceptions import GraphStatsError
 import os
 import networkx as nx
 import subprocess as sub
@@ -560,10 +561,8 @@ class TestNetworkStats(unittest.TestCase):
         self.assertIn("11 edges", description)
         self.assertIn("Density: 0.39285", description)
 
-
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
-
 
 if __name__ == '__main__':
     unittest.main(buffer=True)
