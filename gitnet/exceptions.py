@@ -40,3 +40,9 @@ class MergeError(gitnetException):
     Exception given when the user provides nodes to node_merge() which do not meet the initial checks
     """
     pass
+
+class GraphStatsError(gitnetException):
+    """
+    Exception given when the statistics are not generated as expected.
+    """
+    pass

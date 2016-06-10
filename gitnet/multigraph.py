@@ -1,6 +1,7 @@
 import networkx as nx
 import warnings
 from gitnet.exceptions import MergeError
+from gitnet.exceptions import GraphStatsError
 from gitnet.helpers import list_scd_str
 import matplotlib.pyplot as plt
 import copy
@@ -225,13 +226,12 @@ class MultiGraphPlus(nx.MultiGraph):
 
         :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended maximum network size for the low efficiency algorithms is around 100 nodes.
         """
+        mode1 = self.mode2
+        mode2 = self.mode1
         density = bipartite.density(self, bipartite.sets(self)[0])
-        nodes = self.number_of_nodes()
         edges = self.number_of_edges()
-        mode1 = len(bipartite.sets(self)[1])
-        descriptives = ""
-        descriptives1 = ""
-        descriptives2 = ""
+        nodes_mode1 = len(bipartite.sets(self)[0])
+        nodes_mode2 = len(bipartite.sets(self)[1])
         if extra == True:
             # Note: for each mode of the bipartite graph, degree and betweenness centrality are the same.
             # Keeping them both makes it easy to compare them and make sure they are the same.
@@ -250,13 +250,20 @@ class MultiGraphPlus(nx.MultiGraph):
             G = nx.Graph(self)
             projection = bipartite.projected_graph(G, bipartite.sets(G)[0])
             transitivity = nx.transitivity(projection)
-            descriptives1 = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + ".\nTransitivity: " + str(transitivity) + ".\nMean Degree Centrality for Mode 1:  " + str(degree_mode1) + ".\nMean Degree Centrality for Mode 2: " + str(degree_mode2) + ".\n"
-            descriptives2 = "Mean Betweenness Centrality for Mode 1: " + str(betweenness_mode1) + ".\nMean Betweenness Centrality for Mode 2: " + str(betweenness_mode2) + ".\n"
-            descriptives = descriptives1 + descriptives2
+            descriptives_nodes = "This is a bipartite network of types \'" + str(mode1) + "\' and \'" + str(mode2) + "\'.\n" + str(nodes_mode1) + " nodes are of the type: \'" + str(mode1) + "\'.\n" + str(nodes_mode2) + " nodes are of the type: \'" + str(mode2) + "\'.\n"
+            descriptives_edges = "There are " + str(edges) + " edges. \n"
+            descriptives_density = "Density: " + str(density) + ". \n"
+            descriptives_transitivity = "Transitivity: " + str(transitivity) + ". \n"
+            descriptives_degree_centrality = "Mean Degree Centrality for \'" + str(mode1) + ": \'" + str(degree_mode1) + ". \nMean Degree Centrality for \'" + str(mode2) + "\': " + str(degree_mode2) + ".\n"
+            descriptives_betweenness_centrality = "Mean Betweenness Centrality for " + str(mode1) + "\': " + str(betweenness_mode1) + ". \nMean Betweenness Centrality for \'" + str(mode2) + "\': " + str(betweenness_mode2) + ". \n"
+            descriptives = descriptives_nodes + descriptives_edges + descriptives_density + descriptives_transitivity + descriptives_degree_centrality + descriptives_betweenness_centrality
         elif extra == False:
-            descriptives = "This \'MultiGraphPlus\' object has: \n" + str(nodes) + " nodes, " + str(mode1) + " are in Mode 1.\n" + str(edges) + " edges. \nDensity: " + str(density) + "."
-        print(descriptives)
-        return descriptives
+            descriptives_nodes = "This is a bipartite network of types \'" + str(mode1) + "\' and \'" + str(mode2) + "\'.\n" + str(nodes_mode1) + " nodes are of the type: \'" + str(mode1) + "\'.\n" + str(nodes_mode2) + " nodes are of the type: \'" + str(mode2) + "\'.\n"
+            descriptives_edges = "There are " + str(edges) + " edges. \n"
+            descriptives_density = "Density: " + str(density) + ". \n"
+            descriptives = descriptives_nodes + descriptives_edges + descriptives_density
+            print(descriptives)
+            return descriptives
 
     def node_merge(self, node1, node2, show_warning=True):
         """
