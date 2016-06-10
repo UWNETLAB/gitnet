@@ -560,7 +560,6 @@ class TestNetworkStats(unittest.TestCase):
         self.assertIn("11 edges", description)
         self.assertIn("Density: 0.39285", description)
 
-
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
 
