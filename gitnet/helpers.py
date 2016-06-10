@@ -1,6 +1,5 @@
 import datetime as dt
 import re
-import networkx as nx
 from gitnet.exceptions import InputError
 
 
