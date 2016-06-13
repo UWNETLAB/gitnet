@@ -226,8 +226,8 @@ class MultiGraphPlus(nx.MultiGraph):
 
         :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended maximum network size for the low efficiency algorithms is around 100 nodes.
         """
-        mode1 = self.mode2
-        mode2 = self.mode1
+        mode1 = self.mode1
+        mode2 = self.mode2
         density = bipartite.density(self, bipartite.sets(self)[0])
         edges = self.number_of_edges()
         nodes_mode1 = len(bipartite.sets(self)[0])
