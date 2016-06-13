@@ -230,8 +230,15 @@ class MultiGraphPlus(nx.MultiGraph):
         mode2 = self.mode2
         density = bipartite.density(self, bipartite.sets(self)[0])
         edges = self.number_of_edges()
-        nodes_mode1 = len(bipartite.sets(self)[0])
-        nodes_mode2 = len(bipartite.sets(self)[1])
+        nodes_mode1 = 0
+        nodes_mode2 = 0
+        for n in self.nodes():
+            if self.node[n]['type'] == mode1:
+                nodes_mode1 = nodes_mode1 + 1
+            elif self.node[n]['type'] == mode2:
+                nodes_mode2 = nodes_mode2 + 1
+        # nodes_mode1 = len(bipartite.sets(self)[0])
+        # nodes_mode2 = len(bipartite.sets(self)[1])
         if extra == True:
             # Note: for each mode of the bipartite graph, degree and betweenness centrality are the same.
             # Keeping them both makes it easy to compare them and make sure they are the same.
