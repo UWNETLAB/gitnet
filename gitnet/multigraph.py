@@ -1,7 +1,6 @@
 import networkx as nx
 import warnings
 from gitnet.exceptions import MergeError
-from gitnet.exceptions import GraphStatsError
 from gitnet.helpers import list_scd_str
 import matplotlib.pyplot as plt
 import copy
@@ -21,7 +20,8 @@ class MultiGraphPlus(nx.MultiGraph):
         """
         write_graphml converts a MultiGraphPlus object to a graphml file.
         :param self: MultiGraphPlus graph
-        :param fpath: A string indicating the path or file name to write. File names which end in .gz or .bz2 will be compressed.
+        :param fpath: A string indicating the path or file name to write. File names which end in .gz or .bz2 will be
+            compressed.
         :return: None
         This method will have the side effect of creating a file, specified by fpath.
         This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
@@ -37,7 +37,7 @@ class MultiGraphPlus(nx.MultiGraph):
             for attr in graph.node[n].keys():
                 if isinstance(graph.node[n][attr], list):
                     warning = True
-                    warning_set = {'n:'+ attr} | warning_set
+                    warning_set = {'n:' + attr} | warning_set
                     graph.node[n][attr] = list_scd_str(graph.node[n][attr])
 
         for n1, n2, data in graph.edges(data=True):
@@ -70,40 +70,41 @@ class MultiGraphPlus(nx.MultiGraph):
         Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
         """
         modes = []
-        mode1Set = set()
+        mode1set = set()
         for node_index, node in enumerate(self.nodes_iter(data=True), start=1):
             try:
-                nMode = node[1][mode_string]
+                nmode = node[1][mode_string]
             except KeyError:
                 # too many modes so will fail
                 modes = [1, 2, 3]
-                nMode = 4
-            if nMode not in modes:
+                nmode = 4
+            if nmode not in modes:
                 if len(modes) < 2:
-                    modes.append(nMode)
+                    modes.append(nmode)
                 else:
                     raise ValueError(
-                        "Too many modes of '{}' found in the network or one of the nodes was missing its mode. There must be exactly 2 modes.".format(
-                            mode_string))
-            if nMode == modes[0]:
-                mode1Set.add(node[0])
+                        "Too many modes of '{}' found in the network or one of the nodes was missing its mode. "
+                        "There must be exactly 2 modes.".format(mode_string))
+            if nmode == modes[0]:
+                mode1set.add(node[0])
             node[1][node_index_string] = node_index
         if len(modes) != 2:
             raise ValueError(
                 "Too few modes of '{}' found in the network. There must be exactly 2 modes.".format(mode_string))
         with open(fname, 'w', encoding='utf-8') as f:
             for n1, n2, eDict in self.edges_iter(data=True):
-                if n1 in mode1Set:
-                    if n2 in mode1Set:
+                if n1 in mode1set:
+                    if n2 in mode1set:
                         raise ValueError(
-                            "The nodes '{}' and '{}' have an edge and the same type. The network must be purely 2-mode.".format(
-                                n1, n2))
-                elif n2 in mode1Set:
+                            "The nodes '{}' and '{}' have an edge and the same type. "
+                            "The network must be purely 2-mode.".format(n1, n2))
+                elif n2 in mode1set:
                     n1, n2 = n2, n1
                 else:
                     raise ValueError(
-                        "The nodes '{}' and '{}' have an edge and the same type. The network must be purely 2-mode.".format(
-                            n1, n2))
+                        "The nodes '{}' and '{}' have an edge and the same type. "
+                        "The network must be purely 2-mode.".format(n1, n2))
+
                 if time_string is not None and time_string in eDict:
                     edt = eDict[time_string]
                     if type(edt) is str:
@@ -111,20 +112,22 @@ class MultiGraphPlus(nx.MultiGraph):
                     e_time_string = edt.strftime("\"%y-%m-%d %H:%M:%S\"")
                 else:
                     e_time_string = ''
+
                 # Write to file
                 node1 = self.node[n1][node_index_string]
                 node2 = self.node[n2][node_index_string]
                 weight = eDict[weight_string]
-                if time_string != None:
-                    f.write("{} {} {}".format(e_time_string,node1,node2))
+                if time_string is not None:
+                    f.write("{} {} {}".format(e_time_string, node1, node2))
                 else:
-                    f.write("{} {}".format(node1,node2))
+                    f.write("{} {}".format(node1, node2))
+
                 if weighted:
                     f.write(" {}\n".format(weight))
                 else:
                     f.write("\n")
 
-    def node_attributes(self,name,helper):
+    def node_attributes(self, name, helper):
         """
         Creates a new node attribute.
         :param name: The name of the new attribute.
@@ -139,11 +142,15 @@ class MultiGraphPlus(nx.MultiGraph):
     def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
         """
         Makes a quick visualization of the network.
-        :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
         :param fname: If specified, a copy of the figure is saved using this file name.
+        :param k:
+        :param iterations:
+        :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
         :param size: The size of the nodes. Default is 20.
+        :param default_colour:
         :return: None
         """
+
         if type(k) is str:
             k = 4/np.sqrt(self.number_of_nodes())
         # Make a copy
@@ -164,16 +171,16 @@ class MultiGraphPlus(nx.MultiGraph):
         print("Plotting...")
         if layout in ["dot", "neato", "fdp", "circo"]:
             nx.draw(copy_net,
-                    pos = graphviz_layout(copy_net,prog=layout),
-                    node_size = size,
-                    font_size = 5,
-                    node_color = colour_list,
-                    linewidths = .5,
-                    edge_color = "DarkGray",
-                    width = .1)
+                    pos=graphviz_layout(copy_net, prog=layout),
+                    node_size=size,
+                    font_size=5,
+                    node_color=colour_list,
+                    linewidths=.5,
+                    edge_color="DarkGray",
+                    width=.1)
         if layout == "spring":
             nx.draw(copy_net,
-                    pos=nx.spring_layout(copy_net,k=k,iterations=iterations),
+                    pos=nx.spring_layout(copy_net, k=k, iterations=iterations),
                     node_size=size,
                     font_size=5,
                     node_color=colour_list,
@@ -182,49 +189,50 @@ class MultiGraphPlus(nx.MultiGraph):
                     width=.1)
         elif layout == "circular":
             nx.draw_circular(copy_net,
-                            node_size = size,
-                            font_size = 5,
-                            node_color =colour_list,
-                            linewidths = .5,
-                            edge_color = "DarkGray",
-                            width = .1)
+                             node_size=size,
+                             font_size=5,
+                             node_color=colour_list,
+                             linewidths=.5,
+                             edge_color="DarkGray",
+                             width=.1)
         elif layout == "shell":
             nx.draw_shell(copy_net,
-                           node_size=size,
-                           font_size=5,
-                           node_color =colour_list,
-                           linewidths=.5,
-                           edge_color="DarkGray",
-                           width=.1)
+                          node_size=size,
+                          font_size=5,
+                          node_color=colour_list,
+                          linewidths=.5,
+                          edge_color="DarkGray",
+                          width=.1)
         elif layout == "spectral":
             nx.draw_spectral(copy_net,
-                           node_size=size,
-                           font_size=5,
-                           node_color =colour_list,
-                           linewidths=.5,
-                           edge_color="DarkGray",
-                           width=.1)
+                             node_size=size,
+                             font_size=5,
+                             node_color=colour_list,
+                             linewidths=.5,
+                             edge_color="DarkGray",
+                             width=.1)
         elif layout == "random":
             nx.draw_random(copy_net,
                            node_size=size,
                            font_size=5,
-                           node_color =colour_list,
+                           node_color=colour_list,
                            linewidths=.5,
                            edge_color="DarkGray",
                            width=.1)
         # Save figure if applicable
         if fname is not None:
-            plt.savefig(fname,bbox_inches="tight")
+            plt.savefig(fname, bbox_inches="tight")
             print("Wrote file: {}".format(fname))
 
-    def describe(self, extra = False):
+    def describe(self, extra=False):
         """
         Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,
         denstiy, and the average degree for one mode.
         Prints a string that contains each of the items that make up the summary.
         Density is calculated using one of the modes of the original bipartite network graph.
 
-        :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended maximum network size for the low efficiency algorithms is around 100 nodes.
+        :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended
+            maximum network size for the low efficiency algorithms is around 100 nodes.
         """
         mode1 = self.mode1
         mode2 = self.mode2
@@ -234,13 +242,13 @@ class MultiGraphPlus(nx.MultiGraph):
         nodes_mode2 = 0
         for n in self.nodes():
             if self.node[n]['type'] == mode1:
-                nodes_mode1 = nodes_mode1 + 1
+                nodes_mode1 += 1
             elif self.node[n]['type'] == mode2:
-                nodes_mode2 = nodes_mode2 + 1
+                nodes_mode2 += 1
 
         descriptives_nodes = "This is a bipartite network of types '{}' and '{}'.\n " \
                              "{} nodes are of the type '{}'.\n " \
-                             "{} nodes are of the type '{}'.\n".format(str(mode1),str(mode2), str(nodes_mode1),
+                             "{} nodes are of the type '{}'.\n".format(str(mode1), str(mode2), str(nodes_mode1),
                                                                        str(mode1), str(nodes_mode2), str(mode2))
         descriptives_edges = "There are {} edges.\n".format(str(edges))
         descriptives_density = "Density: {}.\n".format(str(density))
@@ -261,10 +269,9 @@ class MultiGraphPlus(nx.MultiGraph):
             betweenness_mode2 = bipartite.betweenness_centrality(self, bipartite.sets(self)[1])
             betweenness_mode2 = list(betweenness_mode2.values())
             betweenness_mode2 = np.mean(betweenness_mode2)
-            G = nx.Graph(self)
-            projection = bipartite.projected_graph(G, bipartite.sets(G)[0])
+            g = nx.Graph(self)
+            projection = bipartite.projected_graph(g, bipartite.sets(g)[0])
             transitivity = nx.transitivity(projection)
-
             descriptives_transitivity = "Transitivity: {}.\n".format(str(transitivity))
             descriptives_degree_centrality = "Mean Degree Centrality for '{}': {}.\n" \
                                              "Mean Degree Centrality for '{}': {}.\n".format(str(mode1),
@@ -276,8 +283,8 @@ class MultiGraphPlus(nx.MultiGraph):
                                                                                                 str(betweenness_mode1),
                                                                                                 str(mode2),
                                                                                                 str(betweenness_mode2))
-            descriptives = descriptives + descriptives_transitivity + \
-                           descriptives_degree_centrality + descriptives_btwn_centrality
+            descriptives = descriptives + descriptives_transitivity +\
+                descriptives_degree_centrality + descriptives_btwn_centrality
         print(descriptives)
         return descriptives
 
@@ -328,7 +335,7 @@ class MultiGraphPlus(nx.MultiGraph):
                 node_merge_warn = True
                 node_merge_warn_list.append(na)
 
-        merged_graph.remove_node(node2) # Removes node2
+        merged_graph.remove_node(node2)  # Removes node2
 
         if node_merge_warn and show_warning:
             print("Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, "
@@ -343,9 +350,9 @@ class MultiGraphPlus(nx.MultiGraph):
         Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
         assigned depends on the sum_weights parameter.
 
-        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges. If
-        False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of the
-        weights of collapsed edges.
+        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.
+        If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
+        the weights of collapsed edges.
 
         :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
         stores other edge data in lists.
@@ -356,7 +363,7 @@ class MultiGraphPlus(nx.MultiGraph):
         """
         gnew = MultiGraphPlus()
         for n1, n2, data in self.edges(data=True):
-            if gnew.has_edge(n1,n2):
+            if gnew.has_edge(n1, n2):
                 gnew_data = gnew.edge[n1][n2][0]
                 if 'weight' not in data:
                     gnew_data['weight'] += 1

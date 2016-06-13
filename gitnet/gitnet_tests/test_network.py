@@ -46,11 +46,6 @@ class GraphMLTests(unittest.TestCase):
         finally:
             self.made_gml = True
 
-    def tearDown(self):
-        if self.made_gml:
-            os.remove(self.path)
-            os.rmdir('temp')
-
     def test_basic_res(self):
         """Was basic functionality of the method achieved?"""
         # Check that the method doesn't return a value
@@ -175,6 +170,590 @@ class GraphMLTests(unittest.TestCase):
             mg_atomic.write_graphml(self.path)
             # Check Warning didn't occurred
             self.assertEqual(len(w), 0)
+
+    def tearDown(self):
+        if self.made_gml:
+            os.remove(self.path)
+            os.rmdir('temp')
+
+
+class TnetTests(unittest.TestCase):
+    def setUp(self):
+        """Setup to occur before each method executes"""
+        self.mg = multigraph.MultiGraphPlus()
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'type': 'author',
+                                             'email': 'alice@gmail.com',
+                                             'records': ['hash1', 'hash2']})
+        self.mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                             'type': 'author',
+                                             'email': 'bob@gmail.com',
+                                             'records': ['hash3', 'hash4']})
+        self.mg.add_node('file01', attr_dict={'id': 'f01',
+                                              'type': 'file',
+                                              'records': ['hash1', 'hash3']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file',
+                                              'records': ['hash2']})
+        self.mg.add_node('file03', attr_dict={'id': 'f03',
+                                              'type': 'file',
+                                              'records': ['hash4']})
+
+        self.mg.add_edge('Alice', 'file01', sha='hash1', weight=1)
+        self.mg.add_edge('Alice', 'file02', sha='hash2', weight=1)
+        self.mg.add_edge('Bobby', 'file01', sha='hash3', weight=1)
+        self.mg.add_edge('Bobby', 'file03', sha='hash4', weight=1)
+
+        self.made_tnet = False
+        try:
+            os.mkdir('temp')
+            self.path = os.getcwd() + '/temp/tnet.txt'
+            self.tnet = self.mg.write_tnet(self.path)
+        finally:
+            self.made_tnet = True
+
+    def test_basic(self):
+        """Is basic functionality of the method achieved?"""
+        # Check that the method doesn't return a value
+        self.assertIsNone(self.mg.write_tnet(self.path))
+        # Check that a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_date(self):
+        """Is basic functionality achieved when date is given in the edge?"""
+        # Add edge with a date
+        self.mg.add_edge('Alice', 'file03', date='Thu Feb 4 09:13:45 2016 -0600', weight=1)
+        # Check method doesn't return a value
+        self.assertIsNone(self.mg.write_tnet(self.path))
+        # Check a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_weighted(self):
+        # Check method executes and doesn't return a value when weighted = True
+        self.assertIsNone(self.mg.write_tnet(self.path, weighted=True))
+        # Check a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_None_timestr(self):
+        # Check method executes and doesn't return a value when time_string = None
+        self.assertIsNone(self.mg.write_tnet(self.path, time_string=None))
+        # Check a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_mode_errors(self):
+        """Are errors raised when there is an incorrect number of modes or if edges are occuring between modes?"""
+        # Create a graph with only 1 mode
+        mg = multigraph.MultiGraphPlus()
+        mg.add_node('Alice', attr_dict={'id': 'a01',
+                                        'type': 'author',
+                                        'email': 'alice@gmail.com',
+                                        'records': ['hash1']})
+        mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                        'type': 'author',
+                                        'email': 'bob@gmail.com',
+                                        'records': ['hash2', 'hash3']})
+        # Checking the right error occurs
+        with self.assertRaisesRegex(ValueError, "Too few modes of 'type' found in the network. "
+                                                "There must be exactly 2 modes."):
+            mg.write_tnet(self.path)
+
+        # Adding 2 more modes
+        mg.add_node('file01', attr_dict={'id': 'f01',
+                                         'type': 'file',
+                                         'records': ['hash1', 'hash2']})
+        mg.add_node('file02', attr_dict={'id': 'f02',
+                                         'type': 'file',
+                                         'records': ['hash1']})
+        mg.add_node('UWaterloo', attr_dict={'id': 'u01',
+                                            'type': 'university',
+                                            'records': ['hash3']})
+
+        mg.add_edge('Alice', 'file01', sha='hash1', weight=1)
+        mg.add_edge('Alice', 'file02', sha='hash1', weight=1)
+        mg.add_edge('Bobby', 'file01', sha='hash2', weight=1)
+        mg.add_edge('Bobby', 'UWaterloo', sha='hash2', weight=1)
+
+        # Checking the right error occurs
+        with self.assertRaisesRegex(ValueError, "Too many modes of 'type' found in the network or one of the nodes was "
+                                                "missing its mode. There must be exactly 2 modes."):
+            mg.write_tnet(self.path)
+
+        # Adding an edge between equal modes
+        mg.remove_node('UWaterloo')  # Remove to prevent error
+        mg.add_edge('Alice', 'Bobby', sha='hash5', weight=1)
+
+        # Checking the right error occurs
+        with self.assertRaisesRegex(ValueError, "The nodes '(Alice|Bobby)' and '(Alice|Bobby)' have an edge and the "
+                                                "same type. The network must be purely 2-mode."):
+            mg.write_tnet(self.path)
+
+    def test_other_errors(self):
+        mg = multigraph.MultiGraphPlus()
+        mg.add_node('Alice', attr_dict={'id': 'a01',
+                                        'type': 'author',
+                                        'email': 'alice@gmail.com',
+                                        'records': ['hash1']})
+        mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                        'type': 'author',
+                                        'email': 'bob@gmail.com',
+                                        'records': ['hash2']})
+        mg.add_node('file01', attr_dict={'id': 'f01',
+                                         'type': 'file',
+                                         'records': ['hash1', 'hash2']})
+        mg.add_edge('Alice', 'file01', date='Thu Feb 4 09:13:45 2016 -0600')
+        mg.add_edge('Bobby', 'file01', date='Fri Feb 5 09:13:45 2016 -0600')
+
+        # Ensuring a warning is raised when the mode_string isn't an attribute of each node
+        with self.assertRaises(ValueError):
+            mg.write_tnet(self.path, mode_string="email")
+
+    def tearDown(self):
+        if self.made_tnet:
+            os.remove(self.path)
+            os.rmdir('temp')
+
+
+class NodeAttrTests(unittest.TestCase):
+    def setUp(self):
+        self.mg = multigraph.MultiGraphPlus()
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'email': 'alice@gmail.com',
+                                             'type': 'author',
+                                             'records': ['hash1']})
+        self.mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                             'email': 'bobby@gmail.com',
+                                             'type': 'author',
+                                             'records': ['hash2']})
+        self.mg.add_node('file01', attr_dict={'id': 'f01',
+                                              'type': 'file',
+                                              'records': ['hash1', 'hash2']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file',
+                                              'records': ['hash1']})
+        self.mg.add_edge('file01', 'Alice', date='Jan 1')
+        self.mg.add_edge('file02', 'Alice', date='Jan 2')
+        self.mg.add_edge('file01', 'Bobby', date='Jan 3')
+
+    def test_basic(self):
+        # Creating the expected output from the function
+        expected_mg = multigraph.MultiGraphPlus()
+        expected_mg.add_node('Alice', attr_dict={'id': 'a01',
+                                                 'email': 'alice@gmail.com',
+                                                 'type': 'author',
+                                                 'records': ['hash1'],
+                                                 'colour': 'dodgerblue'})
+        expected_mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                                 'email': 'bobby@gmail.com',
+                                                 'type': 'author',
+                                                 'records': ['hash2'],
+                                                 'colour': 'dodgerblue'})
+        expected_mg.add_node('file01', attr_dict={'id': 'f01',
+                                                  'type': 'file',
+                                                  'records': ['hash1', 'hash2'],
+                                                  'colour': 'red'})
+        expected_mg.add_node('file02', attr_dict={'id': 'f02',
+                                                  'type': 'file',
+                                                  'records': ['hash1'],
+                                                  'colour': 'red'})
+        expected_mg.add_edge('file01', 'Alice', date='Jan 1')
+        expected_mg.add_edge('file02', 'Alice', date='Jan 2')
+        expected_mg.add_edge('file01', 'Bobby', date='Jan 3')
+
+        # Defining the helper function for node_attributes
+        def helper(d):
+            colour = 'red'
+            if d['type'] == 'author':
+                colour = 'dodgerblue'
+            return colour
+
+        self.assertIsInstance(self.mg.node_attributes('colour', helper), multigraph.MultiGraphPlus)
+        self.assertDictEqual(self.mg.node_attributes('colour', helper).node['Alice'],
+                             expected_mg.node['Alice'])
+        self.assertDictEqual(self.mg.node_attributes('colour', helper).node['Bobby'],
+                             expected_mg.node['Bobby'])
+        self.assertDictEqual(self.mg.node_attributes('colour', helper).node['file01'],
+                             expected_mg.node['file01'])
+        self.assertDictEqual(self.mg.node_attributes('colour', helper).node['file02'],
+                             expected_mg.node['file02'])
+
+    def test_attr_there(self):
+        expected_mg = multigraph.MultiGraphPlus()
+        expected_mg.add_node('Alice', attr_dict={'id': 'a01',
+                                                 'email': 'alice@gmail.com',
+                                                 'type': 'contributor',
+                                                 'records': ['hash1']})
+        expected_mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                                 'email': 'bobby@gmail.com',
+                                                 'type': 'contributor',
+                                                 'records': ['hash2']})
+        expected_mg.add_node('file01', attr_dict={'id': 'f01',
+                                                  'type': 'file',
+                                                  'records': ['hash1', 'hash2']})
+        expected_mg.add_node('file02', attr_dict={'id': 'f02',
+                                                  'type': 'file',
+                                                  'records': ['hash1']})
+        expected_mg.add_edge('file01', 'Alice', date='Jan 1')
+        expected_mg.add_edge('file02', 'Alice', date='Jan 2')
+        expected_mg.add_edge('file01', 'Bobby', date='Jan 3')
+
+        # Defining the helper function for node_attributes
+        def helper(d):
+            node_type = 'file'
+            if d['type'] == 'author':
+                node_type = 'contributor'
+            return node_type
+
+        self.assertIsInstance(self.mg.node_attributes('type', helper), multigraph.MultiGraphPlus)
+        self.assertDictEqual(self.mg.node_attributes('type', helper).node['Alice'],
+                             expected_mg.node['Alice'])
+        self.assertDictEqual(self.mg.node_attributes('type', helper).node['Bobby'],
+                             expected_mg.node['Bobby'])
+        self.assertDictEqual(self.mg.node_attributes('type', helper).node['file01'],
+                             expected_mg.node['file01'])
+        self.assertDictEqual(self.mg.node_attributes('type', helper).node['file02'],
+                             expected_mg.node['file02'])
+
+
+class QuickPlotTests(unittest.TestCase):
+    """Tests for basic functionality of the quickplot() method"""
+    def setUp(self):
+        self.mg = multigraph.MultiGraphPlus()
+
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'email': 'alice@gmail.com',
+                                             'type': 'author',
+                                             'records': ['hash1']})
+        self.mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                             'email': 'bobby@gmail.com',
+                                             'type': 'author',
+                                             'records': ['hash2']})
+        self.mg.add_node('file01', attr_dict={'id': 'f01',
+                                              'type': 'file',
+                                              'records': ['hash1', 'hash2']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file',
+                                              'records': ['hash1']})
+        self.mg.add_edge('file01', 'Alice', date='Jan 1')
+        self.mg.add_edge('file02', 'Alice', date='Jan 2')
+        self.mg.add_edge('file01', 'Bobby', date='Jan 3')
+
+        # Creating a spot for the image
+        self.made_qp = False
+        try:
+            os.mkdir('temp')
+            self.path = os.getcwd() + '/temp/quickplot.png'
+            self.qp = self.mg.quickplot(self.path, layout='spring')
+        finally:
+            self.made_qp = True
+
+    def test_basic(self):
+        """Is basic functionality achieved?"""
+        # Check that the method doesn't return a value
+        self.assertIsNone(self.mg.quickplot(self.path, layout="spring"))
+        # Check that a file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_layouts(self):
+        """Do all of the layouts run?"""
+        self.assertIsNone(self.mg.quickplot(self.path, layout="spring"))
+        self.assertIsNone(self.mg.quickplot(self.path, layout="circular"))
+        self.assertIsNone(self.mg.quickplot(self.path, layout="shell"))
+        self.assertIsNone(self.mg.quickplot(self.path, layout="spectral"))
+        self.assertIsNone(self.mg.quickplot(self.path, layout="random"))
+
+        # Graphviz Layouts
+        # self.assertIsNone(self.mg.quickplot(self.path, layout="dot"))
+        # self.assertIsNone(self.mg.quickplot(self.path, layout="neato"))
+        # self.assertIsNone(self.mg.quickplot(self.path, layout="fdp"))
+        # self.assertIsNone(self.mg.quickplot(self.path, layout="circo"))
+
+    def test_colour(self):
+        colour_mg = multigraph.MultiGraphPlus()
+
+        colour_mg.add_node('Alice', attr_dict={'id': 'a01',
+                                               'type': 'author',
+                                               'colour': 'blue'})
+        colour_mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                               'type': 'author',
+                                               'colour': 'blue'})
+        colour_mg.add_node('file01', attr_dict={'id': 'f01',
+                                                'type': 'file',
+                                                'colour': 'red'})
+        colour_mg.add_edge('file01', 'Alice', date='Jan 2')
+        colour_mg.add_edge('file01', 'Bobby', date='Jan 3')
+        # Checking basic functionality is achieved when colour is an attribute
+        self.assertIsNone(colour_mg.quickplot(self.path, layout="spring"))
+
+    def test_color(self):
+        color_mg = multigraph.MultiGraphPlus()
+
+        color_mg.add_node('Alice', attr_dict={'id': 'a01',
+                                              'type': 'author',
+                                              'color': 'blue'})
+        color_mg.add_node('Bobby', attr_dict={'id': 'a02',
+                                              'type': 'author',
+                                              'color': 'blue'})
+        color_mg.add_node('file01', attr_dict={'id': 'f01',
+                                               'type': 'file',
+                                               'color': 'red'})
+        color_mg.add_edge('file01', 'Alice', date='Jan 2')
+        color_mg.add_edge('file01', 'Bobby', date='Jan 3')
+        # Checking basic functionality is achieved when color is an attribute
+        self.assertIsNone(color_mg.quickplot(self.path, layout="spring"))
+
+    def tearDown(self):
+        if self.made_qp:
+            os.remove(self.path)
+            os.rmdir('temp')
+
+
+class DescribeTest(unittest.TestCase):
+    """Testing of the describe method in the MultiGraphPlus class."""
+    # A small network containing 11 nodes and 11 edges, 4 authors and 7 files.
+    # Has a rough density of around 0.39.
+
+    def setUp(self):
+        # Prepare small network repo for testing.
+        sub.call(["cp","-R","small_network_repo.git",".git"])
+        self.path = os.getcwd()
+        self.mylogs = gitnet.get_log(self.path)
+        self.mgraph = self.mylogs.generate_network('author', 'files')
+
+    def test_type_check(self):
+        self.assertIsInstance(self.mgraph, multigraph.MultiGraphPlus)
+
+    def test_stats(self):
+        description = self.mgraph.describe()
+        self.assertIn("7 nodes are of the type 'files'", description)
+        self.assertIn("4 nodes are of the type 'author'", description)
+        self.assertIn("11 edges", description)
+        self.assertIn("Density: 0.39285", description)
+
+    def test_extra(self):
+        """Are results as expected when extra is set to True?"""
+        description = self.mgraph.describe(extra=True)
+        self.assertIn("7 nodes are of the type 'files'", description)
+        self.assertIn("4 nodes are of the type 'author'", description)
+        self.assertIn("11 edges", description)
+        self.assertIn("Density: 0.39285", description)
+        self.assertIn("Transitivity: ", description)
+        self.assertIn("Mean Degree Centrality for 'files':", description)
+        self.assertIn("Mean Degree Centrality for 'author':", description)
+        self.assertIn("Mean Betweenness Centrality for 'files'", description)
+        self.assertIn("Mean Betweenness Centrality for 'author'", description)
+
+    def tearDown(self):
+        sub.call(["rm","-rf",".git"])
+
+
+class NodeMergeTest(unittest.TestCase):
+    """Tests for the node_merge() method within multigraph.py"""
+
+    def setUp(self):
+        self.mg = multigraph.MultiGraphPlus()
+        self.mg.add_node('Alice', attr_dict={'id': 'a01',
+                                             'email': 'alice@gmail.com',
+                                             'phone': '1(888)123-4567',
+                                             'type': 'author',
+                                             'records': ['hash1', 'hash2'],
+                                             'affiliations': ['Uwaterloo', 'Networks Lab']})
+        self.mg.add_node('Alice Smith', attr_dict={'id': 'a02',
+                                                   'email': 'alice@gmail.ca',
+                                                   'type': 'author',
+                                                   'colour': 'blue',
+                                                   'records': ['hash3', 'hash4'],
+                                                   'languages': ['Python', 'C']})
+        self.mg.add_node('file02', attr_dict={'id': 'f02',
+                                              'type': 'file'})
+        self.mg.add_edge('file01', 'Alice', date='Jan 1', style='dotted')
+        self.mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
+        self.mg_merged = self.mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+
+    def test_basic_res(self):
+        """Ensures the results of the method are appropriate"""
+        mg_merged = self.mg_merged
+        # Checking Return Value
+        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
+        # Checking Nodes
+        self.assertEqual(self.mg.number_of_nodes(), 4)  # Checking before
+        self.assertEqual(mg_merged.number_of_nodes(), 3)
+        self.assertEqual(set(mg_merged.nodes()), {'Alice Smith', 'file01', 'file02'})
+        self.assertNotIn('Alice', mg_merged.nodes())
+        # Checking Edges
+        self.assertEqual(self.mg.number_of_edges(), 2)  # Checking before
+        self.assertEqual(mg_merged.number_of_edges(), 2)
+        self.assertIn('file01', mg_merged.edge['Alice Smith'])
+        self.assertIn('file02', mg_merged.edge['Alice Smith'])
+        self.assertIn('Alice Smith', mg_merged.edge['file01'])
+        self.assertIn('Alice Smith', mg_merged.edge['file02'])
+        self.assertNotIn('Alice', mg_merged.edge['file01'])
+        self.assertNotIn('Alice', mg_merged.edge['file02'])
+
+    def test_list_attr(self):
+        """Are list attributes combined by node_merge?"""
+        mg_merged = self.mg_merged
+        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
+        self.assertEqual(len(mg_merged.node['Alice Smith']['records']), 4)
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['records']), {'hash1', 'hash2', 'hash3', 'hash4'})
+
+    def test_ncon_attr(self):
+        """Are the nodes' non-conflicting attributes present in the final node?"""
+        mg_merged = self.mg_merged
+        self.assertEqual(len(mg_merged.node['Alice Smith']), 8)
+        self.assertEqual(mg_merged.node['Alice Smith']['phone'], '1(888)123-4567')
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['affiliations']), {'Uwaterloo', 'Networks Lab'})
+        self.assertEqual(mg_merged.node['Alice Smith']['colour'], 'blue')
+        self.assertSetEqual(set(mg_merged.node['Alice Smith']['languages']), {'Python', 'C'})
+
+    def test_conf_attr(self):
+        """When conflicting atomic attributes are present, are node1's retained?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        # Checking that all atomic attributes in node1 are retained
+        for a in mg.node['Alice Smith']:
+            if not isinstance(mg.node['Alice Smith'][a], list):
+                self.assertEqual(mg.node['Alice Smith'][a], mg_merged.node['Alice Smith'][a])
+        # Checking conflicting attributes from node2 have been overwritten
+        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['email'])
+        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['id'])
+
+    def test_node_gone(self):
+        """Does the method delete node2, and keep node1?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        self.assertNotEqual(mg.number_of_nodes(), mg_merged.number_of_nodes())
+        self.assertEqual(mg.number_of_nodes()-1, mg_merged.number_of_nodes())
+        self.assertEqual(mg_merged.number_of_nodes(), 3)
+        with self.assertRaises(KeyError):
+           mg_merged.node['Alice']  # Delete node2?
+        self.assertIsNotNone(mg_merged.node['Alice Smith'])  # Kept node1?
+
+    def test_edge_attr(self):
+        """Does the method retain edge attributes?"""
+        mg = self.mg
+        mg.add_edge('Alice','file04', date='Jan 19')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice')
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        # Checking if each edge in the original graph has the same attr as its corresponding edge in the merged graph
+        for n1, n2, data in mg.edges(data=True):
+            if n1 == node2:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[node1][n2])
+            elif n2 == node2:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][node1])
+            else:
+                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][n2])
+        # Checking an edge explicitly to ensure
+        self.assertDictEqual(mg.edge['Alice']['file01'], mg_merged.edge['Alice Smith']['file01'])
+
+    def test_edge_tran(self):
+        """Are all of node2's edges transferred to node1?"""
+        mg = self.mg
+        mg_merged = self.mg_merged
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        # Check that node1's edges now include node2's old edges
+        self.assertEqual(len(mg_merged.edge[node1]), len(mg.edge[node1])+len(mg.edge[node2]))
+        self.assertEqual(len(mg_merged.edge[node1]), 2)
+        # Check that the edges to node2 no longer exist
+        with self.assertRaises(KeyError):
+            mg_merged.edge['Alice']
+
+    def test_mult_edge(self):
+        """Are multiple edges handled correctly?
+         Ex. A1->B, A2->B. Then merge A1 and A2. """
+        mg = self.mg
+        mg.add_edge("Alice", "file02", date='Jan 17')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+        # Check all edges are retained
+        self.assertEqual(len(mg_merged.edges()),3)
+        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
+        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Check Before
+        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 2)  # Check After
+        # Make sure duplicate edges within mg are kept
+        mg.add_edge('Alice', 'file02', date='Jan 21')
+        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
+        self.assertEqual(len(mg_merged.edges()), 4)
+        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
+        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Before
+        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 3)  # After
+
+    def test_show_warn(self):
+        """Does the show_warning parameter act as anticipated?"""
+        node1 = 'Alice Smith'
+        node2 = 'Alice'
+        warn_msg1 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
+                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
+                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"\
+                    .format(node1, node2, ['email','id'], node1, node2, node2, node2, node1)
+        warn_msg2 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
+                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
+                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n" \
+                    .format(node1, node2, ['id', 'email'], node1, node2, node2, node2, node1)
+
+        # Checking if the default show_warning parameter prints a message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2)
+            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
+
+        # Checking if the explicit show_warning = True prints a message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2)
+            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
+
+        # Checking if the false show_warning parameter  doesn't print message to the screen
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.mg.node_merge(node1, node2, show_warning=False)
+            self.assertEqual(fake_out.getvalue(), "")
+
+    def test_warn_ovrt(self):
+        """Is the overwrite warning(print statement) printed at the right time?"""
+
+        # Merging when no shared attributes -> No output
+        mg = self.mg
+        mg.add_node('Alice S')
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg.node_merge("Alice S", "Alice")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when shared but non-conflicting attributes -> No output
+        mg = self.mg
+        mg.add_node('Alice S', attr_dict={'email': 'alice@gmail.ca'})
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg.node_merge("Alice Smith", "Alice S")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when shared list attributes -> No Output
+        mg = self.mg
+        mg.add_node('Alice S', attr_dict={'records': ['hash5', 'hash6']})
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg.node_merge("Alice Smith", "Alice S")
+            self.assertEqual(fake_out.getvalue(), "")
+
+        # Merging when conflicting atomic attributes -> Output
+        mg = self.mg
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            mg_merged = mg.node_merge("Alice Smith", "Alice")
+            self.assertNotEqual(fake_out.getvalue(), "")
+            self.assertIn("Note: nodes 'Alice Smith' and 'Alice", fake_out.getvalue())
+
+    def test_errors(self):
+        """Are errors being raised at the correct times?"""
+        mg = self.mg
+
+        # Is there an error when nodes aren't in the graph?
+        with self.assertRaises(MergeError):
+            mg.node_merge('Bob', 'Alice')
+        with self.assertRaises(MergeError):
+            mg.node_merge('Alice', 'Bob')
+        with self.assertRaises(MergeError):
+            mg.node_merge('Bob', 'Bobby')
+
+        # Error raised when trying to merge nodes of different types?
+        with self.assertRaises(MergeError):
+            mg.node_merge('Alice', 'file02')
+        with self.assertRaises(MergeError):
+            mg.node_merge('file02', 'Alice')
 
 
 class CollapseEdgesTest(unittest.TestCase):
@@ -328,246 +907,6 @@ class CollapseEdgesTest(unittest.TestCase):
                'Elise':     ed['file02']}
         self.assertDictEqual(diff_attr.edge['file02'], f2d)
         self.assertIsInstance(diff_attr.edge['file02'], dict)
-
-
-class NodeMergeTest(unittest.TestCase):
-    """Tests for the node_merge() method within multigraph.py"""
-
-    def setUp(self):
-        self.mg = multigraph.MultiGraphPlus()
-        self.mg.add_node('Alice', attr_dict={'id': 'a01',
-                                             'email': 'alice@gmail.com',
-                                             'phone': '1(888)123-4567',
-                                             'type': 'author',
-                                             'records': ['hash1', 'hash2'],
-                                             'affiliations': ['Uwaterloo', 'Networks Lab']})
-        self.mg.add_node('Alice Smith', attr_dict={'id': 'a02',
-                                                   'email': 'alice@gmail.ca',
-                                                   'type': 'author',
-                                                   'colour': 'blue',
-                                                   'records': ['hash3', 'hash4'],
-                                                   'languages': ['Python', 'C']})
-        self.mg.add_node('file02', attr_dict={'id': 'f02',
-                                              'type': 'file'})
-        self.mg.add_edge('file01', 'Alice', date='Jan 1', style='dotted')
-        self.mg.add_edge('Alice Smith', 'file02', date='Jan 2', type='commit')
-        self.mg_merged = self.mg.node_merge('Alice Smith', 'Alice', show_warning=False)
-
-    def test_basic_res(self):
-        """Ensures the results of the method are appropriate"""
-        mg_merged = self.mg_merged
-        # Checking Return Value
-        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
-        # Checking Nodes
-        self.assertEqual(self.mg.number_of_nodes(), 4)  # Checking before
-        self.assertEqual(mg_merged.number_of_nodes(), 3)
-        self.assertEqual(set(mg_merged.nodes()), {'Alice Smith', 'file01', 'file02'})
-        self.assertNotIn('Alice', mg_merged.nodes())
-        # Checking Edges
-        self.assertEqual(self.mg.number_of_edges(), 2)  # Checking before
-        self.assertEqual(mg_merged.number_of_edges(), 2)
-        self.assertIn('file01', mg_merged.edge['Alice Smith'])
-        self.assertIn('file02', mg_merged.edge['Alice Smith'])
-        self.assertIn('Alice Smith', mg_merged.edge['file01'])
-        self.assertIn('Alice Smith', mg_merged.edge['file02'])
-        self.assertNotIn('Alice', mg_merged.edge['file01'])
-        self.assertNotIn('Alice', mg_merged.edge['file02'])
-
-    def test_list_attr(self):
-        """Are list attributes combined by node_merge?"""
-        mg_merged = self.mg_merged
-        self.assertIsInstance(mg_merged, multigraph.MultiGraphPlus)
-        self.assertEqual(len(mg_merged.node['Alice Smith']['records']), 4)
-        self.assertSetEqual(set(mg_merged.node['Alice Smith']['records']), {'hash1', 'hash2', 'hash3', 'hash4'})
-
-    def test_ncon_attr(self):
-        """Are the nodes' non-conflicting attributes present in the final node?"""
-        mg_merged = self.mg_merged
-        self.assertEqual(len(mg_merged.node['Alice Smith']), 8)
-        self.assertEqual(mg_merged.node['Alice Smith']['phone'], '1(888)123-4567')
-        self.assertSetEqual(set(mg_merged.node['Alice Smith']['affiliations']), {'Uwaterloo', 'Networks Lab'})
-        self.assertEqual(mg_merged.node['Alice Smith']['colour'], 'blue')
-        self.assertSetEqual(set(mg_merged.node['Alice Smith']['languages']), {'Python', 'C'})
-
-    def test_conf_attr(self):
-        """When conflicting atomic attributes are present, are node1's retained?"""
-        mg = self.mg
-        mg_merged = self.mg_merged
-        # Checking that all atomic attributes in node1 are retained
-        for a in mg.node['Alice Smith']:
-            if not isinstance(mg.node['Alice Smith'][a], list):
-                self.assertEqual(mg.node['Alice Smith'][a], mg_merged.node['Alice Smith'][a])
-        # Checking conflicting attributes from node2 have been overwritten
-        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['email'])
-        self.assertNotEqual(mg.node['Alice']['id'], mg_merged.node['Alice Smith']['id'])
-
-    def test_node_gone(self):
-        """Does the method delete node2, and keep node1?"""
-        mg = self.mg
-        mg_merged = self.mg_merged
-        self.assertNotEqual(mg.number_of_nodes(), mg_merged.number_of_nodes())
-        self.assertEqual(mg.number_of_nodes()-1, mg_merged.number_of_nodes())
-        self.assertEqual(mg_merged.number_of_nodes(), 3)
-        with self.assertRaises(KeyError):
-            w = mg_merged.node['Alice']  # Delete node2?
-        self.assertIsNotNone(mg_merged.node['Alice Smith']) # Kept node1?
-
-    def test_edge_attr(self):
-        """Does the method retain edge attributes?"""
-        mg = self.mg
-        mg.add_edge('Alice','file04', date='Jan 19')
-        mg_merged = mg.node_merge('Alice Smith', 'Alice')
-        node1 = 'Alice Smith'
-        node2 = 'Alice'
-        # Checking if each edge in the original graph has the same attr as its corresponding edge in the merged graph
-        for n1, n2, data in mg.edges(data=True):
-            if n1 == node2:
-                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[node1][n2])
-            elif n2 == node2:
-                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][node1])
-            else:
-                self.assertDictEqual(mg.edge[n1][n2], mg_merged.edge[n1][n2])
-        # Checking an edge explicitly to ensure
-        self.assertDictEqual(mg.edge['Alice']['file01'], mg_merged.edge['Alice Smith']['file01'])
-
-    def test_edge_tran(self):
-        """Are all of node2's edges transferred to node1?"""
-        mg = self.mg
-        mg_merged = self.mg_merged
-        node1 = 'Alice Smith'
-        node2 = 'Alice'
-        # Check that node1's edges now include node2's old edges
-        self.assertEqual(len(mg_merged.edge[node1]), len(mg.edge[node1])+len(mg.edge[node2]))
-        self.assertEqual(len(mg_merged.edge[node1]), 2)
-        # Check that the edges to node2 no longer exist
-        with self.assertRaises(KeyError):
-            mg_merged.edge['Alice']
-
-    def test_mult_edge(self):
-        """Are multiple edges handled correctly?
-         Ex. A1->B, A2->B. Then merge A1 and A2. """
-        mg = self.mg
-        mg.add_edge("Alice", "file02", date='Jan 17')
-        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
-        # Check all edges are retained
-        self.assertEqual(len(mg_merged.edges()),3)
-        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
-        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Check Before
-        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 2)  # Check After
-        # Make sure duplicate edges within mg are kept
-        mg.add_edge('Alice', 'file02', date='Jan 21')
-        mg_merged = mg.node_merge('Alice Smith', 'Alice', show_warning=False)
-        self.assertEqual(len(mg_merged.edges()), 4)
-        self.assertEqual(len(mg_merged.edge['Alice Smith']), 2)
-        self.assertEqual(len(mg.edge['Alice Smith']['file02']), 1)  # Before
-        self.assertEqual(len(mg_merged.edge['Alice Smith']['file02']), 3)  # After
-
-    def test_show_warn(self):
-        """Does the show_warning parameter act as anticipated?"""
-        node1 = 'Alice Smith'
-        node2 = 'Alice'
-        warn_msg1 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
-                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
-                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n"\
-                    .format(node1, node2, ['email','id'], node1, node2, node2, node2, node1)
-        warn_msg2 = "Note: nodes '{}' and '{}' have the following conflicting atomic attributes: {}. In these cases, " \
-                    "'{}' attribute values have been retained, while '{}' values have been ignored. If you would " \
-                    "rather retain '{}' attributes, set '{}' to node1 and '{}' to node2.\n" \
-                    .format(node1, node2, ['id', 'email'], node1, node2, node2, node2, node1)
-
-        # Checking if the default show_warning parameter prints a message to the screen
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            self.mg.node_merge(node1, node2)
-            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
-
-        # Checking if the explicit show_warning = True prints a message to the screen
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            self.mg.node_merge(node1, node2)
-            self.assertTrue((fake_out.getvalue() == warn_msg1) or (fake_out.getvalue() == warn_msg2))
-
-        # Checking if the false show_warning parameter  doesn't print message to the screen
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            self.mg.node_merge(node1, node2, show_warning=False)
-            self.assertEqual(fake_out.getvalue(), "")
-
-    def test_warn_ovrt(self):
-        """Is the overwrite warning(print statement) printed at the right time?"""
-
-        # Merging when no shared attributes -> No output
-        mg = self.mg
-        mg.add_node('Alice S')
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            mg_merged = mg.node_merge("Alice S", "Alice")
-            self.assertEqual(fake_out.getvalue(), "")
-
-        # Merging when shared but non-conflicting attributes -> No output
-        mg = self.mg
-        mg.add_node('Alice S', attr_dict={'email': 'alice@gmail.ca'})
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            mg_merged = mg.node_merge("Alice Smith", "Alice S")
-            self.assertEqual(fake_out.getvalue(), "")
-
-        # Merging when shared list attributes -> No Output
-        mg = self.mg
-        mg.add_node('Alice S', attr_dict={'records': ['hash5', 'hash6']})
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            mg_merged = mg.node_merge("Alice Smith", "Alice S")
-            self.assertEqual(fake_out.getvalue(), "")
-
-        # Merging when conflicting atomic attributes -> Output
-        mg = self.mg
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            mg_merged = mg.node_merge("Alice Smith", "Alice")
-            self.assertNotEqual(fake_out.getvalue(), "")
-            self.assertIn("Note: nodes 'Alice Smith' and 'Alice", fake_out.getvalue())
-
-    def test_errors(self):
-        """Are errors being raised at the correct times?"""
-        mg = self.mg
-
-        # Is there an error when nodes aren't in the graph?
-        with self.assertRaises(MergeError):
-            mg.node_merge('Bob', 'Alice')
-        with self.assertRaises(MergeError):
-            mg.node_merge('Alice', 'Bob')
-        with self.assertRaises(MergeError):
-            mg.node_merge('Bob', 'Bobby')
-
-        # Error raised when trying to merge nodes of different types?
-        with self.assertRaises(MergeError):
-            mg.node_merge('Alice', 'file02')
-        with self.assertRaises(MergeError):
-            mg.node_merge('file02', 'Alice')
-
-
-class DescribeTest(unittest.TestCase):
-    """Testing of the describe method in the MultiGraphPlus class."""
-    # A small network containing 11 nodes and 11 edges, 4 authors and 7 files.
-    # Has a rough density of around 0.39.
-
-    def setUp(self):
-        # Prepare small network repo for testing.
-        sub.call(["cp","-R","small_network_repo.git",".git"])
-        self.path = os.getcwd()
-        self.mylogs = gitnet.get_log(self.path)
-        self.mgraph = self.mylogs.generate_network('author', 'files')
-
-    def test_type_check(self):
-        self.assertIsInstance(self.mgraph, multigraph.MultiGraphPlus)
-
-    def test_stats(self):
-        description = self.mgraph.describe()
-        self.assertIn("7 nodes are of the type 'files'", description)
-        self.assertIn("4 nodes are of the type 'author'", description)
-        self.assertIn("11 edges", description)
-        self.assertIn("Density: 0.39285", description)
-
-    def test_extra(self):
-        """Are results as expected when extra is set to True?"""
-        description = self.mgraph.describe(extra=True)
-
-    def tearDown(self):
-        sub.call(["rm","-rf",".git"])
 
 
 if __name__ == '__main__':
