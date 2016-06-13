@@ -232,7 +232,15 @@ class MultiGraphPlus(nx.MultiGraph):
         edges = self.number_of_edges()
         nodes_mode1 = len(bipartite.sets(self)[0])
         nodes_mode2 = len(bipartite.sets(self)[1])
-        if extra == True:
+        descriptives_nodes = "This is a bipartite network of types '{}' and '{}'.\n " \
+                             "{} nodes are of the type '{}'.\n " \
+                             "{} nodes are of the type '{}'.\n".format(str(mode1),str(mode2), str(nodes_mode1),
+                                                                       str(mode1), str(nodes_mode2), str(mode2))
+        descriptives_edges = "There are {} edges.\n".format(str(edges))
+        descriptives_density = "Density: {}.\n".format(str(density))
+        descriptives = descriptives_nodes + descriptives_edges + descriptives_density
+
+        if extra:
             # Note: for each mode of the bipartite graph, degree and betweenness centrality are the same.
             # Keeping them both makes it easy to compare them and make sure they are the same.
             degree_mode1 = bipartite.degree_centrality(self, bipartite.sets(self)[0])
@@ -250,20 +258,22 @@ class MultiGraphPlus(nx.MultiGraph):
             G = nx.Graph(self)
             projection = bipartite.projected_graph(G, bipartite.sets(G)[0])
             transitivity = nx.transitivity(projection)
-            descriptives_nodes = "This is a bipartite network of types \'" + str(mode1) + "\' and \'" + str(mode2) + "\'.\n" + str(nodes_mode1) + " nodes are of the type: \'" + str(mode1) + "\'.\n" + str(nodes_mode2) + " nodes are of the type: \'" + str(mode2) + "\'.\n"
-            descriptives_edges = "There are " + str(edges) + " edges. \n"
-            descriptives_density = "Density: " + str(density) + ". \n"
-            descriptives_transitivity = "Transitivity: " + str(transitivity) + ". \n"
-            descriptives_degree_centrality = "Mean Degree Centrality for \'" + str(mode1) + ": \'" + str(degree_mode1) + ". \nMean Degree Centrality for \'" + str(mode2) + "\': " + str(degree_mode2) + ".\n"
-            descriptives_betweenness_centrality = "Mean Betweenness Centrality for " + str(mode1) + "\': " + str(betweenness_mode1) + ". \nMean Betweenness Centrality for \'" + str(mode2) + "\': " + str(betweenness_mode2) + ". \n"
-            descriptives = descriptives_nodes + descriptives_edges + descriptives_density + descriptives_transitivity + descriptives_degree_centrality + descriptives_betweenness_centrality
-        elif extra == False:
-            descriptives_nodes = "This is a bipartite network of types \'" + str(mode1) + "\' and \'" + str(mode2) + "\'.\n" + str(nodes_mode1) + " nodes are of the type: \'" + str(mode1) + "\'.\n" + str(nodes_mode2) + " nodes are of the type: \'" + str(mode2) + "\'.\n"
-            descriptives_edges = "There are " + str(edges) + " edges. \n"
-            descriptives_density = "Density: " + str(density) + ". \n"
-            descriptives = descriptives_nodes + descriptives_edges + descriptives_density
-            print(descriptives)
-            return descriptives
+
+            descriptives_transitivity = "Transitivity: {}.\n".format(str(transitivity))
+            descriptives_degree_centrality = "Mean Degree Centrality for '{}': {}.\n" \
+                                             "Mean Degree Centrality for '{}': {}.\n".format(str(mode1),
+                                                                                             str(degree_mode1),
+                                                                                             str(mode2),
+                                                                                             str(degree_mode2))
+            descriptives_btwn_centrality = "Mean Betweenness Centrality for '{}': {}.\n"\
+                                           "Mean Betweenness Centrality for '{}': {}.\n".format(str(mode1),
+                                                                                                str(betweenness_mode1),
+                                                                                                str(mode2),
+                                                                                                str(betweenness_mode2))
+            descriptives = descriptives + descriptives_transitivity + \
+                           descriptives_degree_centrality + descriptives_btwn_centrality
+        print(descriptives)
+        return descriptives
 
     def node_merge(self, node1, node2, show_warning=True):
         """

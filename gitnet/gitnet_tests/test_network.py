@@ -540,7 +540,7 @@ class NodeMergeTest(unittest.TestCase):
             mg.node_merge('file02', 'Alice')
 
 
-class TestNetworkStats(unittest.TestCase):
+class DescribeTest(unittest.TestCase):
     """Testing of the describe method in the MultiGraphPlus class."""
     # A small network containing 11 nodes and 11 edges, 4 authors and 7 files.
     # Has a rough density of around 0.39.
@@ -550,20 +550,25 @@ class TestNetworkStats(unittest.TestCase):
         sub.call(["cp","-R","small_network_repo.git",".git"])
         self.path = os.getcwd()
         self.mylogs = gitnet.get_log(self.path)
-        self.graph = self.mylogs.generate_network('author', 'files')
+        self.mgraph = self.mylogs.generate_network('author', 'files')
 
     def test_type_check(self):
-        self.assertIsInstance(self.graph, multigraph.MultiGraphPlus)
+        self.assertIsInstance(self.mgraph, multigraph.MultiGraphPlus)
 
     def test_stats(self):
-        description = self.graph.describe()
-        self.assertIn("7 nodes are of the type: 'files'", description)
-        self.assertIn("4 nodes are of the type: 'author'", description)
+        description = self.mgraph.describe()
+        self.assertIn("7 nodes are of the type 'files'", description)
+        self.assertIn("4 nodes are of the type 'author'", description)
         self.assertIn("11 edges", description)
         self.assertIn("Density: 0.39285", description)
 
+    def test_extra(self):
+        """Are results as expected when extra is set to True?"""
+        description = self.mgraph.describe(extra=True)
+
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
+
 
 if __name__ == '__main__':
     unittest.main(buffer=True)
