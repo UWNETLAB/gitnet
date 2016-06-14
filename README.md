@@ -54,6 +54,7 @@ The basic methods available for `Log` and all its subclasses are as follows:
 | `.tsv()`              | Export a tab delimited spreadsheet containing the collected data.                 |
 | `.df()`               | Create a `Pandas` dataframe object using the collected data.                      |
 | `.vector()`           | Create a list of all values with a specified tag.                                 |
+| `.replace_val()`      | Replace a specified tag value.                                                     |
 | `.generate_edges()`   | Creates network edges by record.                                                  |
 | `.write_edges()`      | Writes an edgelist (with attributes) to a file.                                   |
 | `.generate_nodes()`   | Creates a dictionary of network nodes.                                            |
@@ -80,7 +81,10 @@ When you create a network model using `gitnet`, it is represented as a `MultiGra
 | `.quickplot()`        | Provides presets to easily create network visualizations with one line of code.|
 | `.node_attributes()`  | Adds node attributes, with prebuilt or custom helper functions.                |
 | `.node_merge()`       | Merges two nodes.                                                              |
+| `.collapse_edges()`   | Simplifies a network by merging edges which occur between node pairs.          |
 | `.write_graphml()`    | Exports the network as a GraphML file.                                         |
+| `.write_tnet()`       | Exports the network as a edge list formatted for the tnet library in R.        |
+
 
 ## Custom Data Sources
 
