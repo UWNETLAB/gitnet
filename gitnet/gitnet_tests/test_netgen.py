@@ -123,6 +123,7 @@ class TestNodeGeneratorSmall(unittest.TestCase):
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
 
+
 class TestNetworkGeneratorSmall(unittest.TestCase):
 
     def setUp(self):
