@@ -10,7 +10,6 @@ import subprocess as sub
 from io import StringIO
 import warnings
 
-"""This file contains tests for log.py. Tests used explicitly for netgen.py"""
 
 class GraphMLTests(unittest.TestCase):
     def setUp(self):

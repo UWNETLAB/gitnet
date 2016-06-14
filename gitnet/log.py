@@ -97,13 +97,18 @@ class Log(object):
         A method which provides a description of the contents of the log. More detailed descriptions are implemented
         for individual subclasses.
         """
-        print(self)
-        print(self.path)
+        des_basic = "{}\n{}".format(self, self.path)
+        des_fstart = ""
+        des_filters = ""
+
         if len(self.filters) != 0:
-            print("Filters:")
+            des_fstart = ("\nFilters:")
             for f in self.filters:
-                print("\t",f)
-        pass
+                des_filters = "\t{}".format(f)
+
+        description = des_basic + des_fstart + des_filters
+        print(description)
+        return description
 
     def browse(self):
         """
@@ -122,7 +127,7 @@ class Log(object):
             if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
                 break
 
-    def filter(self, tag, fun, match, negate = False, helper = None, summary = None):
+    def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
         A method which creates a new Log, containing only records which match certain criteria.
         :param tag: Denotes the tag by which the Log should be filtered. ("ALL" searches every value.)
@@ -222,7 +227,7 @@ class Log(object):
                 del new_log.collection[record]
         return new_log
 
-    def tsv(self, ignore = [], fname = None, empty_cols = False):
+    def tsv(self, ignore=[], fname=None, empty_cols=False):
         """
         Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
         does not change the content strings by removing commas).
