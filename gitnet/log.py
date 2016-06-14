@@ -5,6 +5,8 @@ import warnings
 import copy
 from gitnet.multigraph import MultiGraphPlus
 from gitnet.helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
+import os
+
 
 class Log(object):
     """
@@ -171,8 +173,8 @@ class Log(object):
         my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")
         """
         # This dictionary includes the currently built-in filtering predicates.
-        fun_reference = {"equals" : filter_equals,
-                         "has" : filter_has,
+        fun_reference = {"equals": filter_equals,
+                         "has": filter_has,
                          "<": lambda x, val: x < val,
                          "<=": lambda x, val: x < val or x == val,
                          ">": lambda x, val: x > val,
@@ -182,7 +184,8 @@ class Log(object):
                          "before": before,
                          "beforex": beforex}
         if tag == "date" and fun in ("<", "<=", ">", ">="):
-            warnings.warn("Dates have been compared alphabetically with {}, use Datetime comparisons to compare dates by time.".format(fun))
+            warnings.warn("Dates have been compared alphabetically with {}, "
+                          "use Datetime comparisons to compare dates by time.".format(fun))
         # Make a copy of self
         new_log = copy.deepcopy(self)
         # Add filter summary to self.filters
@@ -204,10 +207,10 @@ class Log(object):
                 for rkey in self.collection[record]:
                     if type(self.collection[record][rkey]) == list:
                         for item in self.collection[record][rkey]:
-                            if use_fun(item,match):
+                            if use_fun(item, match):
                                 keep = True
                                 break
-                    if use_fun(self.collection[record][rkey],match):
+                    if use_fun(self.collection[record][rkey], match):
                         keep = True
                         break
             # Check a specific tag
@@ -247,8 +250,9 @@ class Log(object):
         # The string to be output
         out = ""
         # If a filename is given, access the file.
-        if fname != None:
+        if fname is not None:
             f = open(fname, "w", encoding="utf-8")
+
         # Add header line
         header = ""
         head_cur = 0
@@ -315,9 +319,10 @@ class Log(object):
         Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
         :return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.
         """
-        return pd.DataFrame.from_dict(self.collection, orient = "index")[self.attributes()]
+        retval = pd.DataFrame.from_dict(self.collection, orient = "index")[self.attributes()]
+        return retval
 
-    def vector(self,tag):
+    def vector(self, tag):
         """
         Returns a list containing all of the (keyless) values of a certain tag in the Log collection.
         :param tag: A collection tag. See subclass documentation for subclass-specific tags.
@@ -362,7 +367,7 @@ class Log(object):
             print("Success. You have replaced the " + tag + " value: " + str(current_val) + " " + str(replaced_vals) + " times.")
         return selfcopy
 
-    def generate_edges(self, mode1, mode2, helper = simple_edge, edge_attributes = []):
+    def generate_edges(self, mode1, mode2, helper=simple_edge, edge_attributes=[]):
         """
         Generates bipartite edges present in each Log record.
         :param mode1: A record attribute (tag), which becomes the first node type.
@@ -396,7 +401,7 @@ class Log(object):
                     for item2 in m2:
                         yield helper(item1, item2, cur, edge_attributes)
 
-    def generate_nodes(self, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
+    def generate_nodes(self, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
         Generates the bipartite nodes present in the Log object.
         :param mode1: The tag string for the first mode type.
