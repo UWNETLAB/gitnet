@@ -552,7 +552,7 @@ class Log(object):
                 weight = "NA"
             if "date" in edge[2].keys():
                 date = git_datetime(edge[2]["date"]).date()
-            f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
+                f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
             for tag in edge_attribute:
                 if tag in edge[2].keys():
                     f.write(",{}".format(edge[2][tag]))
