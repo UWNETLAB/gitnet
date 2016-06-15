@@ -1,11 +1,9 @@
 import pandas as pd
-import networkx as nx
 import datetime as dt
 import warnings
 import copy
 from gitnet.multigraph import MultiGraphPlus
 from gitnet.helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
-import os
 
 
 class Log(object):
@@ -14,7 +12,7 @@ class Log(object):
     store all of the data retrieved by gitnet. Log has methods to describe, export, and model the data it contains.
     """
 
-    def __init__(self, dofd = {}, source = None, path = None, key_type = None, filters = []):
+    def __init__(self, dofd={}, source=None, path=None, key_type=None, filters=[]):
         """
         Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.
         Log objects should be passed a dictionary of dictionaries after initialization, or entries should be
@@ -50,9 +48,10 @@ class Log(object):
 
     def __str__(self):
         """
-        A basic summary of the Log. For a more detailed report (which analyzes record contents) use the .describe method.
+        Basic summary of the Log. For a more detailed report (which analyzes record contents) use the .describe method.
         """
-        return "Log containing {} records from {} created at {}.".format(len(self.collection),self.source,self.timestamp)
+        return "Log containing {} records from {} created at {}."\
+            .format(len(self.collection), self.source, self.timestamp)
 
     def __len__(self):
         """
@@ -104,7 +103,7 @@ class Log(object):
         des_filters = ""
 
         if len(self.filters) != 0:
-            des_fstart = ("\nFilters:")
+            des_fstart = "\nFilters:"
             for f in self.filters:
                 des_filters = "\t{}".format(f)
 
@@ -121,7 +120,7 @@ class Log(object):
             print("----- {} -----".format(key))
             for rkey in self.collection[key].keys():
                 print("--- {} ---".format(rkey))
-                if type(self.collection[key][rkey]) in [str,int,bool,float]:
+                if type(self.collection[key][rkey]) in [str, int, bool, float]:
                     print(self.collection[key][rkey])
                 elif type(self.collection[key][rkey]) == list:
                     for s in self.collection[key][rkey]:
@@ -192,7 +191,7 @@ class Log(object):
         if summary is not None:
             filter_summary = summary
         else:
-            filter_summary = "{} {} {} | Negate: {} | Helper: {}".format(tag,fun,match,negate,helper)
+            filter_summary = "{} {} {} | Negate: {} | Helper: {}".format(tag, fun, match, negate, helper)
         new_log.filters.append(filter_summary)
         # Get the predicate for filtering, from custom helper parameter or helper dictionary.
         if callable(helper):
@@ -224,7 +223,7 @@ class Log(object):
                     keep = True
             # Negate the check if required.
             if negate:
-                keep = not(keep)
+                keep = not keep
             # If the data point is not to be kept, remove the record from the copied collection.
             if not keep:
                 del new_log.collection[record]
@@ -240,7 +239,7 @@ class Log(object):
         :return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)
         """
         # Get the tags present in the Log.
-        if empty_cols == True:
+        if empty_cols:
             types = self.tags
         else:
             types = self.attributes()
@@ -260,10 +259,10 @@ class Log(object):
             head_cur += 1
             header = header + tag
             if head_cur != len(types):
-                header = header + "\t"
+                header += "\t"
             else:
-                header = header + "\n"
-        if fname != None:
+                header += "\n"
+        if fname is not None:
             f.write(header)
         else:
             out = out + header
@@ -287,29 +286,29 @@ class Log(object):
                             for i in cur_item:
                                 list_cur += 1
                                 if type(i) == str:
-                                    line = line + i
+                                    line += i
                                 # Force a non-string to string.
                                 else:
-                                    line = line + str(i)
+                                    line += str(i)
                                     num_forced += 1
                                 if list_cur != len(cur_item):
-                                    line = line + ";"
+                                    line += ";"
                         # If the item is neither a string nor a list, force it to a string.
                         else:
-                            line = line + str(cur_item)
+                            line += str(cur_item)
                             num_forced += 1
                     # Unless it is the last tag, add a separating tab.
                     if tags_cur != len(types):
-                        line = line + "\t"
+                        line += "\t"
             # Give the line to string or file.
-            line = line + "\n"
-            if fname != None:
+            line += "\n"
+            if fname is not None:
                 f.write(line)
             else:
-                out = out + line
+                out += line
         if num_forced > 0:
             warnings.warn("Non-string input forced to string {} time(s).".format(num_forced))
-        if fname != None:
+        if fname is not None:
             f.close()
             out = "Data written to {}".format(fname)
         return out
@@ -319,7 +318,7 @@ class Log(object):
         Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
         :return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.
         """
-        retval = pd.DataFrame.from_dict(self.collection, orient = "index")[self.attributes()]
+        retval = pd.DataFrame.from_dict(self.collection, orient="index")[self.attributes()]
         return retval
 
     def vector(self, tag):
@@ -339,11 +338,11 @@ class Log(object):
                     v.append(value)
         return v
 
-    def replace_val(self, tag, current_val, new_val):
+    def replace_val(self, tag, cur_val, new_val):
         """
         Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.
         :param tag: The record tag string whose values will be checked (and replaced when appropriate.)
-        :param current_val: this is the value that the user wants to replace.
+        :param cur_val: this is the value that the user wants to replace.
         :param new_val: this is the value that the user wants to use in the Log Object.
 
         Note: This method is particularly useful for combining duplicate names for the same author.
@@ -353,18 +352,18 @@ class Log(object):
         replaced_vals = 0
         for record in selfcopy.collection:
             if tag in selfcopy.collection[record].keys():
-                if selfcopy[record][tag] == current_val:
+                if selfcopy[record][tag] == cur_val:
                     selfcopy[record][tag] = new_val
                     status = 2
                     replaced_vals = replaced_vals + 1
-                elif current_val != selfcopy.collection[record][tag] and replaced_vals == 0:
+                elif cur_val != selfcopy.collection[record][tag] and replaced_vals == 0:
                     status = 1
         if status == 0:
             print("The tag requested does not appear in this collection.")
         elif status == 1:
             print("The value requested does not appear in any records in this collection.")
         elif status == 2:
-            print("Success. You have replaced the " + tag + " value: " + str(current_val) + " " + str(replaced_vals) + " times.")
+            print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
         return selfcopy
 
     def generate_edges(self, mode1, mode2, helper=simple_edge, edge_attributes=[]):
@@ -513,7 +512,7 @@ class Log(object):
             GN.add_edges_from([(edge[0], edge[1], edge[2])])
         return GN
 
-    def write_edges(self, fname, mode1, mode2, helper = simple_edge, edge_attribute = []):
+    def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=[]):
         """
         Writes an edge list with attributes.
         :param fname: The name of the output file.
@@ -563,7 +562,7 @@ class Log(object):
         f.close()
         print("Wrote edgelist with attributes to {}.".format(fname))
 
-    def write_nodes(self, fname, mode1, mode2, keep_atom1 = [], keep_vector1 = [], keep_atom2 = [], keep_vector2 = []):
+    def write_nodes(self, fname, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
         Writes a list of nodes with attributes.
         :param fname: The name of the output file.
