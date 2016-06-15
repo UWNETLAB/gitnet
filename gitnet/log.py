@@ -360,9 +360,9 @@ class Log(object):
                 elif current_val != selfcopy.collection[record][tag] and replaced_vals == 0:
                     status = 1
         if status == 0:
-            print("The tag requested does not appear in this collection.")
+            warnings.warn("The tag requested does not appear in this collection.")
         elif status == 1:
-            print("The value requested does not appear in any records in this collection.")
+            warnings.warn("The value requested does not appear in any records in this collection.")
         elif status == 2:
             print("Success. You have replaced the " + tag + " value: " + str(current_val) + " " + str(replaced_vals) + " times.")
         return selfcopy

@@ -400,12 +400,55 @@ class VectorTests(unittest.TestCase):
         self.assertListEqual(vect_notag, [])
 
 
-# class ReplaceValTests(unittest.TestCase):
-#     def setup(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
+class ReplaceValTests(unittest.TestCase):
+    """Tests for the replace value function in the Log class."""
+
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp","-R","small_network_repo.git",".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+        pass
+
+    def test_author_replace(self):
+        self.my_log = self.my_log.replace_val("author", "Billy G", "Willy")
+        self.assertEqual(self.my_log.collection["6cd4bbf"]["author"], "Willy")
+
+    def test_email_replace(self):
+        self.my_log = self.my_log.replace_val("email", "bill@gmail.com", "willy@gmail.com")
+        self.assertEqual(self.my_log.collection["6cd4bbf"]["email"], "willy@gmail.com")
+
+    def test_fedits_replace(self):
+        # Note that replacing fedits is not good practice unless you know for certain that it should be changed to reflect reality.
+        # Also, numeric data is represented in the log collection by an integer.
+        self.my_log = self.my_log.replace_val("fedits", 2, 7)
+        self.assertEqual(self.my_log.collection["7965e62"]["fedits"], 7)
+
+    def test_bad_tag(self):
+        # Warning occurs when vector edge and node attributes are provided
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            replacement = self.my_log.replace_val("gitmaster", "Billy G", "William")
+            # Check Warning occurred
+            self.assertEqual(len(w), 1)
+            self.assertIn("The tag requested does not appear in this collection.", str(w[-1].message))
+
+    def test_no_value(self):
+        # Warning occurs when vector edge and node attributes are provided
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            replacement = self.my_log.replace_val("author", "Jan", "Janice")
+            # Check Warning occurred
+            self.assertEqual(len(w), 1)
+            self.assertIn("The value requested does not appear in any records in this collection.", str(w[-1].message))
+
+    def tearDown(self):
+        sub.call(["rm","-rf",".git"])
+
 #
 #
 # class GenEdgesTests(unittest.TestCase):  # I think this may be covered in test_netgen.py
