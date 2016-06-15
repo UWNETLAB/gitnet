@@ -9,7 +9,25 @@ import os
 
 class DatetimeTests(unittest.TestCase):
     def setUp(self):
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+    def test_git_datetime(self):
+        # Currently only used by write edges.
+        self.my_log.write_edges("sample_datetime.txt", "author", "date", edge_attribute = ["author", "date"])
+        with open("sample_datetime.txt", "r") as f:
+            self.data = f.read().replace('\n', '')
+        self.assertIn("Mon May 23 02:45:25 2016 -0400", self.data)
+        sub.call(["rm", "-rf", "sample_datetime.txt"])
+
+    def test_reference_datetime(self):
+        # Unsure how to test beyond git_datetime testing.
+        # There is no requirement to test for bad datetimes, since commits cannot be made with a bad datetime.
         pass
+
+    def tearDown(self):
+        sub.call(["rm", "-rf", ".git"])
 
 
 class FilterTests(unittest.TestCase):

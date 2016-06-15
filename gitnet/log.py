@@ -359,9 +359,9 @@ class Log(object):
                 elif cur_val != selfcopy.collection[record][tag] and replaced_vals == 0:
                     status = 1
         if status == 0:
-            print("The tag requested does not appear in this collection.")
+            warnings.warn("The tag requested does not appear in this collection.")
         elif status == 1:
-            print("The value requested does not appear in any records in this collection.")
+            warnings.warn("The value requested does not appear in any records in this collection.")
         elif status == 2:
             print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
         return selfcopy
@@ -551,7 +551,7 @@ class Log(object):
                 weight = "NA"
             if "date" in edge[2].keys():
                 date = git_datetime(edge[2]["date"]).date()
-            f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
+                f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
             for tag in edge_attribute:
                 if tag in edge[2].keys():
                     f.write(",{}".format(edge[2][tag]))
