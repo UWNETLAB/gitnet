@@ -54,7 +54,7 @@ The basic methods available for `Log` and all its subclasses are as follows:
 | `.tsv()`              | Export a tab delimited spreadsheet containing the collected data.                 |
 | `.df()`               | Create a `Pandas` dataframe object using the collected data.                      |
 | `.vector()`           | Create a list of all values with a specified tag.                                 |
-| `.replace_val()`      | Replace a specified tag value.                                                     |
+| `.replace_val()`      | Replace a specified tag value.                                                    |
 | `.generate_edges()`   | Creates network edges by record.                                                  |
 | `.write_edges()`      | Writes an edgelist (with attributes) to a file.                                   |
 | `.generate_nodes()`   | Creates a dictionary of network nodes.                                            |

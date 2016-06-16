@@ -17,7 +17,7 @@ class CommitLog(Log):
         the attributes method will produce the tags in sorted order. The most important consequence of this ordering
         is the order of columns in TSV output.
 
-        :return: A list of ordered reference hashshes.
+        :return: A list of ordered reference hashes.
         """
         return ["hash","author","email","date","mode","merge","summary",
                 "fedits","inserts","deletes","message","files","changes"]

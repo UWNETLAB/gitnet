@@ -3,14 +3,12 @@ import os
 import warnings
 import subprocess as sub
 import gitnet
-import sys
 from unittest.mock import patch
 from io import StringIO
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-"""This file houses the tests for log.py. However, network generation methods such as generate_edges() are tested
-in test_netgen.py."""
+"""This file houses most log.py tests. Network generation methods (ex. generate_edges()) are tested in test_netgen.py"""
 
 
 class GetTagsTests(unittest.TestCase):
@@ -47,7 +45,7 @@ class AttributesTests(unittest.TestCase):
 
     def test_values(self):
         """Are the correct values returned by the method"""
-        attr_list = ['email', 'loc', 'type'] # Sorted list
+        attr_list = ['email', 'loc', 'type']  # Sorted list
         self.assertListEqual(self.attr, attr_list)
 
 
@@ -489,7 +487,6 @@ class ReplaceValTests(unittest.TestCase):
 #
 #     def tearDown(self):
 #         pass
-
 
 if __name__ == '__main__':
     unittest.main(buffer=True)
