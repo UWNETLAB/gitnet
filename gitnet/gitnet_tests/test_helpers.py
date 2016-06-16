@@ -246,9 +246,69 @@ class EdgeGenTests(unittest.TestCase):
 
 
 class TestNetAttr(unittest.TestCase):
-    def setup(self):
-        pass
+    def setUp(self):
+        self.a_attr = {'id': 'Alice',
+                       'type': 'author',
+                       'email': 'alice@gmail.com'}
+        self.b_attr = {'id': 'Bobby',
+                       'type': 'author',
+                       'email': 'bobby@gmail.com'}
+        self.f1_attr = {'id': 'f01.py',
+                        'type': 'files'}
+        self.f2_attr = {'id': 'f02.cc',
+                        'type': 'files'}
+        self.f3_attr = {'id': 'f03.h',
+                        'type': 'files'}
+        self.f4_attr = {'id': 'f04.txt',
+                        'type': 'files'}
 
+    def test_basic(self):
+        """Ensure the function returns a string"""
+        res = helpers.author_file_node_colours(self.a_attr)
+        self.assertIsInstance(res, str)
+
+    def test_no_type(self):
+        """Are nodes with no type assigned lightgrey?"""
+        notype = {'id': 'mystery',
+                  'email': 'abc@alphabet.com'}
+        res = helpers.author_file_node_colours(notype)
+        self.assertEqual(res, "lightgrey")
+
+    def test_authors(self):
+        """Are authors assigned the correct colour?"""
+        a_res = helpers.author_file_node_colours(self.a_attr)
+        b_res = helpers.author_file_node_colours(self.b_attr)
+
+        self.assertEqual(a_res, "dodgerblue")
+        self.assertEqual(b_res, "dodgerblue")
+
+    def test_files(self):
+        """Do files of the types .py, .cc, .h, etc give the correct colours?"""
+        # Setting up results
+        res1 = helpers.author_file_node_colours(self.f1_attr)
+        res2 = helpers.author_file_node_colours(self.f2_attr)
+        res3 = helpers.author_file_node_colours(self.f3_attr)
+        res4 = helpers.author_file_node_colours(self.f4_attr)
+
+        self.assertEqual(res1, "tomato")
+        self.assertEqual(res2, "gold")
+        self.assertEqual(res3, "goldenrod")
+        self.assertEqual(res4, "lightgrey")
+
+    def test_files_noid(self):
+        """Are file nodes with no id assigned lightgrey?"""
+        noid = {'type': 'files'}
+        res = helpers.author_file_node_colours(noid)
+
+        self.assertEqual(res, "lightgrey")
+
+    def test_not_aorf(self):
+        """Are nodes whose type is neither files nor author assigned lightgrey?"""
+        fnora = {'id': 'Uwaterloo',
+                 'type': 'university'}
+        res = helpers.author_file_node_colours(fnora)
+
+        self.assertEqual(res, "lightgrey")
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(buffer=True)

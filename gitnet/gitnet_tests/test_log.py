@@ -274,7 +274,6 @@ class TsvTests(unittest.TestCase):
             self.path = os.getcwd() + '/temp.tsv'
         finally:
             self.made_tsv = True
-            print(self.made_tsv)
 
     def test_basic_fn(self):
         """Is a file produced and a summary string given?"""
@@ -406,7 +405,6 @@ class ReplaceValTests(unittest.TestCase):
         sub.call(["cp","-R","small_network_repo.git",".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
-        pass
 
     def test_author_replace(self):
         self.my_log = self.my_log.replace_val("author", "Billy G", "Willy")
@@ -447,46 +445,284 @@ class ReplaceValTests(unittest.TestCase):
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
 
-#
-#
-# class GenEdgesTests(unittest.TestCase):  # I think this may be covered in test_netgen.py
-#     def setup(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
-#
-#
-# class GenNodesTests(unittest.TestCase):  # I think this may be covered in test_netgen.py
-#     def setUp(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
-#
-#
-# class GenNetworkTests(unittest.TestCase):
-#     def setUp(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
-#
-#
-# class WriteEdgesTests(unittest.TestCase):
-#     def setUp(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
-#
-#
-# class WriteNodesTests(unittest.TestCase):
-#     def setUp(self):
-#         pass
-#
-#     def tearDown(self):
-#         pass
+
+class GenEdgesTests(unittest.TestCase):  # I think this may be covered in test_netgen.py
+    def setup(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+
+class GenNodesTests(unittest.TestCase):
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+        # Setting up expected author tuples
+        self.m_exp = ('Marcela', {'id': 'Marcela',
+                                  'type': 'author',
+                                  'records': ['7965e62']})
+        self.b_exp = ('Billy G', {'id': 'Billy G',
+                                  'type': 'author',
+                                  'records': ['6cd4bbf']})
+        self.j_exp = ('Jenna', {'id': 'Jenna',
+                                'type': 'author',
+                                'records': ['ee2c408']})
+        self.r_exp = ('Randy', {'id': 'Randy',
+                                'type': 'author',
+                                'records': ['b3a4bac']})
+        # Setting up expected file tuples. Note: because of lists, we only have set up nodes which have one hash record
+        self.f1_exp = ('file1.md', {'id': 'file1.md',
+                                    'type': 'files',
+                                    'records': ['b3a4bac']})
+        self.f2_exp = ('file2.md', {'id': 'file2.md',
+                                    'type': 'files',
+                                    'records': ['b3a4bac']})
+        self.f7_exp = ('file7.md', {'id': 'file7.md',
+                                    'type': 'files',
+                                    'records': ['7965e62']})
+
+    def test_basic(self):
+        """Is a list of tuples returned?"""
+        res = self.my_log.generate_nodes(mode1="author", mode2="files")
+        # Correct length?
+        self.assertEqual(len(res), 11)
+        # List of Tuples?
+        self.assertIsInstance(res, list)
+        self.assertIsInstance(res.pop(), tuple)
+
+    def test_default(self):
+        """Using default attributes, does the method perform as expected?"""
+        # Creating our list of tuples
+        res = self.my_log.generate_nodes(mode1="author", mode2="files")
+
+        # Checking authors
+        self.assertIn(self.m_exp, res)
+        self.assertIn(self.b_exp, res)
+        self.assertIn(self.j_exp, res)
+        self.assertIn(self.r_exp, res)
+
+        # Checking files
+        self.assertIn(self.f1_exp, res)
+        self.assertIn(self.f2_exp, res)
+        self.assertIn(self.f7_exp, res)
+
+    def test_extra_atom(self):
+        """Using extra attributes, does the method perform as expected?"""
+        # Setting up expected author tuples
+        m_exp = ('Marcela', {'id': 'Marcela',
+                             'type': 'author',
+                             'records': ['7965e62'],
+                             'email': 'marcy@gmail.com'})
+        b_exp = ('Billy G', {'id': 'Billy G',
+                             'type': 'author',
+                             'records': ['6cd4bbf'],
+                             'email': 'bill@gmail.com'})
+        j_exp = ('Jenna', {'id': 'Jenna',
+                           'type': 'author',
+                           'records': ['ee2c408'],
+                           'email': 'jenna@gmail.com'})
+        r_exp = ('Randy', {'id': 'Randy',
+                           'type': 'author',
+                           'records': ['b3a4bac'],
+                           'email': 'randy@gmail.com'})
+
+        # Setting up expected file tuples. Note: because of lists, we only have set up nodes which have one hash record
+        f1_exp = ('file1.md', {'id': 'file1.md',
+                               'type': 'files',
+                               'records': ['b3a4bac'],
+                               'email': 'randy@gmail.com'})
+        f2_exp = ('file2.md', {'id': 'file2.md',
+                               'type': 'files',
+                               'records': ['b3a4bac'],
+                               'email': 'randy@gmail.com'})
+        f7_exp = ('file7.md', {'id': 'file7.md',
+                               'type': 'files',
+                               'records': ['7965e62'],
+                               'email': 'marcy@gmail.com'})
+
+        # Creating our list of tuples
+        res_a = self.my_log.generate_nodes(mode1="author", mode2="files", keep_atom1=['email'])
+        res_f = self.my_log.generate_nodes(mode1="author", mode2="files", keep_atom2=['email'])
+
+        # Checking authors, which should have emails
+        self.assertIn(m_exp, res_a)
+        self.assertIn(b_exp, res_a)
+        self.assertIn(j_exp, res_a)
+        self.assertIn(r_exp, res_a)
+
+        # Checking files, using defaults made in setUp
+        self.assertIn(self.f1_exp, res_a)
+        self.assertIn(self.f2_exp, res_a)
+        self.assertIn(self.f7_exp, res_a)
+
+        # Checking authors, using defaults made in setUp
+        self.assertIn(self.m_exp, res_f)
+        self.assertIn(self.b_exp, res_f)
+        self.assertIn(self.j_exp, res_f)
+        self.assertIn(self.r_exp, res_f)
+
+        # Checking files, which should have emails
+        self.assertIn(f1_exp, res_f)
+        self.assertIn(f2_exp, res_f)
+        self.assertIn(f7_exp, res_f)
+
+    def test_extra_vect(self):
+        # Setting up expected author tuples with vector attribute date
+        m_exp = ('Marcela', {'id': 'Marcela',
+                             'type': 'author',
+                             'records': ['7965e62'],
+                             'date': ['Thu May 26 11:21:03 2016 -0400']})
+        b_exp = ('Billy G', {'id': 'Billy G',
+                             'type': 'author',
+                             'records': ['6cd4bbf'],
+                             'date': ['Wed May 25 01:12:48 2016 -0400']})
+        j_exp = ('Jenna', {'id': 'Jenna',
+                           'type': 'author',
+                           'records': ['ee2c408'],
+                           'date': ['Mon May 23 02:45:25 2016 -0400']})
+        r_exp = ('Randy', {'id': 'Randy',
+                           'type': 'author',
+                           'records': ['b3a4bac'],
+                           'date': ['Fri May 20 09:19:20 2016 -0400']})
+
+        # Setting up expected file tuples. Note: because of lists, we only have set up nodes which have one hash record
+        f1_exp = ('file1.md', {'id': 'file1.md',
+                               'type': 'files',
+                               'records': ['b3a4bac'],
+                               'date': ['Fri May 20 09:19:20 2016 -0400']})
+        f2_exp = ('file2.md', {'id': 'file2.md',
+                               'type': 'files',
+                               'records': ['b3a4bac'],
+                               'date': ['Fri May 20 09:19:20 2016 -0400']})
+        f7_exp = ('file7.md', {'id': 'file7.md',
+                               'type': 'files',
+                               'records': ['7965e62'],
+                               'date': ['Thu May 26 11:21:03 2016 -0400']})
+
+        res_a = self.my_log.generate_nodes("author", "files", keep_vector1=["date"])
+        res_f = self.my_log.generate_nodes("author", "files", keep_vector2=["date"])
+
+        # Checking res_a
+        # **************
+
+        # Checking authors, which should have date lists
+        self.assertIn(m_exp, res_a)
+        self.assertIn(b_exp, res_a)
+        self.assertIn(j_exp, res_a)
+        self.assertIn(r_exp, res_a)
+
+        # Checking files, using defaults made in setUp
+        self.assertIn(self.f1_exp, res_a)
+        self.assertIn(self.f2_exp, res_a)
+        self.assertIn(self.f7_exp, res_a)
+
+        # Checking res_f
+        # **************
+
+        # Checking authors, using defaults made in setUp
+        self.assertIn(self.m_exp, res_f)
+        self.assertIn(self.b_exp, res_f)
+        self.assertIn(self.j_exp, res_f)
+        self.assertIn(self.r_exp, res_f)
+
+        # Checking files, which should have date lists
+        self.assertIn(f1_exp, res_f)
+        self.assertIn(f2_exp, res_f)
+        self.assertIn(f7_exp, res_f)
+
+    def test_warnings(self):
+        """Does a warning occur when invalid tags are given?"""
+        # Warning occurs when dates are compared using <,<=,>,>= functions
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            self.my_log.generate_nodes(mode1="dogs", mode2="cats")
+            # Check Warning occurred
+            self.assertEqual(len(w), 1)
+            self.assertIn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.",
+                          str(w[-1].message))
+
+    def tearDown(self):
+        sub.call(["rm","-rf",".git"])
+
+
+class GenNetworkTests(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+
+class WriteEdgesTests(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+
+class WriteNodesTests(unittest.TestCase):
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+        # Setting up the written nodes file
+        self.made_nodes = False
+        try:
+            self.res = self.my_log.write_nodes(fname='temp_node.txt', mode1="author", mode2="files",
+                                               keep_atom1=['email'], keep_vector1=['records'])
+            self.path = os.getcwd() + '/temp_node.txt'
+        finally:
+            self.made_nodes = True
+
+    def test_basic(self):
+        """Does the method return nothing, but create a new file?"""
+        # Check return value is None
+        self.assertIsNone(self.res)
+        # Check new file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_values(self):
+        f = open("temp_node.txt", "r")
+        f_str = f.read()
+        self.assertIsInstance(f_str, str)
+        # Check Header
+        self.assertIn("hashid,id,type,email,records", f_str)
+        # Check Authors
+        self.assertIn("Marcela,author,marcy@gmail.com,7965e62", f_str)
+        self.assertIn("Billy G,author,bill@gmail.com,6cd4bbf", f_str)
+        self.assertIn("Jenna,author,jenna@gmail.com,ee2c408", f_str)
+        self.assertIn("Randy,author,randy@gmail.com,b3a4bac", f_str)
+        # Check files
+        self.assertIn("file1.md,files,NA,b3a4bac", f_str)
+        self.assertIn("file2.md,files,NA,b3a4bac", f_str)
+        self.assertTrue("file3.md,files,NA,ee2c408;b3a4bac" in f_str or
+                        "file3.md,files,NA,b3a4bac;ee2c408" in f_str)
+        self.assertTrue("file4.md,files,NA,6cd4bbf;b3a4bac" in f_str or
+                        "file4.md,files,NA,b3a4bac;6cd4bbf" in f_str)
+        self.assertTrue("file5.md,files,NA,ee2c408;6cd4bbf" in f_str or
+                        "file5.md,files,NA,6cd4bbf;ee2c408" in f_str)
+        self.assertTrue("file6.md,files,NA,6cd4bbf;7965e62" in f_str or
+                        "file6.md,files,NA,7965e62;6cd4bbf" in f_str)
+        self.assertIn("file7.md,files,NA,7965e62", f_str)
+
+        f.close()
+
+    def tearDown(self):
+        # Delete the temporary .git folder
+        sub.call(["rm", "-rf", ".git"])
+        # Delete our temporary written nodes file
+        if self.made_nodes:
+            sub.call(['rm', 'temp_node.txt'])
+
 
 if __name__ == '__main__':
     unittest.main(buffer=True)

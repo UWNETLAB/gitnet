@@ -435,6 +435,7 @@ class Log(object):
                     m2 = [m2]
                 # Yield node attributes
                 for item1 in m1:
+
                     if item1 in nodes.keys():
                         nodes[item1]["records"].append(record)
                         for tag in keep_vector1:
@@ -576,7 +577,7 @@ class Log(object):
         """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
-        attrs = ["hashid","id","type"] + keep_atom1 + keep_vector1 + keep_atom2 + keep_vector2
+        attrs = ["hashid", "id", "type"] + keep_atom1 + keep_vector1 + keep_atom2 + keep_vector2
         # Write header
         cur = len(attrs)
         for colname in attrs:
@@ -587,7 +588,7 @@ class Log(object):
             else:
                 f.write("\n")
         # Write IDHash, Name, type, ... [data]
-        for node, values in self.generate_nodes(mode1,mode2,keep_atom1,keep_vector1,keep_atom2,keep_vector2):
+        for node, values in self.generate_nodes(mode1, mode2, keep_atom1, keep_vector1, keep_atom2, keep_vector2):
             values["hashid"] = hash(node)
             ncur = len(attrs)
             for tag in attrs:

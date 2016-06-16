@@ -149,7 +149,8 @@ class CommitLog(Log):
         and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
 
         :param pattern: A string/regular expression.
-        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not matching pattern are ignored.
+        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
+            matching pattern are ignored.
         :return: A new CommitLog object, same as self but with the appropriate files removed.
         """
         self_copy = copy.deepcopy(self)
