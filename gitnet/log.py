@@ -472,7 +472,7 @@ class Log(object):
                                 elif tag in cur.keys():
                                     nodes[item1][tag].append(cur[tag])
                     else:
-                        nodes[item1] = {"id":item1,"type":mode1,"records":[record]}
+                        nodes[item1] = {"id": item1, "type": mode1, "records": [record]}
                         for tag in keep_atom1:
                             if tag in cur.keys():
                                 nodes[item1][tag] = cur[tag]
@@ -503,8 +503,8 @@ class Log(object):
             node_tuple_list.append((n,nodes[n]))
         return node_tuple_list
 
-    def generate_network(self, mode1, mode2, edge_helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
-                         mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vector_attrs = []):
+    def generate_network(self, mode1, mode2, edge_helper=simple_edge, edge_attributes=[], mode1_atom_attrs=[],
+                         mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
         """
         An abstract network generator. For networks that contain authors, any authors that made
         pull requests will not be transferred from the log.

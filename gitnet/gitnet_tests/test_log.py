@@ -70,6 +70,22 @@ class AttributesTests(unittest.TestCase):
         attr_list = ['email', 'loc', 'type']  # Sorted list
         self.assertListEqual(self.attr, attr_list)
 
+    def test_commit_log_values(self):
+        """The same method pertains to a CommitLog, but the result may be different"""
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        path = os.getcwd()
+
+        cl = gitnet.get_log(path)
+        attr_list = cl.attributes()
+
+        exp_attr_list = {"hash","author","email","date","mode","summary",
+                         "fedits","inserts","message","files","changes"}
+
+        self.assertSetEqual(set(attr_list), exp_attr_list)
+        # Delete the temporary .git folder
+        sub.call(["rm", "-rf", ".git"])
+
 
 class DescribeTests(unittest.TestCase):
     def setUp(self):
@@ -175,13 +191,13 @@ class FilterTests(unittest.TestCase):
                           "email": 'alice@gmail.com',
                           "type": 'author',
                           "loc": 'Waterloo',
-                          "books": ['BookA', 'BookB'],
+                          "books": ['BookA', 'BookB', 'BookX'],
                           "date": 'Sat May 7 15:41:25 2016 -0400'},
                 "Bobby": {"name": "Mr Bobby",
                           "email": 'bobby_smith@gmail.ca',
                           "type": 'author',
                           "loc": 'Kitchener',
-                          "books": ['BookC', 'BookM'],
+                          "books": ['BookC', 'BookM', 'BookX'],
                           "date": 'Thu May 5 15:41:25 2016 -0400'}}
         self.log = gitnet.Log(data)
 
@@ -298,6 +314,35 @@ class FilterTests(unittest.TestCase):
         self.assertIn('Alice', res)
         self.assertIn('Bobby', res)
 
+    def test_lst_helper(self):
+        def lst_helper(val, chk):
+            if chk in val:
+                return True
+            else:
+                return False
+
+        # Filter out Alice
+        res = self.log.filter('books', 'has', 'BookM', helper=lst_helper)
+        self.assertNotIn('Alice', res)
+        self.assertIn('Bobby', res)
+
+        # Filter out neither
+        res = self.log.filter('books', 'has', 'BookX', helper=lst_helper)
+        self.assertIn('Alice', res)
+        self.assertIn('Bobby', res)
+
+        # Filter out both
+        res = self.log.filter('books', 'has', 'BookJ', helper=lst_helper)
+        self.assertNotIn('Alice', res)
+        self.assertNotIn('Bobby', res)
+
+    def test_negate(self):
+        """ Does the negate parameter work properly?"""
+        res = self.log.filter("email", "has", "gmail.com", negate=True)
+        self.assertIsInstance(res, gitnet.Log)
+        self.assertNotIn('Alice', res)
+        self.assertIn('Bobby', res)
+
     def test_warnings(self):
         # Warning occurs when dates are compared using <,<=,>,>= functions
         with warnings.catch_warnings(record=True) as w:
@@ -318,12 +363,14 @@ class TsvTests(unittest.TestCase):
                           "type": 'author',
                           "loc": 'Waterloo',
                           "books": ['BookA', 'BookB'],
-                          "stars": [4, 5]},
+                          "stars": [4, 5],
+                          "age": 25},
                 "Bobby": {"email": 'bobby@gmail.com',
                           "type": 'author',
                           "loc": 'Kitchener',
                           "books": ['BookC', 'BookD'],
-                          "stars": [4, 4]}}
+                          "stars": [4, 4],
+                          "age": 26}}
         self.log = gitnet.Log(data)
 
         # Setting up the directory for the tsv
@@ -361,9 +408,6 @@ class TsvTests(unittest.TestCase):
         self.assertTrue(os.path.exists(self.path))
         # Check a summary string is produced
         self.assertEqual("Data written to temp.tsv", tsv_str)
-
-    def test_list_attr(self):
-        pass
 
     def test_warnings(self):
         # Warning occurs non string values are forced to strings
@@ -737,8 +781,8 @@ class GenNodesTests(unittest.TestCase):
                                'email': 'marcy@gmail.com'})
 
         # Creating our list of tuples
-        res_a = self.my_log.generate_nodes(mode1="author", mode2="files", keep_atom1=['email'])
-        res_f = self.my_log.generate_nodes(mode1="author", mode2="files", keep_atom2=['email'])
+        res_f = self.my_log.generate_nodes(mode1="files", mode2="author", keep_atom1=['email'])
+        res_a = self.my_log.generate_nodes(mode1="files", mode2="author", keep_atom2=['email'])
 
         # Checking authors, which should have emails
         self.assertIn(m_exp, res_a)
@@ -825,6 +869,72 @@ class GenNodesTests(unittest.TestCase):
         self.assertIn(f1_exp, res_f)
         self.assertIn(f2_exp, res_f)
         self.assertIn(f7_exp, res_f)
+
+        # FLIPPING FILES & AUTHOR
+        # ***********************
+
+        res_a = self.my_log.generate_nodes("files", "author", keep_vector2=["date"])
+        res_f = self.my_log.generate_nodes("files", "author", keep_vector1=["date"])
+
+        # Checking res_a
+        # **************
+
+        # Checking authors, which should have date lists
+        self.assertIn(m_exp, res_a)
+        self.assertIn(b_exp, res_a)
+        self.assertIn(j_exp, res_a)
+        self.assertIn(r_exp, res_a)
+
+        # Checking files, using defaults made in setUp
+        self.assertIn(self.f1_exp, res_a)
+        self.assertIn(self.f2_exp, res_a)
+        self.assertIn(self.f7_exp, res_a)
+
+        # Checking res_f
+        # **************
+
+        # Checking authors, using defaults made in setUp
+        self.assertIn(self.m_exp, res_f)
+        self.assertIn(self.b_exp, res_f)
+        self.assertIn(self.j_exp, res_f)
+        self.assertIn(self.r_exp, res_f)
+
+        # Checking files, which should have date lists
+        self.assertIn(f1_exp, res_f)
+        self.assertIn(f2_exp, res_f)
+        self.assertIn(f7_exp, res_f)
+    def test_author_email(self):
+        """Does the method work when both modes are atomic in the log?"""
+        # Create list of tuples
+        res = self.my_log.generate_nodes(mode1="email", mode2="author")
+
+        # Check type
+        self.assertIsInstance(res, list)
+        self.assertIsInstance(res[0], tuple)
+
+        # Check authors
+        self.assertIn(self.m_exp, res)
+        self.assertIn(self.b_exp, res)
+        self.assertIn(self.j_exp, res)
+        self.assertIn(self.r_exp, res)
+
+        # Check emails
+        email_m = ('marcy@gmail.com', {'id': 'marcy@gmail.com',
+                                       'type': 'email',
+                                       'records': ['7965e62']})
+        email_b = ('bill@gmail.com', {'id': 'bill@gmail.com',
+                                       'type': 'email',
+                                       'records': ['6cd4bbf']})
+        email_j = ('jenna@gmail.com', {'id': 'jenna@gmail.com',
+                                       'type': 'email',
+                                       'records': ['ee2c408']})
+        email_r = ('randy@gmail.com', {'id': 'randy@gmail.com',
+                                       'type': 'email',
+                                       'records': ['b3a4bac']})
+        self.assertIn(email_m, res)
+        self.assertIn(email_b, res)
+        self.assertIn(email_j, res)
+        self.assertIn(email_r, res)
 
     def test_warnings(self):
         """Does a warning occur when invalid tags are given?"""
