@@ -7,6 +7,7 @@ from unittest.mock import patch
 from io import StringIO
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
+import types
 
 """This file houses most log.py tests. Network generation methods (ex. generate_edges()) are tested in test_netgen.py"""
 
@@ -438,7 +439,7 @@ class ReplaceValTests(unittest.TestCase):
 
     def setUp(self):
         # Set up small network
-        sub.call(["cp","-R","small_network_repo.git",".git"])
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
 
@@ -479,15 +480,148 @@ class ReplaceValTests(unittest.TestCase):
             self.assertIn("The value requested does not appear in any records in this collection.", str(w[-1].message))
 
     def tearDown(self):
-        sub.call(["rm","-rf",".git"])
+        sub.call(["rm", "-rf", ".git"])
 
 
-class GenEdgesTests(unittest.TestCase):  # I think this may be covered in test_netgen.py
-    def setup(self):
-        pass
+class GenEdgesTests(unittest.TestCase):
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+        # Setting up the generator for edges
+        self.edges = self.my_log.generate_edges(mode1='author', mode2='files')
+
+    def test_basic(self):
+        """ Is the correct data structure returned?"""
+        self.assertIsInstance(self.edges, types.GeneratorType)
+        self.assertIsInstance(self.edges.__next__(), tuple)
+
+    def test_no_list(self):
+        """ Does the method work when both modes occur as atomic values in the log?"""
+        edges_rev = self.my_log.generate_edges(mode2='date', mode1='author')
+        self.assertIsInstance(edges_rev, types.GeneratorType)
+        self.assertIsInstance(edges_rev.__next__(), tuple)
+
+    def test_values(self):
+        """ Are the correct tuples contained within generate_edges()"""
+        edge_list = []
+        for e in self.edges:
+            edge_list.append(e)
+
+        # Check number of values
+        self.assertEqual(len(edge_list), 11)
+
+        # Check Marcela's edges
+        edge_m6 = ("Marcela", "file6.md", {})
+        edge_m7 = ("Marcela", "file6.md", {})
+        self.assertIn(edge_m6, edge_list)
+        self.assertIn(edge_m7, edge_list)
+
+        # Check Billy G's edges
+        edge_b4 = ("Billy G", "file4.md", {})
+        edge_b5 = ("Billy G", "file5.md", {})
+        edge_b6 = ("Billy G", "file6.md", {})
+        self.assertIn(edge_b4, edge_list)
+        self.assertIn(edge_b5, edge_list)
+        self.assertIn(edge_b6, edge_list)
+
+        # Check Jenna's edges
+        edge_j3 = ("Jenna", "file3.md", {})
+        edge_j5 = ("Jenna", "file5.md", {})
+        self.assertIn(edge_j3, edge_list)
+        self.assertIn(edge_j5, edge_list)
+
+        # Check Randy's edges
+        edge_r1 = ("Randy", "file1.md", {})
+        edge_r2 = ("Randy", "file2.md", {})
+        edge_r3 = ("Randy", "file3.md", {})
+        edge_r4 = ("Randy", "file4.md", {})
+        self.assertIn(edge_r1, edge_list)
+        self.assertIn(edge_r2, edge_list)
+        self.assertIn(edge_r3, edge_list)
+        self.assertIn(edge_r4, edge_list)
+
+    def test_attr(self):
+        """ Does the method work correctly when edge attributes are given"""
+        edges_attr = self.my_log.generate_edges(mode1='author', mode2='files', edge_attributes=['date', 'hash'])
+
+        # Set up the list of tuples
+        edge_list = []
+        for e in edges_attr:
+            edge_list.append(e)
+
+        # Check the basics
+        self.assertIsInstance(edges_attr, types.GeneratorType)
+        self.assertIsInstance(edge_list[0], tuple)
+
+        # Check number of values
+        self.assertEqual(len(edge_list), 11)
+
+        # Check Marcela's edges, tuples with date,tuple and tuple,date orders
+        edge_m6dh = ("Marcela", "file6.md", {'date': 'Thu May 26 11:21:03 2016 -0400',
+                                             'hash': '7965e62e1dda38c7f9d09684a17f5caef3f476f1'})
+        edge_m6hd = ("Marcela", "file6.md", {'hash': '7965e62e1dda38c7f9d09684a17f5caef3f476f1',
+                                             'date': 'Thu May 26 11:21:03 2016 -0400'})
+        self.assertTrue(edge_m6dh in edge_list or edge_m6hd in edge_list)
+
+        edge_m7dh = ("Marcela", "file6.md", {'date': 'Thu May 26 11:21:03 2016 -0400',
+                                             'hash': '7965e62e1dda38c7f9d09684a17f5caef3f476f1'})
+        edge_m7hd = ("Marcela", "file6.md", {'hash': '7965e62e1dda38c7f9d09684a17f5caef3f476f1',
+                                             'date': 'Thu May 26 11:21:03 2016 -0400'})
+        self.assertTrue(edge_m7dh in edge_list or edge_m7hd in edge_list)
+
+        # Check Billy G's edges
+        edge_b4dh = ("Billy G", "file4.md", {'date': 'Wed May 25 01:12:48 2016 -0400',
+                                             'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed'})
+        edge_b4hd = ("Billy G", "file4.md", {'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed',
+                                             'date': 'Wed May 25 01:12:48 2016 -0400'})
+        self.assertTrue(edge_b4dh in edge_list or edge_b4hd in edge_list)
+
+        edge_b5dh = ("Billy G", "file5.md", {'date': 'Wed May 25 01:12:48 2016 -0400',
+                                             'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed'})
+        edge_b5hd = ("Billy G", "file5.md", {'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed',
+                                             'date': 'Wed May 25 01:12:48 2016 -0400'})
+        self.assertTrue(edge_b5dh in edge_list or edge_b5hd in edge_list)
+        edge_b6dh = ("Billy G", "file6.md", {'date': 'Wed May 25 01:12:48 2016 -0400',
+                                             'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed'})
+        edge_b6hd = ("Billy G", "file6.md", {'hash': '6cd4bbf82f41c504d5e3c10b99722e8955b648ed',
+                                             'date': 'Wed May 25 01:12:48 2016 -0400'})
+        self.assertTrue(edge_b6dh in edge_list or edge_b6hd in edge_list)
+
+        # Check Jenna's edges
+        edge_j3dh = ("Jenna", "file3.md", {'date': 'Mon May 23 02:45:25 2016 -0400',
+                                           'hash': 'ee2c408448eb1e0f735b95620bb433c453d026bc'})
+        edge_j3hd = ("Jenna", "file3.md", {'hash': 'ee2c408448eb1e0f735b95620bb433c453d026bc',
+                                           'date': 'Mon May 23 02:45:25 2016 -0400'})
+        self.assertTrue(edge_j3dh in edge_list or edge_j3hd in edge_list)
+        edge_j5dh = ("Jenna", "file5.md", {'date': 'Mon May 23 02:45:25 2016 -0400',
+                                           'hash': 'ee2c408448eb1e0f735b95620bb433c453d026bc'})
+        edge_j5hd = ("Jenna", "file5.md", {'hash': 'ee2c408448eb1e0f735b95620bb433c453d026bc',
+                                           'date': 'Mon May 23 02:45:25 2016 -0400'})
+        self.assertTrue(edge_j5dh in edge_list or edge_j5hd in edge_list)
+
+        # Check Randy's edges
+        edge_r1dh = ("Randy", "file1.md", {'date': 'Fri May 20 09:19:20 2016 -0400',
+                                           'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2'})
+        edge_r1hd = ("Randy", "file1.md", {'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2',
+                                           'date': 'Fri May 20 09:19:20 2016 -0400'})
+        self.assertTrue(edge_r1dh in edge_list or edge_r1hd in edge_list)
+        edge_r2dh = ("Randy", "file2.md", {'date': 'Fri May 20 09:19:20 2016 -0400',
+                                           'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2'})
+        edge_r2hd = ("Randy", "file2.md", {'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2',
+                                           'date': 'Fri May 20 09:19:20 2016 -0400'})
+        self.assertTrue(edge_r2dh in edge_list or edge_r2hd in edge_list)
+        edge_r3dh = ("Randy", "file3.md", {'date': 'Fri May 20 09:19:20 2016 -0400',
+                                           'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2'})
+        edge_r3hd = ("Randy", "file3.md", {'hash': 'b3a4bacaefb09236948b929eea29f346675f4ac2',
+                                           'date': 'Fri May 20 09:19:20 2016 -0400'})
+        self.assertTrue(edge_r3dh in edge_list or edge_r3hd in edge_list)
 
     def tearDown(self):
-        pass
+        # Delete the temporary .git folder
+        sub.call(["rm", "-rf", ".git"])
 
 
 class GenNodesTests(unittest.TestCase):
@@ -697,10 +831,48 @@ class GenNetworkTests(unittest.TestCase):
 
 class WriteEdgesTests(unittest.TestCase):
     def setUp(self):
-        pass
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+        # Setting up the written nodes file
+        self.made_edges = False
+        try:
+            self.res = self.my_log.write_edges("temp_edges.txt", mode1="author", mode2="files")
+            self.path = os.getcwd() + '/temp_edges.txt'
+        finally:
+            self.made_edges = True
+
+    def test_basic(self):
+        """Does the test return None, but still create a file?"""
+        # Check return value is None
+        self.assertIsNone(self.res)
+        # Check new file exists where expected
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_values(self):
+        """Are the correct values being outputted to the file?"""
+        f = open("temp_edges.txt", "r")
+        f_str = f.read()
+        self.assertIsInstance(f_str, str)
+
+        # Check Header
+        self.assertIn("id1,id2,weight,date", f_str)
+
+        # Check contents
+        self.assertIn("Marcela,file6.md,1,05-26-2016", f_str)
+
+        # Close file
+        f.close()
 
     def tearDown(self):
-        pass
+        # Delete the temporary .git folder
+        sub.call(["rm", "-rf", ".git"])
+
+        # Delete our temporary written edges file
+        if self.made_edges:
+            sub.call(['rm', 'temp_edges.txt'])
 
 
 class WriteNodesTests(unittest.TestCase):
@@ -727,6 +899,7 @@ class WriteNodesTests(unittest.TestCase):
         self.assertTrue(os.path.exists(self.path))
 
     def test_values(self):
+        """Are the correct values being outputted to the file?"""
         f = open("temp_node.txt", "r")
         f_str = f.read()
         self.assertIsInstance(f_str, str)
@@ -749,7 +922,7 @@ class WriteNodesTests(unittest.TestCase):
         self.assertTrue("file6.md,files,NA,6cd4bbf;7965e62" in f_str or
                         "file6.md,files,NA,7965e62;6cd4bbf" in f_str)
         self.assertIn("file7.md,files,NA,7965e62", f_str)
-
+        # Close File
         f.close()
 
     def tearDown(self):
