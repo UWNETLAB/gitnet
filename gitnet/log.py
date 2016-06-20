@@ -129,7 +129,7 @@ class Log(object):
             if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
                 break
 
-    def shared_emails(self):
+    def author_email_list(self):
         """
         Gathers each unique author email combination from the log, and then prints them in a list.
         The intention is that the user can use these author names in the replace_val function.
@@ -149,8 +149,11 @@ class Log(object):
             item = item.decode('ascii', 'strict')
             templist.append(item)
         templist = sorted(templist)
-        print('\n'.join(templist))
-        print('The list above contains all author-email combinations in the log. It is at your discretion to consolidate them.\nUnicode characters in author names have been replaced to allow this list to print.')
+        templist = str('\n'.join(templist))
+        footer = '\nThe list above contains all author-email combinations in the log. It is at your discretion to consolidate them.\nUnicode characters in author names have been replaced to allow this list to print.'
+        authors_emails = templist + footer
+        print(authors_emails)
+        return authors_emails
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
