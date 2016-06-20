@@ -389,9 +389,9 @@ class Log(object):
             if mode1 in cur.keys() and mode2 in cur.keys():
                 # Set up mode one data for this record
                 m1 = cur[mode1]
-                if type(m1) not in [list,dict,set]:
+                if type(m1) not in [list, dict, set]:
                     m1 = [m1]
-                # Set up mode one data for this record
+                # Set up mode two data for this record
                 m2 = cur[mode2]
                 if type(m2) not in [list, dict, set]:
                     m2 = [m2]
