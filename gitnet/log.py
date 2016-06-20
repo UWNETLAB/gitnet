@@ -538,7 +538,7 @@ class Log(object):
             GN.add_edges_from([(edge[0], edge[1], edge[2])])
         return GN
 
-    def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=[]):
+    def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=['weight', 'date']):
         """
         Writes an edge list with attributes.
         :param fname: The name of the output file.
@@ -559,7 +559,7 @@ class Log(object):
         """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
-        attrs = ["id1", "id2", "weight", "date"] + edge_attribute
+        attrs = ["id1", "id2"] + edge_attribute # Writes header
         # Write header
         cur = len(attrs)
         for colname in attrs:
@@ -571,16 +571,14 @@ class Log(object):
                 f.write("\n")
         # Write IDHash1,IDHash2,weight,month-day-year
         for edge in self.generate_edges(mode1, mode2, helper, edge_attribute):
-            if "weight" in edge[2].keys():
-                weight = edge[2]["weight"]
-            else:
-                weight = "NA"
-            if "date" in edge[2].keys():
-                date = git_datetime(edge[2]["date"]).date()
-                f.write("{},{},{},{}-{}-{}".format(hash(edge[0]),hash(edge[1]),weight,date.month,date.day,date.year))
+            f.write("{},{}".format(edge[0], edge[1])) # Writes edges
             for tag in edge_attribute:
                 if tag in edge[2].keys():
-                    f.write(",{}".format(edge[2][tag]))
+                    if tag == "date":
+                        date = git_datetime(edge[2]["date"]).date()
+                        f.write(",{}-{}-{}".format(date.month, date.day, date.year))
+                    else:
+                        f.write(",{}".format(edge[2][tag]))
                 else:
                     f.write(",NA")
             f.write("\n")

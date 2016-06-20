@@ -9,7 +9,27 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 import types
 
-"""This file houses most log.py tests. Network generation methods (ex. generate_edges()) are tested in test_netgen.py"""
+class MagicMethodTests(unittest.TestCase):
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
+
+    def testinit(self):
+        log = gitnet.Log()
+        self.assertIsInstance(log, gitnet.Log)
+
+    def test_str(self):
+        string = str(self.my_log)
+        self.assertRegex(string, "Log containing 4 records from local git created at ....-..-.. ..:..:..\.......\.")
+
+    def test_len(self):
+        self.assertEqual(len(self.my_log), 4)
+
+    def tearDown(self):
+        # Delete the temporary .git folder
+        sub.call(["rm", "-rf", ".git"])
 
 
 class GetTagsTests(unittest.TestCase):
@@ -803,7 +823,7 @@ class WriteEdgesTests(unittest.TestCase):
         # Setting up the written nodes file
         self.made_edges = False
         try:
-            self.res = self.my_log.write_edges("temp_edges.txt", mode1="author", mode2="files")
+            self.res = self.my_log.write_edges("temp_edges.txt", mode1="author", mode2="files", edge_attribute=[])
             self.path = os.getcwd() + '/temp_edges.txt'
         finally:
             self.made_edges = True
@@ -815,17 +835,88 @@ class WriteEdgesTests(unittest.TestCase):
         # Check new file exists where expected
         self.assertTrue(os.path.exists(self.path))
 
-    def test_values(self):
-        """Are the correct values being outputted to the file?"""
+    def test_no_attr(self):
+        """Are the correct values being outputted to the file when no attributes are given?"""
         f = open("temp_edges.txt", "r")
         f_str = f.read()
+
+        # Check Type
         self.assertIsInstance(f_str, str)
 
         # Check Header
-        self.assertIn("id1,id2,weight,date", f_str)
+        self.assertIn("id1,id2\n", f_str)
 
         # Check contents
-        self.assertIn("Marcela,file6.md,1,05-26-2016", f_str)
+        self.assertIn("Marcela,file6.md\n", f_str)
+        self.assertIn("Marcela,file7.md\n", f_str)
+        self.assertIn("Billy G,file4.md\n", f_str)
+        self.assertIn("Billy G,file5.md\n", f_str)
+        self.assertIn("Billy G,file6.md\n", f_str)
+        self.assertIn("Jenna,file3.md\n", f_str)
+        self.assertIn("Jenna,file5.md\n", f_str)
+        self.assertIn("Randy,file1.md\n", f_str)
+        self.assertIn("Randy,file2.md\n", f_str)
+        self.assertIn("Randy,file3.md\n", f_str)
+        self.assertIn("Randy,file4.md\n", f_str)
+
+        # Close file
+        f.close()
+
+    def test_default(self):
+        """Do the defaults include weight and date as edge_attributes?"""
+        res = self.my_log.write_edges("temp_edges.txt", mode1="author", mode2="files")
+        f = open("temp_edges.txt", "r")
+        f_str = f.read()
+
+        # Check Types
+        self.assertIsNone(res)
+        self.assertIsInstance(f_str, str)
+
+        # Check Header
+        self.assertIn("id1,id2,weight,date\n", f_str)
+
+        # Check contents
+        self.assertIn("Marcela,file6.md,NA,5-26-2016\n", f_str)
+        self.assertIn("Marcela,file7.md,NA,5-26-2016\n", f_str)
+        self.assertIn("Billy G,file4.md,NA,5-25-2016\n", f_str)
+        self.assertIn("Billy G,file5.md,NA,5-25-2016\n", f_str)
+        self.assertIn("Billy G,file6.md,NA,5-25-2016\n", f_str)
+        self.assertIn("Jenna,file3.md,NA,5-23-2016\n", f_str)
+        self.assertIn("Jenna,file5.md,NA,5-23-2016\n", f_str)
+        self.assertIn("Randy,file1.md,NA,5-20-2016\n", f_str)
+        self.assertIn("Randy,file2.md,NA,5-20-2016\n", f_str)
+        self.assertIn("Randy,file3.md,NA,5-20-2016\n", f_str)
+        self.assertIn("Randy,file4.md,NA,5-20-2016\n", f_str)
+
+        # Close file
+        f.close()
+
+    def test_attrs(self):
+        """Does the method work when extra attributes are included?"""
+        res = self.my_log.write_edges("temp_edges.txt", mode1="author", mode2="files",
+                                      edge_attribute=['date','hash', 'email'])
+        f = open("temp_edges.txt", "r")
+        f_str = f.read()
+
+        # Check Types
+        self.assertIsNone(res)
+        self.assertIsInstance(f_str, str)
+
+        # Check Header
+        self.assertIn("id1,id2,date,hash,email\n", f_str)
+
+        # Check contents
+        self.assertIn("Marcela,file6.md,5-26-2016,7965e62e1dda38c7f9d09684a17f5caef3f476f1,marcy@gmail.com\n", f_str)
+        self.assertIn("Marcela,file7.md,5-26-2016,7965e62e1dda38c7f9d09684a17f5caef3f476f1,marcy@gmail.com\n", f_str)
+        self.assertIn("Billy G,file4.md,5-25-2016,6cd4bbf82f41c504d5e3c10b99722e8955b648ed,bill@gmail.com\n", f_str)
+        self.assertIn("Billy G,file5.md,5-25-2016,6cd4bbf82f41c504d5e3c10b99722e8955b648ed,bill@gmail.com\n", f_str)
+        self.assertIn("Billy G,file6.md,5-25-2016,6cd4bbf82f41c504d5e3c10b99722e8955b648ed,bill@gmail.com\n", f_str)
+        self.assertIn("Jenna,file3.md,5-23-2016,ee2c408448eb1e0f735b95620bb433c453d026bc,jenna@gmail.com\n", f_str)
+        self.assertIn("Jenna,file5.md,5-23-2016,ee2c408448eb1e0f735b95620bb433c453d026bc,jenna@gmail.com\n", f_str)
+        self.assertIn("Randy,file1.md,5-20-2016,b3a4bacaefb09236948b929eea29f346675f4ac2,randy@gmail.com\n", f_str)
+        self.assertIn("Randy,file2.md,5-20-2016,b3a4bacaefb09236948b929eea29f346675f4ac2,randy@gmail.com\n", f_str)
+        self.assertIn("Randy,file3.md,5-20-2016,b3a4bacaefb09236948b929eea29f346675f4ac2,randy@gmail.com\n", f_str)
+        self.assertIn("Randy,file4.md,5-20-2016,b3a4bacaefb09236948b929eea29f346675f4ac2,randy@gmail.com\n", f_str)
 
         # Close file
         f.close()
