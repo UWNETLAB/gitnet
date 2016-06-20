@@ -5,6 +5,7 @@ coverage run -a test_netgen.py
 coverage run -a test_network.py
 coverage run -a test_log.py
 coverage run -a test_helpers.py
+coverage run -a test_commit_log.py
 coverage report -m
 coverage report -m > coverage_report.md
 coverage erase

@@ -42,10 +42,10 @@ class CommitLog(Log):
         # Define included/excluded data summaries.
         if mode == "default":
             output = ["summary", "path", "filters", "authors", "files",
-                      "emails", "dates","changes","merges","errors"]
+                      "emails", "dates", "changes", "merges", "errors"]
         else:
             output = ["summary", "path", "filters", "authors", "files",
-                      "emails", "dates","changes","merges","errors"]
+                      "emails", "dates", "changes", "merges", "errors"]
         for i in exclude:
             output.remove(i)
         # Print summary
@@ -143,7 +143,7 @@ class CommitLog(Log):
                     n_errors += len(self.collection[record]["errors"])
             print("Number of parsing errors: {}".format(n_errors))
 
-    def ignore(self,pattern,ignoreif = "match"):
+    def ignore(self, pattern, ignoreif="match"):
         """
         Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
         and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.

@@ -903,6 +903,7 @@ class GenNodesTests(unittest.TestCase):
         self.assertIn(f1_exp, res_f)
         self.assertIn(f2_exp, res_f)
         self.assertIn(f7_exp, res_f)
+
     def test_author_email(self):
         """Does the method work when both modes are atomic in the log?"""
         # Create list of tuples
