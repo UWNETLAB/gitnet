@@ -80,6 +80,42 @@ class DescribeTests(unittest.TestCase):
                              "None\n"
                              "Filters:\tage > 10 | Negate: False | Helper: None")
 
+class AuthorEmailsTests(unittest.TestCase):
+    """
+    Tests for the author_email_list function.
+    """
+    def setUp(self):
+        data = {"Bob": {"author": 'Bob',
+                          "email": 'bob@gmail.com',
+                          "type": 'author',
+                          "loc": 'Waterloo',
+                          "books": ['BookA', 'BookB']},
+                "Bobby": {"author": 'Bobby',
+                          "email": 'bobby@gmail.com',
+                          "type": 'author',
+                          "loc": 'Kitchener',
+                          "books": ['BookC', 'BookD']},
+                "Robert": {"author": 'Robert',
+                           "email": 'robby@gmail.com',
+                           "type": 'author',
+                           "loc": 'Kitchener',
+                           "books": ['BookC', 'BookD']}}
+        self.log = gitnet.Log(data)
+
+    def test_list_type(self):
+        temp = self.log.author_email_list()
+        self.assertIsInstance(temp, str)
+
+    def test_output(self):
+        temp = str(self.log.author_email_list())
+        self.assertIn('robby@gmail.com   Robert', temp)
+        self.assertIn('bob@gmail.com   Bob', temp)
+        self.assertIn('bobby@gmail.com   Bobby', temp)
+
+    def test_list_length(self):
+        temp = len(self.log.author_email_list())
+        self.assertEqual(temp, 263)
+        
 
 class BrowseTests(unittest.TestCase):
     def setUp(self):
