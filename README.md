@@ -8,7 +8,7 @@
 
 ## A Quick (Meta) Example
 
-`gitnet` makes it easy to collect, clean, and model local Git repositories. Here, we used it to create a network model of contributions to `.py` files in our Git repository.
+`gitnet` makes it easy to collect, clean, and visualize local Git repositories. Here, we used it to create a network visualization of contributions to `.py` files in our Git repository.
 
 <br />
 
@@ -59,7 +59,7 @@ The basic methods available for `Log` and all its subclasses are as follows:
 | `.write_edges()`      | Writes an edgelist (with attributes) to a file.                                   |
 | `.generate_nodes()`   | Creates a dictionary of network nodes.                                            |
 | `.write_nodes()`      | Writes a list of nodes (with attributes) to a file.                               |
-| `.generate_network()` | Creates a network model of the dataset producing a `MultiGraphPlus` object.       |
+| `.generate_network()` | Creates a network of the dataset producing a `MultiGraphPlus` object.       |
 
 ## The `CommitLog` Subclass
 
@@ -73,7 +73,7 @@ Git commit log datasets are stored as a `CommitLog`, which inherits all the feat
 
 ## The `MultiGraphPlus` Class
 
-When you create a network model using `gitnet`, it is represented as a `MultiGraphPlus` object, which is a subclass of the `networkx` class for undirected graphs with duplicate edges, the `MultiGraph`. `MultiGraphPlus` inherits all the features of a `MultiGraph`, and so can be used with all `networkx` functions that have `MultiGraph` support. However, `MultiGraphPlus` defines a number of new methods to make working with `gitnet` networks more convenient. The methods unique to `MultiGraph` are:
+When you create a network using `gitnet`, it is represented as a `MultiGraphPlus` object, which is a subclass of the `networkx` class for undirected graphs with duplicate edges, the `MultiGraph`. `MultiGraphPlus` inherits all the features of a `MultiGraph`, and so can be used with all `networkx` functions that have `MultiGraph` support. However, `MultiGraphPlus` defines a number of new methods to make working with `gitnet` networks more convenient. The methods unique to `MultiGraph` are:
 
 | Method                | Purpose                                                                        |
 |-----------------------|--------------------------------------------------------------------------------|
