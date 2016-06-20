@@ -131,9 +131,8 @@ class Log(object):
 
     def shared_emails(self):
         """
-        Checks the log object for potential duplicate authors, and authors that use the same
-        email but different names. Returns a list of the author names that could be duplicates.
-        The main intention is that the user can use these author names in the replace_val() function.
+        Gathers each unique author email combination from the log, and then prints them in a list.
+        The intention is that the user can use these author names in the replace_val function.
         """
         duplicates = []
         selfcopy = copy.deepcopy(self)
