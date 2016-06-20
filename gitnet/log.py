@@ -139,15 +139,19 @@ class Log(object):
         selfcopy = copy.deepcopy(self)
         for record in selfcopy.collection:
             if 'email' in selfcopy.collection[record].keys():
-                if ('b\'' + (selfcopy.collection[record]['email'] + '   ' + selfcopy.collection[record]['author']) + '\'') in duplicates:
+                if str(selfcopy.collection[record]['email'] + '   ' + selfcopy.collection[record]['author']).encode('ascii', 'replace') in duplicates:
                     pass
                 else:
                     entry = str((selfcopy.collection[record]['email'] + '   ' + selfcopy.collection[record]['author']))
-                    entry = str(entry.encode('ascii', 'replace'))
+                    entry = entry.encode('ascii', 'replace')
                     duplicates.append(entry)
-        duplicates = sorted(duplicates)
-        print('\n'.join(duplicates))
-        print('The list above contains all author-email combinations in the log. It is at your discretion to consolidate them.\nSome author names contain unicode characters, which have been removed for printing this string.')
+        templist = []
+        for item in duplicates:
+            item = item.decode('ascii', 'strict')
+            templist.append(item)
+        templist = sorted(templist)
+        print('\n'.join(templist))
+        print('The list above contains all author-email combinations in the log. It is at your discretion to consolidate them.\nUnicode characters in author names have been replaced to allow this list to print.')
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
