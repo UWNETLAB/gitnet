@@ -2,6 +2,7 @@ import pandas as pd
 import datetime as dt
 import warnings
 import copy
+import subprocess as sub
 from gitnet.multigraph import MultiGraphPlus
 from gitnet.helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
 
@@ -127,6 +128,29 @@ class Log(object):
                         print(s)
             if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
                 break
+
+    def shared_emails(self):
+        """
+        Gathers each unique author email combination from the log, and then prints them in a list.
+        The intention is that the user can use these author names in the replace_val function.
+        """
+        duplicates = []
+        selfcopy = copy.deepcopy(self)
+        for record in selfcopy.collection:
+            if 'email' in selfcopy.collection[record].keys():
+                if str(selfcopy.collection[record]['email'] + '   ' + selfcopy.collection[record]['author']).encode('ascii', 'replace') in duplicates:
+                    pass
+                else:
+                    entry = str((selfcopy.collection[record]['email'] + '   ' + selfcopy.collection[record]['author']))
+                    entry = entry.encode('ascii', 'replace')
+                    duplicates.append(entry)
+        templist = []
+        for item in duplicates:
+            item = item.decode('ascii', 'strict')
+            templist.append(item)
+        templist = sorted(templist)
+        print('\n'.join(templist))
+        print('The list above contains all author-email combinations in the log. It is at your discretion to consolidate them.\nUnicode characters in author names have been replaced to allow this list to print.')
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
@@ -479,7 +503,8 @@ class Log(object):
     def generate_network(self, mode1, mode2, edge_helper = simple_edge, edge_attributes = [], mode1_atom_attrs = [],
                          mode2_atom_attrs = [], mode1_vector_attrs = [], mode2_vector_attrs = []):
         """
-        An abstract network generator.
+        An abstract network generator. For networks that contain authors, any authors that made
+        pull requests will not be transferred from the log.
         :param mode1: The tag string for the first mode type.
         :param mode2: The tag string for the second mode type.
         :param edge_helper: The helper function used to compute an edge.
