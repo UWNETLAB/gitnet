@@ -9,6 +9,7 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 import types
 
+
 class MagicMethodTests(unittest.TestCase):
     def setUp(self):
         # Set up small network
@@ -101,16 +102,17 @@ class DescribeTests(unittest.TestCase):
                              "None\n"
                              "Filters:\tage > 10 | Negate: False | Helper: None")
 
+
 class AuthorEmailsTests(unittest.TestCase):
     """
     Tests for the author_email_list function.
     """
     def setUp(self):
         data = {"Bob": {"author": 'Bob',
-                          "email": 'bob@gmail.com',
-                          "type": 'author',
-                          "loc": 'Waterloo',
-                          "books": ['BookA', 'BookB']},
+                        "email": 'bob@gmail.com',
+                        "type": 'author',
+                        "loc": 'Waterloo',
+                        "books": ['BookA', 'BookB']},
                 "Bobby": {"author": 'Bobby',
                           "email": 'bobby@gmail.com',
                           "type": 'author',
@@ -843,10 +845,92 @@ class GenNodesTests(unittest.TestCase):
 
 class GenNetworkTests(unittest.TestCase):
     def setUp(self):
-        pass
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        self.good_path = os.getcwd()
+        self.my_log = gitnet.get_log(self.good_path)
 
-    def tearDown(self):
-        pass
+        self.graph = self.my_log.generate_network(mode1='author', mode2='files', edge_attributes=['date'])
+
+    def test_basic(self):
+        """Does the method produce a MultiGraphPlus object?"""
+        self.assertIsInstance(self.graph, gitnet.MultiGraphPlus)
+        self.assertEqual(self.graph.mode1, "author")
+        self.assertEqual(self.graph.mode2, "files")
+
+    def test_nodes(self):
+        """Are the correct nodes recorded in the network?"""
+        mg = self.graph
+        # Are there the correct number of nodes?
+        self.assertEqual(len(mg.nodes()), 11)
+
+        # Checking the author nodes
+        self.assertDictEqual(mg.node['Marcela'], {'id': 'Marcela',
+                                                  'type': 'author',
+                                                  'records': ['7965e62']})
+        self.assertDictEqual(mg.node['Billy G'], {'id': 'Billy G',
+                                                  'type': 'author',
+                                                  'records': ['6cd4bbf']})
+        self.assertDictEqual(mg.node['Jenna'], {'id': 'Jenna',
+                                                'type': 'author',
+                                                'records': ['ee2c408']})
+        self.assertDictEqual(mg.node['Randy'], {'id': 'Randy',
+                                                'type': 'author',
+                                                'records': ['b3a4bac']})
+
+        # Checking the file nodes
+        self.assertDictEqual(mg.node['file1.md'], {'id': 'file1.md',
+                                                   'type': 'files',
+                                                   'records': ['b3a4bac']})
+        self.assertDictEqual(mg.node['file2.md'], {'id': 'file2.md',
+                                                   'type': 'files',
+                                                   'records': ['b3a4bac']})
+        self.assertTrue(mg.node['file3.md'] == {'id': 'file3.md',
+                                                'type': 'files',
+                                                'records': ['b3a4bac', 'ee2c408']} or
+                        mg.node['file3.md'] == {'id': 'file3.md',
+                                                'type': 'files',
+                                                'records': ['ee2c408', 'b3a4bac']})
+        self.assertTrue(mg.node['file4.md'] == {'id': 'file4.md',
+                                                'type': 'files',
+                                                'records': ['b3a4bac', '6cd4bbf']} or
+                        mg.node['file4.md'] == {'id': 'file4.md',
+                                                'type': 'files',
+                                                'records': ['6cd4bbf', 'b3a4bac']})
+        self.assertTrue(mg.node['file5.md'] == {'id': 'file5.md',
+                                                'type': 'files',
+                                                'records': ['6cd4bbf', 'ee2c408']} or
+                        mg.node['file5.md'] == {'id': 'file5.md',
+                                                'type': 'files',
+                                                'records': ['ee2c408', '6cd4bbf']})
+        self.assertTrue(mg.node['file6.md'] == {'id': 'file6.md',
+                                                'type': 'files',
+                                                'records': ['6cd4bbf', '7965e62']} or
+                        mg.node['file6.md'] == {'id': 'file6.md',
+                                                'type': 'files',
+                                                'records': ['7965e62', '6cd4bbf']})
+        self.assertDictEqual(mg.node['file7.md'], {'id': 'file7.md',
+                                                   'type': 'files',
+                                                   'records': ['7965e62']})
+
+    def test_edges(self):
+        """Are the correct edges contained in the network"""
+        mg = self.graph
+
+        # Checking the correct number of edges are in the network
+        self.assertEqual(len(self.graph.edges()), 11)
+
+        self.assertDictEqual(mg.edge['Marcela']['file7.md'], {0: {'date': 'Thu May 26 11:21:03 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Marcela']['file6.md'], {0: {'date': 'Thu May 26 11:21:03 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Billy G']['file4.md'], {0: {'date': 'Wed May 25 01:12:48 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Billy G']['file5.md'], {0: {'date': 'Wed May 25 01:12:48 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Billy G']['file6.md'], {0: {'date': 'Wed May 25 01:12:48 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Jenna']['file3.md'], {0: {'date': 'Mon May 23 02:45:25 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Jenna']['file5.md'], {0: {'date': 'Mon May 23 02:45:25 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Randy']['file1.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Randy']['file2.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Randy']['file3.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
+        self.assertDictEqual(mg.edge['Randy']['file4.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
 
 
 class WriteEdgesTests(unittest.TestCase):
