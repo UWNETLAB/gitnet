@@ -27,7 +27,7 @@ class CommitLog(Log):
         A method for creating an extended descriptive output for the CommitLog subclass.
 
         :param mode: Indicate an output mode. Currently implemented: "default"
-        :param exclude: A list of output tag strings to exclude from the pringin. Default is an empty list.
+        :param exclude: A list of output tag strings to exclude from printing. Default is an empty list.
         :return: None
         Output items currently implemented (and their tag for exclusion):
             - "summary" : Prints the number of logs and creation date. Identical to str(self).
@@ -96,18 +96,18 @@ class CommitLog(Log):
             max_domain = most_common(emails)
             print("Most common email address domains:")
             for domain in max_domain:
-                print("\t {} [{} users]".format(domain[1],domain[0]))
+                print("\t {} [{} users]".format(domain[1], domain[0]))
         # Print date range.
         if "dates" in output:
             early = None
             late = None
             for record in self.collection:
                 date = git_datetime(self.collection[record]["date"])
-                if early == None or date < early:
+                if early is None or date < early:
                     early = date
-                if late == None or late < early:
+                if late is None or date > late:
                     late = date
-            print("Date range: {} to {}".format(early,late))
+            print("Date range: {} to {}".format(early, late))
         # Print descriptive statistics of distribution of changes (number of file edits, inserts, and deletes.)
         if "changes" in output:
             file_lst = []
@@ -122,12 +122,12 @@ class CommitLog(Log):
                 if "deletes" in cur_record.keys():
                     delete_lst.append(cur_record["deletes"])
             print("Change distribution summary:")
-            print("\t Files changed: Mean = {}, SD = {}".format(round(np.mean(file_lst),3),
-                                                                round(np.std(file_lst),3)))
-            print("\t Line insertions: Mean = {}, SD = {}".format(round(np.mean(insert_lst),3),
-                                                                  round(np.std(insert_lst),3)))
-            print("\t Line deletions: Mean = {}, SD = {}".format(round(np.mean(delete_lst),3),
-                                                                 round(np.std(delete_lst),3)))
+            print("\t Files changed: Mean = {}, SD = {}".format(round(np.mean(file_lst), 3),
+                                                                round(np.std(file_lst), 3)))
+            print("\t Line insertions: Mean = {}, SD = {}".format(round(np.mean(insert_lst), 3),
+                                                                  round(np.std(insert_lst), 3)))
+            print("\t Line deletions: Mean = {}, SD = {}".format(round(np.mean(delete_lst), 3),
+                                                                 round(np.std(delete_lst), 3)))
         # Print number of merges.
         if "merges" in output:
             n_merge = 0
@@ -167,7 +167,7 @@ class CommitLog(Log):
                                     self_copy.collection[record]["files"]))
         # Add a summary of the ignore to self_copy.filters
         ignore_note = ""
-        if ignoreif == "matches":
+        if ignoreif == "match":
             ignore_note = "matches"
         elif ignoreif == "no match":
             ignore_note = "doesn't match"

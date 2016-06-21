@@ -175,6 +175,7 @@ class ListTests(unittest.TestCase):
         self.assertEqual(helpers.most_common(self.norep),[])
         self.assertSetEqual(set(helpers.most_common(self.repa)), {(2, 'a')})
         self.assertSetEqual(set(helpers.most_common(self.repab)), {(2, 'a'), (2, 'b')})
+        self.assertEqual(helpers.most_common(['a', 'b', 'c', 'a', 'b', 'a']), [(3, 'a'), (2, 'b')])
 
     def test_most_occurrences(self):
         self.assertIsInstance(helpers.most_occurrences(self.norep), int)

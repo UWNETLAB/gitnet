@@ -1043,6 +1043,10 @@ class GenNetworkTests(unittest.TestCase):
         self.assertDictEqual(mg.edge['Randy']['file3.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
         self.assertDictEqual(mg.edge['Randy']['file4.md'], {0: {'date': 'Fri May 20 09:19:20 2016 -0400'}})
 
+    def tearDown(self):
+        # Delete temporary .git file
+        sub.call(["rm", "-rf", ".git"])
+
 
 class WriteEdgesTests(unittest.TestCase):
     def setUp(self):
