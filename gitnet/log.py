@@ -4,7 +4,8 @@ import warnings
 import copy
 import subprocess as sub
 from gitnet.multigraph import MultiGraphPlus
-from gitnet.helpers import git_datetime, before, beforex, since, sincex, filter_has, filter_equals, simple_edge
+from gitnet.helpers import git_datetime, before, beforex, since, sincex, \
+    filter_has, filter_equals, simple_edge, changes_edge
 
 
 class Log(object):
@@ -301,7 +302,8 @@ class Log(object):
         Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
         does not change the content strings by removing commas).
         :param ignore: Tags included in this list of strings will be ignored.
-        :param fname: If a file name is provided, the function will write to this file instead of to a string for output.
+        :param fname: An optional string (defaults to None) indicating the path or file name to write to. If None, no
+        file will be written.
         :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
         :return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)
         """
@@ -584,7 +586,7 @@ class Log(object):
     def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=['weight', 'date']):
         """
         Writes an edge list with attributes.
-        :param fname: The name of the output file.
+        :param fname: A string indicating the path or file name to write to.
         :param mode1: The tag string for the first mode type.
         :param mode2: The tag string for the second mode type.
         :param helper: The helper function used to generate the edges.
@@ -632,7 +634,7 @@ class Log(object):
     def write_nodes(self, fname, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
         Writes a list of nodes with attributes.
-        :param fname: The name of the output file.
+        :param fname: A string indicating the path or file name to write to.
         :param mode1: The tag string for the first mode type.
         :param mode2: The tag string for the second mode type.
         :param keep_atom1: The tag names of attributes to be saved once for each node of mode1.

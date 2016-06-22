@@ -16,11 +16,11 @@ class MultiGraphPlus(nx.MultiGraph):
 
     mode2 = ""
 
-    def write_graphml(self, fpath):
+    def write_graphml(self, fname):
         """
         write_graphml converts a MultiGraphPlus object to a graphml file.
         :param self: MultiGraphPlus graph
-        :param fpath: A string indicating the path or file name to write. File names which end in .gz or .bz2 will be
+        :param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be
             compressed.
         :return: None
         This method will have the side effect of creating a file, specified by fpath.
@@ -53,13 +53,13 @@ class MultiGraphPlus(nx.MultiGraph):
                           " convert them to atomic attributes prior to calling .write_graphml"
                           .format(warning_set))
 
-        nx.write_graphml(graph, fpath)
+        nx.write_graphml(graph, fname)
 
     def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
                    weight_string='weight'):
         """
         A function to write an edgelist formatted for the tnet library for network analysis in R.
-        :param fname: The name of the tnet file to be created.
+        :param fname: A string indicating the path or file name to write to.
         :param mode_string: The name string of the mode node attribute.
         :param weighted: Do the edges have weights? True or false.
         :param time_string: the name string of the date/time node attribute.
@@ -116,13 +116,13 @@ class MultiGraphPlus(nx.MultiGraph):
                 # Write to file
                 node1 = self.node[n1][node_index_string]
                 node2 = self.node[n2][node_index_string]
-                weight = eDict[weight_string]
                 if time_string is not None:
                     f.write("{} {} {}".format(e_time_string, node1, node2))
                 else:
                     f.write("{} {}".format(node1, node2))
 
                 if weighted:
+                    weight = eDict[weight_string]
                     f.write(" {}\n".format(weight))
                 else:
                     f.write("\n")
@@ -142,7 +142,7 @@ class MultiGraphPlus(nx.MultiGraph):
     def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
         """
         Makes a quick visualization of the network.
-        :param fname: If specified, a copy of the figure is saved using this file name.
+        :param fname: A string indicating the path or file name to write to.
         :param k:
         :param iterations:
         :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
