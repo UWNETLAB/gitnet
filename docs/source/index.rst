@@ -8,6 +8,7 @@
   :width: 200 px
   :align: center
 
+
 **gitnet**
 ==================================
 
@@ -22,9 +23,32 @@ Contents:
 
 .. automodule:: gitnet
   :members:
+  :member-order: alphabetical
 
 .. autoclass:: CommitLog
   :members:
+  :member-order: alphabetical
+
+.. autoclass:: Log
+  :members:
+  :member-order: alphabetical
+
+.. autoclass:: MultiGraphPlus
+  :members:
+  :member-order: alphabetical
+
+.. autoclass:: Get_Log
+  :members:
+  :member-order: alphabetical
+
+.. autoclass:: helpers
+  :members:
+  :member-order: alphabetical
+
+.. autoexception:: Exceptions
+  :members:
+  :inherited-members:
+  :member-order: alphabetical
 
 Indices and tables
 ==================
