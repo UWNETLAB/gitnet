@@ -155,6 +155,46 @@ class Log(object):
         print(authors_emails)
         return authors_emails
 
+    def detect_dup_emails(self):
+        """
+        Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
+        have committed under multiple names. This will allow you to either replace the author names now. Or merge nodes
+        once you have converted the log to a network.
+
+        :return: A dictionary where keys are emails and values are the multiple authors associated with this email.
+        """
+        duplicate_dict = {}
+        observed_dict = {}
+
+        for r in self:
+            email = self[r]['email']
+            author = self[r]['author']
+            if email in duplicate_dict:
+                if author not in duplicate_dict[email]:
+                    duplicate_dict[email] += [author]
+            elif email in observed_dict:
+                if author not in observed_dict[email]:
+                    duplicate_dict[email] = [author, observed_dict[email]]
+            else:
+                observed_dict[email] = [author]
+
+        print("Emails associated with multiple authors:")
+        warn = 0
+        for email in duplicate_dict:
+            string = str(email) + ": " + str(duplicate_dict[email])
+            try:
+                print(string)
+            except UnicodeEncodeError:
+                print(string.encode("ascii", "replace"))
+                warn += 1
+        if warn > 0:
+            if warn == 1:
+                warnings.warn("Author names or emails contained special characters. {} special characters has been "
+                              "printed as question marks".format(warn))
+            else:
+                warnings.warn("Author names or emails contained special characters. {} special characters have been "
+                              "printed as question marks".format(warn))
+
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
         A method which creates a new Log, containing only records which match certain criteria.
