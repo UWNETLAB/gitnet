@@ -168,6 +168,7 @@ class Log(object):
         observed_dict = {}
 
         for r in self:
+            print(r)
             email = self[r]['email']
             author = self[r]['author']
             if email in duplicate_dict:
@@ -175,9 +176,9 @@ class Log(object):
                     duplicate_dict[email] += [author]
             elif email in observed_dict:
                 if author not in observed_dict[email]:
-                    duplicate_dict[email] = [author, observed_dict[email]]
+                    duplicate_dict[email] = [author, observed_dict[email][0]]
             else:
-                observed_dict[email] = [author]
+                observed_dict[email] = [author
 
         print("Emails associated with multiple authors:")
         warn = 0
@@ -195,6 +196,9 @@ class Log(object):
             else:
                 warnings.warn("Author names or emails contained special characters. {} special characters have been "
                               "printed as question marks".format(warn))
+
+        return duplicate_dict
+
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """

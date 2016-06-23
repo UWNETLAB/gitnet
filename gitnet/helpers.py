@@ -102,25 +102,45 @@ def filter_has(x,match):
 
 
 # Working with lists.
-def most_common(lst):
+def most_common(lst, n=1):
     """
-    Produces a list containing the most common entry (occurring more than once) in a list (more than one entry if there
-        is a tie.)
+    Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common
+     entry is in a tie, all these entries will be returned as well.
     :param lst: A list of values.
+    :param n: An positive integer. The top n most common entries (occurring more than once) will be returned.
     :return: A list of tuples, each containing a frequency integer and a value.
     """
     occurrences = {}
-    # Count occurences
+    # Count occurrences
     for i in lst:
         if i in occurrences:
             occurrences[i] += 1
         else:
             occurrences[i] = 1
+
+    # Remove entries with one occurrence
     s_list = []
     for j in occurrences:
         if occurrences[j] > 1:
-            s_list.append((occurrences[j],j))
-    return sorted(s_list,reverse=True)
+            s_list.append((occurrences[j], j))
+    s_list = sorted(s_list, reverse=True)
+
+    # Select top n
+    num_count = 1
+    ret_list = []
+    min = 2
+    for item in s_list:
+        if num_count < n:
+            ret_list.append(item)
+        elif num_count == n:
+            ret_list.append(item)
+            min = item[0]
+        else:
+            if item[0] == min:
+                ret_list.append(item)
+        num_count += 1
+
+    return sorted(ret_list, reverse=True)
 
 
 def most_occurrences(lst):

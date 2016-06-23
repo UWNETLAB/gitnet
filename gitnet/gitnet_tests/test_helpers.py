@@ -171,11 +171,20 @@ class ListTests(unittest.TestCase):
         self.lofl = [[2,3], ['a','b'], [1,'c']]
 
     def test_most_common(self):
+        """Does the most_common() helper function work properly?"""
+        # Do the defaults work?
         self.assertIsInstance(helpers.most_common(self.norep), list)
         self.assertEqual(helpers.most_common(self.norep),[])
         self.assertSetEqual(set(helpers.most_common(self.repa)), {(2, 'a')})
         self.assertSetEqual(set(helpers.most_common(self.repab)), {(2, 'a'), (2, 'b')})
-        self.assertEqual(helpers.most_common(['a', 'b', 'c', 'a', 'b', 'a']), [(3, 'a'), (2, 'b')])
+        self.assertSetEqual(set(helpers.most_common(['a', 'b', 'c', 'a', 'b', 'a'])), {(3, 'a')})
+
+        # Do other values of n work?
+        lst = ['a', 'a', 'a', 'b', 'b', 'c', 'c', 'd', 'd', 'd', 'a', 'e']
+        self.assertSetEqual(set(helpers.most_common(lst, 1)), {(4, 'a')})
+        self.assertSetEqual(set(helpers.most_common(lst, 2)), {(4, 'a'), (3, 'd')})
+        self.assertSetEqual(set(helpers.most_common(lst, 3)), {(4, 'a'), (3, 'd'), (2, 'b'), (2, 'c')})
+        # self.assertEqual(helpers.most_common(lst, 4), [(4, 'a'), (3, 'd'), (2, 'b'), (2, 'c')])
 
     def test_most_occurrences(self):
         self.assertIsInstance(helpers.most_occurrences(self.norep), int)

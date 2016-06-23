@@ -93,7 +93,7 @@ class CommitLog(Log):
                 return domain
             emails = set(self.vector("email"))
             emails = list(map(get_domain, emails))
-            max_domain = most_common(emails)
+            max_domain = most_common(emails, 10)
             print("Most common email address domains:")
             for domain in max_domain:
                 print("\t {} [{} users]".format(domain[1], domain[0]))

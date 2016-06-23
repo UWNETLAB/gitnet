@@ -154,7 +154,59 @@ class AuthorEmailsTests(unittest.TestCase):
     def test_list_length(self):
         temp = len(self.log.author_email_list())
         self.assertEqual(temp, 263)
-        
+
+
+class DetectDuplicateEmailTests(unittest.TestCase):
+    def setUp(self):
+        data = {"Bob": {"author": 'Bob',
+                        "email": 'bob@gmail.com',
+                        "type": 'author'},
+                "Bobby": {"author": 'Bobby',
+                          "email": 'bob@gmail.com',
+                          "type": 'author'},
+                "Robert": {"author": 'Robert',
+                           "email": 'bob@gmail.com',
+                           "type": 'author'}}
+
+        self.log = gitnet.Log(data)
+
+    def test_basic(self):
+        """Is a dictionary returned and something printed?"""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            res = self.log.detect_dup_emails()
+            self.assertIsInstance(res, dict)
+            self.assertIsInstance(fake_out.getvalue(),str)
+            self.assertNotEqual(fake_out.getvalue(), "")
+
+    def test_dict(self):
+        """Is a correct dictionary returned?"""
+        pass
+
+    def test_print(self):
+        """Are correct messages being printed?"""
+        print('*****')
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            for i in range(1000):
+                self.log.detect_dup_emails()
+                output = fake_out.getvalue()
+                self.assertIn("Emails associated with multiple authors:\n", output)
+                # self.assertTrue("bob@gmail.com: ['Bob', 'Bobby', 'Robert']" in output or
+                #                 "bob@gmail.com: ['Bob', 'Robert', 'Bobby']" in output or
+                #                 "bob@gmail.com: ['Bobby', 'Bob', 'Robert']" in output or
+                #                 "bob@gmail.com: ['Bobby', 'Robert', 'Bob']" in output or
+                #                 "bob@gmail.com: ['Robert', 'Bob', 'Bobby']" in output or
+                #                 "bob@gmail.com: ['Robert', 'Bobby', 'Bob']" in output)
+
+                self.assertRegex(output, "Emails associated with multiple authors:"
+                                         "\nbob@gmail.com: \[........................\]")
+        print('*****')
+
+    def test_warnings(self):
+        """Are warnings being printed at the right times?"""
+        pass
+
+    def tearDown(self):
+        pass
 
 class BrowseTests(unittest.TestCase):
     def setUp(self):
