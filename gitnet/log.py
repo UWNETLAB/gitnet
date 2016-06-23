@@ -175,10 +175,10 @@ class Log(object):
                 if author not in duplicate_dict[email]:
                     duplicate_dict[email] += [author]
             elif email in observed_dict:
-                if author not in observed_dict[email]:
-                    duplicate_dict[email] = [author, observed_dict[email][0]]
+                if author != observed_dict[email]:
+                    duplicate_dict[email] = [author, observed_dict[email]]
             else:
-                observed_dict[email] = [author
+                observed_dict[email] = author
 
         print("Emails associated with multiple authors:")
         warn = 0
