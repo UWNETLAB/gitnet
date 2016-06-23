@@ -159,16 +159,17 @@ class Log(object):
     def detect_dup_emails(self):
         """
         Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
-        have committed under multiple names. This will allow you to either replace the author names now. Or merge nodes
-        once you have converted the log to a network.
+        have committed under multiple names. This will allow you to either replace the author names in the log, or
+        merge nodes once you have converted the log to a network.
 
         :return: A dictionary where keys are emails and values are the multiple authors associated with this email.
+
+
         """
         duplicate_dict = {}
         observed_dict = {}
 
         for r in self:
-            print(r)
             email = self[r]['email']
             author = self[r]['author']
             if email in duplicate_dict:
@@ -190,15 +191,10 @@ class Log(object):
                 print(string.encode("ascii", "replace"))
                 warn += 1
         if warn > 0:
-            if warn == 1:
-                warnings.warn("Author names or emails contained special characters. {} special characters has been "
-                              "printed as question marks".format(warn))
-            else:
-                warnings.warn("Author names or emails contained special characters. {} special characters have been "
-                              "printed as question marks".format(warn))
+            warnings.warn("Author names or emails contained special characters. {} special character(s) have been "
+                          "printed as question marks".format(warn))
 
         return duplicate_dict
-
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """

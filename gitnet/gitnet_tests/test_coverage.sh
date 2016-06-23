@@ -11,7 +11,8 @@ coverage report -m > coverage_report.md
 coverage erase
 
 echo "
-## 5 lines will not be run with our tests:
+## 9 lines will not be run with our tests:
+    - log.py            line 188,189,190,192
     - helpers.py        line 29 and 212
     - multigraph.py     line 98 or line 104
     - test_get.py       line 32
