@@ -9,12 +9,12 @@ test_get.py                                                              92     
 test_helpers.py                                                         197      0   100%
 test_log.py                                                             636      0   100%
 test_netgen.py                                                          111      0   100%
-test_network.py                                                         524      1    99%   641
+test_network.py                                                         524      1    99%   643
 /Users/jilliananderson/Documents/NetLab/gitnet/gitnet/helpers.py        119      2    98%   29, 212
-/Users/jilliananderson/Documents/NetLab/gitnet/gitnet/log.py            333      3    99%   142, 471, 488
-/Users/jilliananderson/Documents/NetLab/gitnet/gitnet/multigraph.py     200      2    99%   104, 173
+/Users/jilliananderson/Documents/NetLab/gitnet/gitnet/log.py            359     28    92%   143, 167-196, 512, 529
+/Users/jilliananderson/Documents/NetLab/gitnet/gitnet/multigraph.py     200      2    99%   98, 173
 ---------------------------------------------------------------------------------------------------
-TOTAL                                                                  2706     26    99%
+TOTAL                                                                  2732     51    98%
 
 ## 5 lines will not be run with our tests:
     - helpers.py        line 29 and 212
