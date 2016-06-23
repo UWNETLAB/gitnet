@@ -9,7 +9,7 @@
   :align: center
 
 
-**gitnet**
+**Gitnet**
 ==================================
 
 ``gitnet`` is a Python 3 library with user friendly tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network models and visualizations. The primary purpose of `gitnet` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be of use to organizations, project managers, and curious coders.
@@ -54,6 +54,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
-* :ref:`gitnet`
