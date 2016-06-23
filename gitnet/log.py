@@ -1,3 +1,6 @@
+"""
+![](static/gitnet.png)
+"""
 import pandas as pd
 import datetime as dt
 import warnings
@@ -10,22 +13,43 @@ from gitnet.helpers import git_datetime, before, beforex, since, sincex, \
 
 class Log(object):
     """
-    Log is the basic class for the back end of gitnet. The Log class, and other classes which inherit its features,
-    store all of the data retrieved by gitnet. Log has methods to describe, export, and model the data it contains.
+    `Log` is the basic class for the back end of gitnet. The `Log` class, and other classes which inherit its features,
+    store all of the data retrieved by `gitnet`. `Log` has methods to describe, export, and model the data it contains.
+
     """
 
     def __init__(self, dofd={}, source=None, path=None, key_type=None, filters=[]):
         """
-        Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.
-        Log objects should be passed a dictionary of dictionaries after initialization, or entries should be
-        added to the empty dictionary in self.collection.
+        Initializes the `Log` with a timestamp. Other fields default to an empty dictionary, or `none` unless otherwise specified.
+        `Log` objects should be passed a dictionary of dictionaries after initialization, or entries should be
+        added to the empty dictionary in `self.collection`.
 
-        :param dofd: A dictionary of dictionaries, which becomes self.collection. Defaults to empty.
-        :param source: A string passed by the parser indicating the source of the data.
-        :param path: A string passed by the parser indicating the path from which the data was accessed.
-        :param key_type: A string passed by the parser indicating how data is keyed in the dicitonary (e.g. by hash.)
-        :param filters: A list of strings summarizing how the Log has been filtered (using filter and ignore methods.)
-        :var self.tags: Tags are generated using the get_tags method.
+        **Parameters** :
+
+        > *dofd* : `dictionary`
+
+        >> A dictionary of dictionaries, which becomes `self.collection`. Defaults to empty.
+
+        > *source* : `string`
+
+        >> A string passed by the parser indicating the source of the data.
+
+        > *path* : `string`
+
+        >> A string passed by the parser indicating the path from which the data was accessed.
+
+        > *key_type* : `string`
+
+        >> A string passed by the parser indicating how data is keyed in the dicitonary (for example by hash).
+
+        > *filters* : `list`
+
+        >> A list of strings summarizing how the Log has been filtered (using filter and ignore methods).
+
+        *var* : `self.tags` : `list`
+
+        >> Tags are generated using the get_tags method.
+
         """
         self.collection = dofd
         self.timestamp = str(dt.datetime.now())
@@ -38,45 +62,60 @@ class Log(object):
 
     def __iter__(self):
         """
-        Log iterates upon its core data set, which is a dictionary of dictionaries.
+        `Log` iterates upon its core data set, which is a dictionary of dictionaries.
+
         """
         return iter(self.collection)
 
     def __getitem__(self, item):
         """
-        Makes Log subscriptable.
+        Makes `Log` subscriptable.
+
         """
         return self.collection[item]
 
     def __str__(self):
         """
-        Basic summary of the Log. For a more detailed report (which analyzes record contents) use the .describe method.
+        Basic summary of the `Log`. For a more detailed report (which analyzes record contents) use the `describe` method.
+
+        **Return** : `Log`
+
+        > Basic descriptive data of the `Log` object
+
         """
         return "Log containing {} records from {} created at {}."\
             .format(len(self.collection), self.source, self.timestamp)
 
     def __len__(self):
         """
-        The number of records in self.collection.
+        The number of records in `self.collection`.
+
         """
         return len(self.collection)
 
     def get_tags(self):
         """
-        For the base Log class, tags defaults to an empty list. Log subclasses have alternate get_tags methods, which
-        specify the expected data points in their core data sets, and give a preferred order for displaying the data
-        (i.e. in a tabular format.)
-        :return: An empty list of tags.
+        For the base `Log` class, tags defaults to an empty list. `Log` subclasses have alternate `get_tags` methods, which
+        specify the expected data points in their core data sets, and give a preferred order for displaying the data.
+
+        **Return** : `list`
+
+        > An empty list of tags.
+
         """
         return []
 
     def attributes(self):
         """
-        A method for determining what data has been recorded in this commit log.
-        :return: A sorted list containing every key present in the Log's records. For example, the attributes for
-        a local commit log would contain hashes ("hash"), author name ("author"), author email ("email"), etc.
-        If the self.tags attribute has been defined for this object, tags appear by their order in self.tags. Any
-        unrecognized tags will be added at the end.
+        A method for determining what data has been recorded in this `Commitlog`.
+
+        **Return** : `list`
+
+        > A sorted list containing every key present in the `Log`. For example, the attributes for
+        > a local `Commitlog` would contain hashes ("hash"), author name ("author"), author email ("email"), and several more.
+        > If the `self.tags` attribute has been defined for this object, tags appear by their order in `self.tags`. Any
+        > unrecognized tags will be added at the end.
+
         """
         attr = set()
         # Add every key in the collection to a set object.
@@ -97,8 +136,9 @@ class Log(object):
 
     def describe(self):
         """
-        A method which provides a description of the contents of the log. More detailed descriptions are implemented
+        A method which provides a description of the contents of the `Log`. More detailed descriptions are implemented
         for individual subclasses.
+
         """
         des_basic = "{}\n{}".format(self, self.path)
         des_fstart = ""
@@ -116,7 +156,9 @@ class Log(object):
     def browse(self):
         """
         Interactively prints the contents of the Log collection, one record at a time.
-        :return: None
+
+        **Return** : `None`
+
         """
         for key in self.collection.keys():
             print("----- {} -----".format(key))
@@ -133,7 +175,8 @@ class Log(object):
     def author_email_list(self):
         """
         Gathers each unique author email combination from the log, and then prints them in a list.
-        The intention is that the user can use these author names in the replace_val function.
+        The intention is that the user can use these author names in the `replace_val` function.
+
         """
         duplicates = []
         selfcopy = copy.deepcopy(self)
@@ -159,11 +202,12 @@ class Log(object):
     def detect_dup_emails(self):
         """
         Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
-        have committed under multiple names. This will allow you to either replace the author names in the log, or
+        have committed under multiple names. This will allow you to either replace the author names in the `Log`, or
         merge nodes once you have converted the log to a network.
 
-        :return: A dictionary where keys are emails and values are the multiple authors associated with this email.
+        **Return** : `dictionary`
 
+        > A dictionary where keys are emails and values are the multiple authors associated with this email.
 
         """
         duplicate_dict = {}
@@ -198,46 +242,81 @@ class Log(object):
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
-        A method which creates a new Log, containing only records which match certain criteria.
-        :param tag: Denotes the tag by which the Log should be filtered. ("ALL" searches every value.)
-        :param fun: A string denoting which predicate function to use.
-        :param match: A string which the predicate function uses for comparison.
-        :param negate: If negate is set to true, only entries which do not match will be kept.
-        :param helper: Passing a function object over-rides 'fun'.
-        :param summary: An optional summary string describing the filter operation. Recommended when using a custom
-        helper function.
-        :return: A new Log object identical to self but with only matching records.
+        A method which creates a new `Log`, containing only records which match certain criteria.
 
-        Details:
-        Comparisons are usually made in the following way: fun(self.collection[sha][tag],match). This pattern should
-        be followed when using custom helper functions.
+        **Parameters** :
 
-        Predicates currently implemented:
-            - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("author","equals","Jane"))
-                - If both values are strings, match can be a regular expression.
-            - "has" (Is match "in" the [tag] value? e.g. self.filter("email","has","@gmail.com"))
-                - If both values are strings, match can be a regular expression.
-            - Comparison operations. The values of tag, and match, must be comparable with >, and <. Note that unless
-            you have explicitly converted date strings to datetime objects (or something similar), these comparisons
-            are not valid for date strings.
-                - "<" tag value less than match.
-                - "<=" tag value less than or equal to match.
-                - ">" tag value greater than match.
-                - ">=" tag value greater than or equal to match.
-            - Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as
-                "Mon Apr 8 00:59:02 2016 -0400")
-                - "since" (Is the date since match? Inclusive.)
-                - "sincex" (Is the date since match? Exclusive.)
-                - "before" (Is the date before match? Inclusive.)
-                - "beforex" (Is the date before match? Exclusive.)
+        > *tag* : `string`
+
+        >> Denotes the tag by which the Log should be filtered. ("ALL" searches every value).
+
+        > *fun* : `string`
+
+        >> A string denoting which built-in function to use.
+
+        > *match* : `string`
+
+        >> A string which the predicate function uses for comparison.
+
+        > *negate* : `bool`
+
+        >> If negate is set to true, only entries which do not match will be kept.
+
+        > *helper* : `None`
+
+        >> Passing a function object over-rides `fun`.
+
+        > *summary* : `string`
+
+        >> An optional summary string describing the filter operation. Recommended when using a custom helper function.
+
+        **Return** : `Log`
+
+        > A new `Log` object identical to self but with only matching records.
+
+        **Details** :
+
+        > Comparisons are usually made in the following way: `fun(self.collection[sha][tag],match)`.
+        > This pattern should be followed when using custom helper functions.
+
+        > *Predicates currently implemented* :
+
+        >> `equals` : (Does the [tag] value exactly equal match? e.g. `self.filter("author","equals","Jane")`)
+
+        >>> If both values are strings, match can be a regular expression.
+
+        >> `has` : (Is match "in" the [tag] value? e.g. `self.filter("email","has","@gmail.com")`)
+
+        >>> If both values are strings, match can be a regular expression.
+
+        >> Comparison operations. The values of tag, and match, must be comparable with >, and <. Note that unless
+        >> you have explicitly converted date strings to datetime objects (or something similar), these comparisons
+        >> are not valid for date strings.
+
+        >>> `<` tag value less than match.
+        >>> `<=` tag value less than or equal to match.
+        >>> `>` tag value greater than match.
+        >>> `>=` tag value greater than or equal to match.
+
+        >> Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as "Mon Apr 8 00:59:02 2016 -0400")
+
+        >>> `since` (Is the date since match? Inclusive).
+        >>> `sincex` (Is the date since match? Exclusive).
+        >>> `before` (Is the date before match? Inclusive).
+        >>> `beforex` (Is the date before match? Exclusive).
 
         Note that if a keyed value is a list, every item in the list is checked.
 
-        Examples:
-        my_log.filter("email", "equals", "bob@gmail.com")
-        my_log.filter("email", "has", "@gmail.com")
-        my_log.filter("email", "has", "@gmail.c[oa]m?")
-        my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")
+        **Examples** :
+
+        > `my_log.filter("email", "equals", "bob@gmail.com")`
+
+        > `my_log.filter("email", "has", "@gmail.com")`
+
+        > `my_log.filter("email", "has", "@gmail.c[oa]m?")`
+
+        > `my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")`
+
         """
         # This dictionary includes the currently built-in filtering predicates.
         fun_reference = {"equals": filter_equals,
@@ -299,13 +378,28 @@ class Log(object):
 
     def tsv(self, ignore=[], fname=None, empty_cols=False):
         """
-        Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
+        Converts the `Log` to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
         does not change the content strings by removing commas).
-        :param ignore: Tags included in this list of strings will be ignored.
-        :param fname: An optional string (defaults to None) indicating the path or file name to write to. If None, no
+
+        **Parameters** :
+
+        > *ignore* : `list`
+
+        >> Tags included in this list of strings will be ignored.
+
+        > *fname* : `string`
+
+        >> An optional string (defaults to `None`) indicating the path or file name to write to. If `None`, no
         file will be written.
-        :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
-        :return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)
+
+        > *empty_cols* :
+
+        >> If True, export will include all Log subclass tags, even if not collected, giving empty columns.
+
+        **Return** : `string`
+
+        > A tab-delimited dataset in string form (or a summary statement if a file name was provided).
+
         """
         # Get the tags present in the Log.
         if empty_cols:
@@ -384,8 +478,11 @@ class Log(object):
 
     def df(self):
         """
-        Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
-        :return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.
+        Converts the `Log` to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
+
+        **Return** : `dataframe`
+
+        > Returns a `pandas dataframe` object. Rows are commits by short-hash. Columns are commit attributes.
         """
         retval = pd.DataFrame.from_dict(self.collection, orient="index")[self.attributes()]
         return retval
@@ -393,8 +490,17 @@ class Log(object):
     def vector(self, tag):
         """
         Returns a list containing all of the (keyless) values of a certain tag in the Log collection.
-        :param tag: A collection tag. See subclass documentation for subclass-specific tags.
-        :return: Returns a list of values (usually strings or numbers).
+
+        **Parameters** :
+
+        > *tag* : `string`
+
+        >> A collection tag. See subclass documentation for subclass-specific tags.
+
+        **Return** :
+
+        > Returns a list of values (usually strings or numbers).
+
         """
         v = []
         for record in self.collection:
@@ -409,12 +515,27 @@ class Log(object):
 
     def replace_val(self, tag, cur_val, new_val):
         """
-        Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.
-        :param tag: The record tag string whose values will be checked (and replaced when appropriate.)
-        :param cur_val: this is the value that the user wants to replace.
-        :param new_val: this is the value that the user wants to use in the Log Object.
+        Searches for user specified values in a specific tag in the `Log` and replaces them with a new value.
+        This method is particularly useful for combining duplicate names for the same author.
 
-        Note: This method is particularly useful for combining duplicate names for the same author.
+        **Parameters** :
+
+        > *tag* : `string`
+
+        >> The record tag string whose values will be checked (and replaced when appropriate).
+
+        > *cur_val* : `string`
+
+        >> This is the value that the user wants to replace.
+
+        > *new_val* : `string`
+
+        >> This is the value that the user wants to use in the new `Log`.
+
+        **Return** : `Log`
+
+        > Returns a `Log` object with values that have been replaced according to user specifications.
+
         """
         selfcopy = copy.deepcopy(self)
         status = 0
@@ -438,20 +559,39 @@ class Log(object):
     def generate_edges(self, mode1, mode2, helper=simple_edge, edge_attributes=[]):
         """
         Generates bipartite edges present in each Log record.
-        :param mode1: A record attribute (tag), which becomes the first node type.
-        :param mode2: A record attribute (tag), which becomes the second node type.
-        :param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.
-        :param edge_attributes: A list of attributes to keep as attributes of the edge.
-        :return: A generator object containing edges and their weights.
 
-        Notes:
-        Currently, two edge_helper functions are available in gitnet.gn_helpers:
-        1. simple_edge
-            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-        2. changes_edge
-            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
+        **Parameters** :
+
+        > *mode1* : `string`
+
+        >> A record attribute or tag, which becomes the first node type.
+
+        > *mode2* : `string`
+
+        >> A record attribute or tag, which becomes the second node type.
+
+        > *helper* : `function`
+
+        >> The function that computes the edges. Options are simple_edge (default) and changes_edge.
+
+        > *edge_attributes* :
+
+        >> A list of attributes to keep as attributes of the edge.
+
+
+        **Return** :
+
+        > A generator object containing edges and their weights.
+
+        **Notes** :
+
+        > Currently, two edge_helper functions are available in gitnet.gn_helpers:
+
+        >> `simple_edge` : Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+
+        >> `changes_edge` : Only to be used for author-file networks, with "changes" from "git log --stat" logs (as in a `Commitlog`).
+        >> Computes edges between authors and files based on the number of lines changed in the corresponding changes (weight is 6 for `README.md | 6 +++---`).
+
         """
         for record in self.collection:
             cur = self.collection[record]
@@ -472,23 +612,47 @@ class Log(object):
     def generate_nodes(self, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
         Generates the bipartite nodes present in the Log object.
-        :param mode1: The tag string for the first mode type.
-        :param mode2: The tag string for the second mode type.
-        :param keep_atom1: Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
-        :param keep_vector1: Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
-        :param keep_atom2: Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
-        :param keep_vector2: Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
-        :return: A list of tuples, i.e. ("node_id", {attribute_dictionary}).
 
-        By default, each node should have a record in the following format:
+        **Parameters** :
 
-        ("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})
+        > *mode1* : `string`
 
-        With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
+        >> The tag string for the first mode type.
 
-        ("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
-         atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
-         vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])
+        > *mode2* : `string`
+
+        >> The tag string for the second mode type.
+
+        > *keep_atom1* : `list`
+
+        >> Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
+
+        > *keep_vector1* :  list
+
+        >> Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
+
+        > *keep_atom2* : `list`
+
+        >> Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
+
+        > *keep_vector2* : `list`
+
+        >> Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
+
+        **Return** :
+
+        > A list of tuples, i.e. ("node_id", {attribute_dictionary}).
+
+        *By default, each node should have a record in the following format* :
+
+        > ("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})
+
+        > With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
+
+        >("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
+        > atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
+        > vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])
+
         """
         nodes = {}
         for record in self.collection:
