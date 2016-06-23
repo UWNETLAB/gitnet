@@ -180,33 +180,64 @@ class DetectDuplicateEmailTests(unittest.TestCase):
 
     def test_dict(self):
         """Is a correct dictionary returned?"""
-        pass
+        dup_dict = self.log.detect_dup_emails()
+
+        self.assertIn('bob@gmail.com', dup_dict)
+        self.assertEqual(len(dup_dict), 1)
+
+        self.assertEqual(len(dup_dict['bob@gmail.com']), 3)
+        self.assertIn('Bob', dup_dict['bob@gmail.com'])
+        self.assertIn('Bobby', dup_dict['bob@gmail.com'])
+        self.assertIn('Robert', dup_dict['bob@gmail.com'])
 
     def test_print(self):
         """Are correct messages being printed?"""
-        print('*****')
         with patch('sys.stdout', new=StringIO()) as fake_out:
             for i in range(1000):
                 self.log.detect_dup_emails()
                 output = fake_out.getvalue()
                 self.assertIn("Emails associated with multiple authors:\n", output)
-                # self.assertTrue("bob@gmail.com: ['Bob', 'Bobby', 'Robert']" in output or
-                #                 "bob@gmail.com: ['Bob', 'Robert', 'Bobby']" in output or
-                #                 "bob@gmail.com: ['Bobby', 'Bob', 'Robert']" in output or
-                #                 "bob@gmail.com: ['Bobby', 'Robert', 'Bob']" in output or
-                #                 "bob@gmail.com: ['Robert', 'Bob', 'Bobby']" in output or
-                #                 "bob@gmail.com: ['Robert', 'Bobby', 'Bob']" in output)
+                self.assertTrue("bob@gmail.com: ['Bob', 'Bobby', 'Robert']" in output or
+                                "bob@gmail.com: ['Bob', 'Robert', 'Bobby']" in output or
+                                "bob@gmail.com: ['Bobby', 'Bob', 'Robert']" in output or
+                                "bob@gmail.com: ['Bobby', 'Robert', 'Bob']" in output or
+                                "bob@gmail.com: ['Robert', 'Bob', 'Bobby']" in output or
+                                "bob@gmail.com: ['Robert', 'Bobby', 'Bob']" in output)
 
                 self.assertRegex(output, "Emails associated with multiple authors:"
                                          "\nbob@gmail.com: \[........................\]")
-        print('*****')
+
+    def test_no_warnings(self):
+        """Are warnings not printed at the right times?"""
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            self.log.detect_dup_emails()
+            # Check no warning occurred
+            self.assertEqual(len(w), 0)
 
     def test_warnings(self):
-        """Are warnings being printed at the right times?"""
-        pass
+        """Are warnings printed at the right time?"""
+        # Setting up a more complicated repository
+        sub.call(["rm", "-rf", ".git"])
+        sub.call(["cp", "-R", "repo_nx.git", ".git"])
+        path = os.getcwd()
+        nx_log = gitnet.get_log(path)
+
+        # Note: Depending on the environment a warning may or may not be raised. For example, PyCharm uses UTF-8
+        #       encoding and thus will not raised the unicode error.
+        with warnings.catch_warnings(record=True) as w:
+            # Ensure warnings are being shown
+            warnings.simplefilter("always")
+            # Trigger Warning
+            nx_log.detect_dup_emails()
+            # Check warning occurs
+            self.assertTrue(len(w) == 0 or len(w) == 1)
 
     def tearDown(self):
-        pass
+        sub.call(["rm", "-rf", ".git"])
+
 
 class BrowseTests(unittest.TestCase):
     def setUp(self):
