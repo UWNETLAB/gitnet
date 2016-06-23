@@ -1090,13 +1090,12 @@ table {
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">gitnet.log</span> <span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
-<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">git_datetime</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">simple_edge</span><span class="p">,</span> <span class="n">changes_edge</span>
+<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">simple_edge</span><span class="p">,</span> <span class="n">changes_edge</span>
 
 
 <span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Log class for holding Git commit logs.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1191,7 +1190,7 @@ table {
             <span class="n">early</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="n">late</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
-                <span class="n">date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">early</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&lt;</span> <span class="n">early</span><span class="p">:</span>
                     <span class="n">early</span> <span class="o">=</span> <span class="n">date</span>
                 <span class="k">if</span> <span class="n">late</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&gt;</span> <span class="n">late</span><span class="p">:</span>
@@ -1312,7 +1311,6 @@ table {
     <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Log class for holding Git commit logs.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1407,7 +1405,7 @@ table {
             <span class="n">early</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="n">late</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
-                <span class="n">date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">early</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&lt;</span> <span class="n">early</span><span class="p">:</span>
                     <span class="n">early</span> <span class="o">=</span> <span class="n">date</span>
                 <span class="k">if</span> <span class="n">late</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&gt;</span> <span class="n">late</span><span class="p">:</span>
@@ -1801,7 +1799,7 @@ Output items currently implemented (and their tag for exclusion):
         <span class="n">early</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">late</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
-            <span class="n">date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">early</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&lt;</span> <span class="n">early</span><span class="p">:</span>
                 <span class="n">early</span> <span class="o">=</span> <span class="n">date</span>
             <span class="k">if</span> <span class="n">late</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">date</span> <span class="o">&gt;</span> <span class="n">late</span><span class="p">:</span>
@@ -1858,8 +1856,8 @@ Output items currently implemented (and their tag for exclusion):
     
   
     <div class="desc"><p>Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
-have committed under multiple names. This will allow you to either replace the author names now. Or merge nodes
-once you have converted the log to a network.</p>
+have committed under multiple names. This will allow you to either replace the author names in the log, or
+merge nodes once you have converted the log to a network.</p>
 <p>:return: A dictionary where keys are emails and values are the multiple authors associated with this email.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.detect_dup_emails', this);">Show source &equiv;</a></p>
@@ -1867,14 +1865,13 @@ once you have converted the log to a network.</p>
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">detect_dup_emails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds emails which are associated with multiple authors. This list should be a good indicator of authors which</span>
-<span class="sd">    have committed under multiple names. This will allow you to either replace the author names now. Or merge nodes</span>
-<span class="sd">    once you have converted the log to a network.</span>
+<span class="sd">    have committed under multiple names. This will allow you to either replace the author names in the log, or</span>
+<span class="sd">    merge nodes once you have converted the log to a network.</span>
 <span class="sd">    :return: A dictionary where keys are emails and values are the multiple authors associated with this email.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">duplicate_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">observed_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
         <span class="n">author</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="s1">&#39;author&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">duplicate_dict</span><span class="p">:</span>
@@ -1895,12 +1892,8 @@ once you have converted the log to a network.</p>
             <span class="k">print</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span>
             <span class="n">warn</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">warn</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">warn</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Author names or emails contained special characters. {} special characters has been &quot;</span>
-                          <span class="s2">&quot;printed as question marks&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warn</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Author names or emails contained special characters. {} special characters have been &quot;</span>
-                          <span class="s2">&quot;printed as question marks&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warn</span><span class="p">))</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Author names or emails contained special characters. {} special character(s) have been &quot;</span>
+                      <span class="s2">&quot;printed as question marks&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warn</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">duplicate_dict</span>
 </pre></div>
 
@@ -2091,7 +2084,7 @@ my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_edges">
-    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function simple_edge at 0x0000000007210488&gt;, edge_attributes=[])</p>
+    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function simple_edge at 0x114758620&gt;, edge_attributes=[])</p>
     </div>
     
 
@@ -2156,7 +2149,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_network">
-    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function simple_edge at 0x0000000007210488&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
+    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function simple_edge at 0x114758620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
     </div>
     
 
@@ -2666,7 +2659,7 @@ file will be written.
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.write_edges">
-    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function simple_edge at 0x0000000007210488&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
+    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function simple_edge at 0x114758620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
     </div>
     
 
@@ -2726,7 +2719,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
         <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">edge_attribute</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span>
-                    <span class="n">date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;,{}-{}-{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;,{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">tag</span><span class="p">]))</span>

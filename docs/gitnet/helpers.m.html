@@ -1044,14 +1044,14 @@ table {
     <li class="mono"><a href="#gitnet.helpers.before">before</a></li>
     <li class="mono"><a href="#gitnet.helpers.beforex">beforex</a></li>
     <li class="mono"><a href="#gitnet.helpers.changes_edge">changes_edge</a></li>
+    <li class="mono"><a href="#gitnet.helpers.datetime_git">datetime_git</a></li>
+    <li class="mono"><a href="#gitnet.helpers.datetime_reference">datetime_reference</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_equals">filter_equals</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_has">filter_has</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_regex">filter_regex</a></li>
-    <li class="mono"><a href="#gitnet.helpers.git_datetime">git_datetime</a></li>
     <li class="mono"><a href="#gitnet.helpers.list_scd_str">list_scd_str</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_common">most_common</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_occurrences">most_occurrences</a></li>
-    <li class="mono"><a href="#gitnet.helpers.reference_datetime">reference_datetime</a></li>
     <li class="mono"><a href="#gitnet.helpers.simple_edge">simple_edge</a></li>
     <li class="mono"><a href="#gitnet.helpers.since">since</a></li>
     <li class="mono"><a href="#gitnet.helpers.sincex">sincex</a></li>
@@ -1082,27 +1082,37 @@ table {
 
 
 <span class="c1"># Working with Git Log date strings</span>
-<span class="k">def</span> <span class="nf">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns a git date string into a datetime object.</span>
-<span class="sd">    :param s: A git-formatted date string.</span>
-<span class="sd">    :return: A datetime object.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    *s* : `str`</span>
+<span class="sd">    &gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    **Return** `datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="s2">&quot;%a %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y %z&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">reference_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">datetime_reference</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns a Git date string, or a datetime object into a datetime.</span>
-<span class="sd">    :param s: String or Datetime</span>
-<span class="sd">    :return: Datetime</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    *s* : `str` or `datetime object`</span>
+<span class="sd">    &gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
         <span class="n">ref_date</span> <span class="o">=</span> <span class="n">s</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">git_date_p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">git_date_p</span><span class="p">,</span> <span class="n">s</span><span class="p">)):</span>
-            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
                              <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
@@ -1112,28 +1122,36 @@ table {
 <span class="c1"># Filtering functions.</span>
 <span class="k">def</span> <span class="nf">since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate determining if s is a date since match (inclusive).</span>
-<span class="sd">    :param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).</span>
-<span class="sd">    :param match: A comparison date. Either a Git date string or a datetime object.</span>
-<span class="sd">    :return: True or False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`).  If the dates are equal,</span>
+<span class="sd">    the function returns `True`. Example. since(&quot;Fri Jan 10 10:12:34 2016 -0400&quot;, &quot;Sat Apr 2 07:25:25 2016 -0400&quot;)</span>
+<span class="sd">    returns `False`.</span>
 
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
 
 <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
 
 
 <span class="k">def</span> <span class="nf">sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
 
 
 <span class="k">def</span> <span class="nf">beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
 
 
 <span class="k">def</span> <span class="nf">filter_regex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
@@ -1431,8 +1449,8 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.before', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.before" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
 </pre></div>
 
   </div>
@@ -1453,8 +1471,8 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.beforex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.beforex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
 </pre></div>
 
   </div>
@@ -1515,6 +1533,91 @@ in the file. Is a helper for Log.generate_edges().
             <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
         <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.datetime_git">
+    <p>def <span class="ident">datetime_git</span>(</p><p>s)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Turns a git date string into a datetime object.</p>
+<p><strong>Parameters</strong></p>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+<p><strong>Return</strong> <code>datetime</code></p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_git', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.datetime_git" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Turns a git date string into a datetime object.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    *s* : `str`</span>
+<span class="sd">    &gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    **Return** `datetime`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="s2">&quot;%a %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y %z&quot;</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.datetime_reference">
+    <p>def <span class="ident">datetime_reference</span>(</p><p>s)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Turns a Git date string, or a datetime object into a datetime.</p>
+<p><strong>Parameters</strong></p>
+<p><em>s</em> : <code>str</code> or <code>datetime object</code></p>
+<blockquote>
+<p>Either a git-formatted string such as "Wed Mar 4 20:00:00 2015 -0400" or a datetime object.</p>
+</blockquote>
+<p><strong>Return</strong> <code>datetime</code></p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_reference', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.datetime_reference" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_reference</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Turns a Git date string, or a datetime object into a datetime.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    *s* : `str` or `datetime object`</span>
+<span class="sd">    &gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `datetime`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">git_date_p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">git_date_p</span><span class="p">,</span> <span class="n">s</span><span class="p">)):</span>
+            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
+                             <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ref_date</span>
 </pre></div>
 
   </div>
@@ -1622,35 +1725,6 @@ in the file. Is a helper for Log.generate_edges().
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;search&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.git_datetime">
-    <p>def <span class="ident">git_datetime</span>(</p><p>s)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Turns a git date string into a datetime object.
-:param s: A git-formatted date string.
-:return: A datetime object.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.git_datetime', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.git_datetime" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Turns a git date string into a datetime object.</span>
-<span class="sd">    :param s: A git-formatted date string.</span>
-<span class="sd">    :return: A datetime object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="s2">&quot;%a %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y %z&quot;</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1805,44 +1879,6 @@ prior to joining.
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.reference_datetime">
-    <p>def <span class="ident">reference_datetime</span>(</p><p>s)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Turns a Git date string, or a datetime object into a datetime.
-:param s: String or Datetime
-:return: Datetime</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.reference_datetime', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.reference_datetime" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">reference_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Turns a Git date string, or a datetime object into a datetime.</span>
-<span class="sd">    :param s: String or Datetime</span>
-<span class="sd">    :return: Datetime</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
-        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">s</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">git_date_p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">git_date_p</span><span class="p">,</span> <span class="n">s</span><span class="p">)):</span>
-            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
-                             <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ref_date</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
     <div class="name def" id="gitnet.helpers.simple_edge">
     <p>def <span class="ident">simple_edge</span>(</p><p>v1, v2, record, keep)</p>
     </div>
@@ -1886,22 +1922,42 @@ prior to joining.
 
     
   
-    <div class="desc"><p>A predicate determining if s is a date since match (inclusive).
-:param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).
-:param match: A comparison date. Either a Git date string or a datetime object.
-:return: True or False.</p></div>
+    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) has occurred since another date (<code>match</code>).  If the dates are equal,
+the function returns <code>True</code>. Example. since("Fri Jan 10 10:12:34 2016 -0400", "Sat Apr 2 07:25:25 2016 -0400")
+returns <code>False</code>.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+<blockquote>
+<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.since', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.since" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate determining if s is a date since match (inclusive).</span>
-<span class="sd">    :param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).</span>
-<span class="sd">    :param match: A comparison date. Either a Git date string or a datetime object.</span>
-<span class="sd">    :return: True or False.</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`).  If the dates are equal,</span>
+<span class="sd">    the function returns `True`. Example. since(&quot;Fri Jan 10 10:12:34 2016 -0400&quot;, &quot;Sat Apr 2 07:25:25 2016 -0400&quot;)</span>
+<span class="sd">    returns `False`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
 </pre></div>
 
   </div>
@@ -1922,8 +1978,8 @@ prior to joining.
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.sincex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.sincex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">reference_datetime</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">git_datetime</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
 </pre></div>
 
   </div>
