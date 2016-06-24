@@ -1,6 +1,3 @@
-"""
-![](static/gitnet.png)
-"""
 import pandas as pd
 import datetime as dt
 import warnings
@@ -649,9 +646,9 @@ class Log(object):
 
         > With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
 
-        >("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
-        > atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
-        > vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])
+        > `("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},`
+        > `atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",`
+        > `vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])`
 
         """
         nodes = {}
@@ -714,24 +711,61 @@ class Log(object):
         """
         An abstract network generator. For networks that contain authors, any authors that made
         pull requests will not be transferred from the log.
-        :param mode1: The tag string for the first mode type.
-        :param mode2: The tag string for the second mode type.
-        :param edge_helper: The helper function used to compute an edge.
-        :param edge_attributes: The tag names of attributes to be saved for each edge.
-        :param mode1_atom_attrs: The tag names of attributes to be saved once for each node of mode1.
-        :param mode2_atom_attrs: The tag names of attributes to be saved repeatedly for each node of mode1.
-        :param mode1_vector_attrs: The tag names of attributes to be saved once for each node of mode2.
-        :param mode2_vector_attrs: The tag names of attributes to be saved repeatedly for each node of mode2.
-        :return: A MultiGraphPlus object, which inherits from the NetworkX MultiGraph class.
 
-        Notes:
+        **Parameters** :
+
+        > *mode1* : `string`
+
+        >> The tag string for the first mode type.
+
+        > *mode2* : `string`
+
+        >> The tag string for the second mode type.
+
+        > *edge_helper* : `None`
+
+        >> The helper function used to compute an edge.
+
+        > *edge_attributes* : `list`
+
+        >> The tag names of attributes to be saved for each edge.
+
+        > *mode1_atom_attrs* : `list`
+
+        >> The tag names of attributes to be saved once for each node of mode1.
+
+        > *mode2_atom_attrs* : `list`
+
+        >> The tag names of attributes to be saved repeatedly for each node of mode1.
+
+        > *mode1_vector_attrs* : `list`
+
+        >> The tag names of attributes to be saved once for each node of mode2.
+
+        > *mode2_vector_attrs* : `list`
+
+        >> The tag names of attributes to be saved repeatedly for each node of mode2.
+
+        **Return**
+
+        > A `MultiGraphPlus` object, which inherits from the NetworkX MultiGraph class.
+
+        **Notes** :
+
         Currently, two edge_helper functions are available in gitnet.gn_helpers:
-        1. simple_edge
-            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-        2. changes_edge
-            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
+
+        > `simple_edge`
+
+        >> Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+
+        > `changes_edge`
+
+        >> Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
+
+        >> Computes edges between authors and files based on the number of lines changed in the
+
+        >> corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).
+
         """
         graph = MultiGraphPlus()
         graph.mode1 = mode1
@@ -750,21 +784,47 @@ class Log(object):
     def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=['weight', 'date']):
         """
         Writes an edge list with attributes.
-        :param fname: A string indicating the path or file name to write to.
-        :param mode1: The tag string for the first mode type.
-        :param mode2: The tag string for the second mode type.
-        :param helper: The helper function used to generate the edges.
-        :param edge_attribute: The tag names of attributes to be saved for each edge
-        :return: None
 
-        Notes:
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *mode1* : `string`
+
+        >> The tag string for the first mode type.
+
+        > *mode2* : `string`
+
+        >> The tag string for the second mode type.
+
+        > *helper* : `None`
+
+        >> The helper function used to generate the edges.
+
+        > *edge_attribute* : `list`
+
+        >> The tag names of attributes to be saved for each edge.
+
+        **Return** : `None`
+
+        **Notes** :
+
         Currently, two edge_helper functions are available in gitnet.gn_helpers:
-        1. simple_edge
-            Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-        2. changes_edge
-            Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-            Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-            corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").
+
+        > `simple_edge`
+
+        >> Creates an unweighted edge, and saves the attributes specified by edge_attributes.
+
+        > `changes_edge`
+
+        >> Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
+
+        >> Computes edges between authors and files based on the number of lines changed in the
+
+        >> corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).
+
         """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
@@ -798,14 +858,39 @@ class Log(object):
     def write_nodes(self, fname, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
         Writes a list of nodes with attributes.
-        :param fname: A string indicating the path or file name to write to.
-        :param mode1: The tag string for the first mode type.
-        :param mode2: The tag string for the second mode type.
-        :param keep_atom1: The tag names of attributes to be saved once for each node of mode1.
-        :param keep_vector1: The tag names of attributes to be repeatedly once for each node of mode1.
-        :param keep_atom2: The tag names of attributes to be saved once for each node of mode2.
-        :param keep_vector2: The tag names of attributes to be repeatedly once for each node of mode2.
-        :return: None
+
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *mode1* : `string`
+
+        >> The tag string for the first mode type.
+
+        > *mode2* : `string`
+
+        >> The tag string for the second mode type.
+
+        > *keep_atom1* : `list`
+
+        >> The tag names of attributes to be saved once for each node of mode1.
+
+        > *keep_vector1* : `list`
+
+        >> The tag names of attributes to be repeatedly once for each node of mode1.
+
+        > *keep_atom2* : `list`
+
+        >> The tag names of attributes to be saved once for each node of mode2.
+
+        > *keep_vector2* : `list`
+
+        >> The tag names of attributes to be repeatedly once for each node of mode2.
+
+        **Return** : `None`
+
         """
         f = open(fname, "w", encoding="utf-8")
         # Define attributes
