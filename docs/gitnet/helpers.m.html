@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>gitnet.helpers API documentation</title>
-    <meta name="description" content=">![](static/gitnet.png)" />
+    <meta name="description" content="" />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1034,7 +1034,7 @@ table {
     
   
   <div id="sidebar">
-    <h1>Index</h1>
+    <img src="static/gitnet.png" height="250" width="250"/>
     <ul id="index">
 
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
@@ -1042,8 +1042,6 @@ table {
   <ul>
     <li class="mono"><a href="#gitnet.helpers.datetime_git">datetime_git</a></li>
     <li class="mono"><a href="#gitnet.helpers.datetime_reference">datetime_reference</a></li>
-    <li class="mono"><a href="#gitnet.helpers.edges_changes">edges_changes</a></li>
-    <li class="mono"><a href="#gitnet.helpers.edges_simple">edges_simple</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_before">filter_before</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_beforex">filter_beforex</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_equals">filter_equals</a></li>
@@ -1054,6 +1052,8 @@ table {
     <li class="mono"><a href="#gitnet.helpers.list_to_scd">list_to_scd</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_common">most_common</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_occurrences">most_occurrences</a></li>
+    <li class="mono"><a href="#gitnet.helpers.net_edges_changes">net_edges_changes</a></li>
+    <li class="mono"><a href="#gitnet.helpers.net_edges_simple">net_edges_simple</a></li>
     <li class="mono"><a href="#gitnet.helpers.node_colours">node_colours</a></li>
   </ul>
 
@@ -1072,16 +1072,11 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">gitnet.helpers</span> module</h1>
-  <blockquote>
-<p><img alt="" src="static/gitnet.png" /></p>
-</blockquote>
+  
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers" class="source">
-    <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&gt;![](static/gitnet.png)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+    <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
 
@@ -1379,7 +1374,7 @@ table {
 
 
 <span class="c1"># Network Edge Generator Functions</span>
-<span class="k">def</span> <span class="nf">edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">net_edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated</span>
 <span class="sd">    dictionary of properties.</span>
@@ -1405,7 +1400,7 @@ table {
     <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">net_edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number</span>
 <span class="sd">    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type &quot;files&quot;.</span>
@@ -1470,8 +1465,6 @@ table {
 <span class="sd">    (ending in .py) return &#39;tomato&#39;. C code files (ending in .cc) return &#39;gold&#39;. C interface files (ending in .h)</span>
 <span class="sd">    return &#39;goldenrod&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># After Here is not being run</span>
     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1583,166 +1576,6 @@ table {
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
                              <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ref_date</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.edges_changes">
-    <p>def <span class="ident">edges_changes</span>(</p><p>v1, v2, record, keep)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number
-of lines changed. The first vertex (<code>v1</code>) can be of any type. The second vertex (<code>v2</code>) must have the type "files".</p>
-<p><strong>Parameters</strong></p>
-<blockquote>
-<p><em>v1</em> : <code>any</code></p>
-<blockquote>
-<p>The first vertex.</p>
-</blockquote>
-<p><em>v2</em> : <code>str</code></p>
-<blockquote>
-<p>A string giving the id of a vertex whose type is "files".</p>
-</blockquote>
-<p><em>record</em> : <code>str</code></p>
-<blockquote>
-<p>The short hash string for the current record in edge generation.</p>
-</blockquote>
-<p><em>keep</em> : <code>list</code></p>
-<blockquote>
-<p>A list of edge attributes to be kept from the CommitLog record.</p>
-</blockquote>
-</blockquote>
-<p><strong>Return</strong></p>
-<blockquote>
-<p>A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>. The
-edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in <code>v2</code>.</p>
-</blockquote></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.edges_changes', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.edges_changes" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number</span>
-<span class="sd">    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type &quot;files&quot;.</span>
-
-<span class="sd">    **Parameters**</span>
-
-<span class="sd">    &gt;*v1* : `any`</span>
-<span class="sd">    &gt;&gt; The first vertex.</span>
-
-<span class="sd">    &gt;*v2* : `str`</span>
-<span class="sd">    &gt;&gt; A string giving the id of a vertex whose type is &quot;files&quot;.</span>
-
-<span class="sd">    &gt;*record* : `str`</span>
-<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
-
-<span class="sd">    &gt;*keep* : `list`</span>
-<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
-
-<span class="sd">    **Return**</span>
-<span class="sd">    &gt; A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The</span>
-<span class="sd">    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
-    <span class="c1"># Get file name and change weight</span>
-    <span class="n">split_change</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;changes&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">ch</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">v2</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
-            <span class="n">split_change</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
-            <span class="k">break</span>
-
-    <span class="k">if</span> <span class="n">split_change</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
-    <span class="n">fname</span> <span class="o">=</span> <span class="n">split_change</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">fname</span> <span class="o">==</span> <span class="n">v2</span><span class="p">)</span>
-    <span class="n">weight_str</span> <span class="o">=</span> <span class="n">split_change</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s2">&quot;Bin&quot;</span> <span class="ow">in</span> <span class="n">weight_str</span><span class="p">:</span>
-        <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">weight_str</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
-                <span class="n">weight</span> <span class="o">+=</span> <span class="n">char</span>
-        <span class="k">if</span> <span class="n">weight</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-            <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
-        <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.edges_simple">
-    <p>def <span class="ident">edges_simple</span>(</p><p>v1, v2, record, keep)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated
-dictionary of properties.</p>
-<p><strong>Parameters</strong></p>
-<blockquote>
-<p><em>v1</em> : <code>any</code></p>
-<blockquote>
-<p>The first vertex.</p>
-</blockquote>
-<p><em>v2</em> : <code>any</code></p>
-<blockquote>
-<p>The second vertex.</p>
-</blockquote>
-<p><em>record</em> : <code>str</code></p>
-<blockquote>
-<p>The short hash string for the current record in edge generation.</p>
-</blockquote>
-<p><em>keep</em> : <code>list</code></p>
-<blockquote>
-<p>A list of edge attributes to be kept from the CommitLog record.</p>
-</blockquote>
-</blockquote>
-<p><strong>Record</strong></p>
-<blockquote>
-<p>An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>.</p>
-</blockquote></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.edges_simple', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.edges_simple" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated</span>
-<span class="sd">    dictionary of properties.</span>
-
-<span class="sd">    **Parameters**</span>
-
-<span class="sd">    &gt;*v1* : `any`</span>
-<span class="sd">    &gt;&gt; The first vertex.</span>
-
-<span class="sd">    &gt;*v2* : `any`</span>
-<span class="sd">    &gt;&gt; The second vertex.</span>
-
-<span class="sd">    &gt;*record* : `str`</span>
-<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
-
-<span class="sd">    &gt;*keep* : `list`</span>
-<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
-
-<span class="sd">    **Record**</span>
-<span class="sd">    &gt; An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -2341,6 +2174,166 @@ entry is in a tie, all these entries will be returned as well.</p>
   
       
   <div class="item">
+    <div class="name def" id="gitnet.helpers.net_edges_changes">
+    <p>def <span class="ident">net_edges_changes</span>(</p><p>v1, v2, record, keep)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number
+of lines changed. The first vertex (<code>v1</code>) can be of any type. The second vertex (<code>v2</code>) must have the type "files".</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>v1</em> : <code>any</code></p>
+<blockquote>
+<p>The first vertex.</p>
+</blockquote>
+<p><em>v2</em> : <code>str</code></p>
+<blockquote>
+<p>A string giving the id of a vertex whose type is "files".</p>
+</blockquote>
+<p><em>record</em> : <code>str</code></p>
+<blockquote>
+<p>The short hash string for the current record in edge generation.</p>
+</blockquote>
+<p><em>keep</em> : <code>list</code></p>
+<blockquote>
+<p>A list of edge attributes to be kept from the CommitLog record.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong></p>
+<blockquote>
+<p>A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>. The
+edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in <code>v2</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.net_edges_changes', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.net_edges_changes" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">net_edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number</span>
+<span class="sd">    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type &quot;files&quot;.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
+
+<span class="sd">    &gt;*v2* : `str`</span>
+<span class="sd">    &gt;&gt; A string giving the id of a vertex whose type is &quot;files&quot;.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The</span>
+<span class="sd">    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+    <span class="c1"># Get file name and change weight</span>
+    <span class="n">split_change</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;changes&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">ch</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">v2</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
+            <span class="n">split_change</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">split_change</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">split_change</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">fname</span> <span class="o">==</span> <span class="n">v2</span><span class="p">)</span>
+    <span class="n">weight_str</span> <span class="o">=</span> <span class="n">split_change</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;Bin&quot;</span> <span class="ow">in</span> <span class="n">weight_str</span><span class="p">:</span>
+        <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">weight_str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
+                <span class="n">weight</span> <span class="o">+=</span> <span class="n">char</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.net_edges_simple">
+    <p>def <span class="ident">net_edges_simple</span>(</p><p>v1, v2, record, keep)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated
+dictionary of properties.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>v1</em> : <code>any</code></p>
+<blockquote>
+<p>The first vertex.</p>
+</blockquote>
+<p><em>v2</em> : <code>any</code></p>
+<blockquote>
+<p>The second vertex.</p>
+</blockquote>
+<p><em>record</em> : <code>str</code></p>
+<blockquote>
+<p>The short hash string for the current record in edge generation.</p>
+</blockquote>
+<p><em>keep</em> : <code>list</code></p>
+<blockquote>
+<p>A list of edge attributes to be kept from the CommitLog record.</p>
+</blockquote>
+</blockquote>
+<p><strong>Record</strong></p>
+<blockquote>
+<p>An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.net_edges_simple', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.net_edges_simple" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">net_edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated</span>
+<span class="sd">    dictionary of properties.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
+
+<span class="sd">    &gt;*v2* : `any`</span>
+<span class="sd">    &gt;&gt; The second vertex.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Record**</span>
+<span class="sd">    &gt; An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
     <div class="name def" id="gitnet.helpers.node_colours">
     <p>def <span class="ident">node_colours</span>(</p><p>d)</p>
     </div>
@@ -2381,8 +2374,6 @@ return 'goldenrod'.</p>
 <span class="sd">    (ending in .py) return &#39;tomato&#39;. C code files (ending in .cc) return &#39;gold&#39;. C interface files (ending in .h)</span>
 <span class="sd">    return &#39;goldenrod&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># After Here is not being run</span>
     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
     <span class="k">else</span><span class="p">:</span>

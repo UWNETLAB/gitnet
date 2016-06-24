@@ -1,3 +1,6 @@
+"""
+![](static/gitnet.png)
+"""
 import numpy as np
 import copy
 from gitnet.log import Log
@@ -7,36 +10,40 @@ from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_si
 
 class CommitLog(Log):
     """
-    A Log class for holding Git commit logs.
+    A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.
     """
-
-    def get_tags(self):
-        """
-        A Log's tags are automatically detected by the self.attributes() method. Attributes are produced in the order
-        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,
-        the attributes method will produce the tags in sorted order. The most important consequence of this ordering
-        is the order of columns in TSV output.
-
-        :return: A list of ordered reference hashes.
-        """
-        return ["hash","author","email","date","mode","merge","summary",
-                "fedits","inserts","deletes","message","files","changes"]
 
     def describe(self, mode = "default", exclude = []):
         """
-        A method for creating an extended descriptive output for the CommitLog subclass.
+        A method for creating extended descriptive output for the `Commitlog` subclass.
 
-        :param mode: Indicate an output mode. Currently implemented: "default"
-        :param exclude: A list of output tag strings to exclude from printing. Default is an empty list.
-        :return: None
-        Output items currently implemented (and their tag for exclusion):
-            - "summary" : Prints the number of logs and creation date. Identical to str(self).
-            - "authors" : Prints the number of authors who commit to the repository.
-            - "emails" : Prints the ten most common email address domains used by more than one user.
-            - "dates" : Prints the date range for commits in the collection.
-            - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
-            - "merges" : Prints the number of merges in the collection.
-            - "errors" : Prints the number of parsing errors in the collection.
+        **Parameters**:
+
+        > *mode* : `string`
+
+        >> Indicate an output mode. Currently only one implemented: "default".
+
+        > *param* : `list`
+
+        >> A list of output tag strings to exclude from printing. Defaults to an empty list.
+
+        **Return** `none`
+
+        *Output items* currently implemented (and their tag for exclusion):
+
+        > *summary* : Prints the number of logs and creation date. Identical to `str(self)`.
+
+        > *authors* : Prints the number of authors who commit to the repository.
+
+        > *emails* : Prints the ten most common email address domains used by more than one user.
+
+        > *dates* : Prints the date range for commits in the collection.
+
+        > *changes* : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
+
+        > *merges* : Prints the number of merges in the collection.
+
+        > *errors* : Prints the number of parsing errors in the collection.
 
         """
         # Define included/excluded data summaries.
@@ -143,15 +150,40 @@ class CommitLog(Log):
                     n_errors += len(self.collection[record]["errors"])
             print("Number of parsing errors: {}".format(n_errors))
 
+    def get_tags(self):
+        """
+        `Commitlog` tags are automatically detected by the `self.attributes()` method. Attributes are produced in the order
+        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in `get_tags`,
+        the attributes method will produce the tags in sorted order. The most important consequence of this ordering
+        is the order of columns in TSV output.
+
+        **Return** `list`
+
+        > A list of ordered reference hashes.
+
+        """
+        return ["hash","author","email","date","mode","merge","summary",
+                "fedits","inserts","deletes","message","files","changes"]
+
     def ignore(self, pattern, ignoreif="match"):
         """
-        Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
-        and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.
+        Looks for file and path names in "files" and "changes" that match (or not) a pattern (regular expression)
+        and moves them into `f_ignore` and `ch_ignore` respectively. Updates `filters` attribute with ignore summary.
 
-        :param pattern: A string/regular expression.
-        :param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
-            matching pattern are ignored.
-        :return: A new CommitLog object, same as self but with the appropriate files removed.
+        **Parameters*
+
+        > *pattern* : `string`
+
+        >> A regular expression pattern specified by the user.
+
+        > *ignoreif* : `string`
+
+        >> If `matches` (default) files matching the pattern are ignored. If `no match`, files not matching pattern are ignored.
+
+        **return**
+
+        > A new `Commitlog` object, same as self but with the appropriate files removed.
+
         """
         self_copy = copy.deepcopy(self)
         for record in self_copy.collection:
@@ -177,10 +209,18 @@ class CommitLog(Log):
 
     def network(self, type):
         """
-        A method for quickly creating preset networks using CommitLog data.
+        A method for quickly creating preset networks using `Commitlog` data.
 
-        :param type: A string indicating which preset to use.
-        :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.
+        **Parameters** :
+
+        > *type* : `string`
+
+        >> Indicates which preset to use.
+
+        **return** :
+
+        > A `MultiGraphPlus` object constructed with `generate_network` according to the specified defaults.
+
         """
         if type == "author/file/simple":
             return self.generate_network("author", "files")

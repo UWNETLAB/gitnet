@@ -18,15 +18,21 @@ class MultiGraphPlus(nx.MultiGraph):
 
     def write_graphml(self, fname):
         """
-        write_graphml converts a MultiGraphPlus object to a graphml file.
-        :param self: MultiGraphPlus graph
-        :param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be
-            compressed.
-        :return: None
-        This method will have the side effect of creating a file, specified by fpath.
-        This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
-            a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
-            attributes are preceded by 'n:' while edge attributes are preceded by 'e:'.
+        Converts a `MultiGraphPlus` object to a graphml file.
+
+        **Parameters** :
+
+        > *fname* :
+
+        >> A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.
+
+        **Return** : `None`
+
+        > This method will have the side effect of creating a file, specified by fpath.
+        > This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
+        > a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
+        > attributes are preceded by 'n:' while edge attributes are preceded by 'e:').
+
         """
 
         graph = copy.deepcopy(self)
@@ -59,15 +65,39 @@ class MultiGraphPlus(nx.MultiGraph):
                    weight_string='weight'):
         """
         A function to write an edgelist formatted for the tnet library for network analysis in R.
-        :param fname: A string indicating the path or file name to write to.
-        :param mode_string: The name string of the mode node attribute.
-        :param weighted: Do the edges have weights? True or false.
-        :param time_string: the name string of the date/time node attribute.
-        :param node_index_string: Creates a new integer id attribute.
-        :param weight_string: The name of the weight node attribute.
-        :return: None
 
-        Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *mode_string* : `string`
+
+        >> The name string of the mode node attribute.
+
+        > *weighted* : `bool`
+
+        >> Do the edges have weights? True or false.
+
+        > *time_string* : `string`
+
+        >> the name string of the date/time node attribute.
+
+        > *node_index_string* : `int`
+
+        >> Creates a new integer id attribute.
+
+        > *weight_string* : `string`
+
+        >> The name of the weight node attribute.
+
+        **Return** : `None`
+
+        *Source* :
+
+        > Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
+
         """
         modes = []
         mode1set = set()
@@ -130,9 +160,21 @@ class MultiGraphPlus(nx.MultiGraph):
     def node_attributes(self, name, helper):
         """
         Creates a new node attribute.
-        :param name: The name of the new attribute.
-        :param helper: A helper function, which takes an attribute dict and produces the new attribute.
-        :return: A new MultiGraphPlus object, identical to self but with the desired attribute.
+
+        **Parameters** :
+
+        > *name* : `string`
+
+        >> The name of the new attribute.
+
+        > *helper* : `None`
+
+        >> A helper function, which takes an attribute dict and produces the new attribute.
+
+        **Return** :
+
+        > A new MultiGraphPlus object, identical to self but with the desired attribute.
+
         """
         self_copy = copy.deepcopy(self)
         for n in self_copy.nodes():
@@ -142,13 +184,35 @@ class MultiGraphPlus(nx.MultiGraph):
     def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
         """
         Makes a quick visualization of the network.
-        :param fname: A string indicating the path or file name to write to.
-        :param k:
-        :param iterations:
-        :param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
-        :param size: The size of the nodes. Default is 20.
-        :param default_colour:
-        :return: None
+
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *k* : `None`
+
+        >> Default function used for plotting.
+
+        > *iterations* : `int`
+
+        >> Default number of iterations to run on the plot.
+
+        > *layout* : `string`
+
+        >> The type of layout to draw, the available layouts are: ("spring", "circular", "shell", "spectral", or "random").
+
+        > *size* : `int`
+
+        >> The size of the nodes. Default is 20.
+
+        > *default_colour* : `string`
+
+        >> Only default nodes will be coloured with this colour.
+
+        **Return** : `None`
+
         """
 
         if type(k) is str:
@@ -227,12 +291,20 @@ class MultiGraphPlus(nx.MultiGraph):
     def describe(self, extra=False):
         """
         Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,
-        denstiy, and the average degree for one mode.
-        Prints a string that contains each of the items that make up the summary.
+        denstiy, and the average degree for one mode. Prints a string that contains each of the items that make up the summary.
         Density is calculated using one of the modes of the original bipartite network graph.
 
-        :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended
-            maximum network size for the low efficiency algorithms is around 100 nodes.
+        **Parameters** :
+
+        > *extra* : `bool`
+
+        >> Runs the low efficiency algorithms, which can be resource-intensive on large networks.
+        >> Recommended maximum network size for the low efficiency algorithms is around 100 nodes.
+
+        **Returns** : `string`
+
+        > Returns the descriptive string that contains information about the `MultiGraphPlus` object.
+
         """
         mode1 = self.mode1
         mode2 = self.mode2
@@ -291,15 +363,29 @@ class MultiGraphPlus(nx.MultiGraph):
     def node_merge(self, node1, node2, show_warning=True):
         """
         Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2's edges will become
-            node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
-            identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the
-            two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic
-            attribute, node1's value will overwrite node2's value.
-        :param node1: The identifier for a node. This node's attributes will persist to the merged node.
-        :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
-        :param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed
-        :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
-        gained node2's edges.
+        node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
+        identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the
+        two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic
+        attribute, node1's value will overwrite node2's value.
+
+        **Parameters** :
+
+        > *node1* : `string`
+
+        >> The identifier for a node. This node's attributes will persist to the merged node.
+
+        > *node2* : `string`
+
+        >> The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
+
+        > *show_warning* : `bool`
+
+        >> A boolean parameter indicating whether overwrite warnings should be displayed.
+
+        **Return** : `MultiGraphPlus`
+
+        > a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have gained node2's edges.
+
         """
         merged_graph = copy.deepcopy(self)
 
@@ -348,17 +434,25 @@ class MultiGraphPlus(nx.MultiGraph):
     def collapse_edges(self, sum_weights=False):
         """
         Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
-        assigned depends on the sum_weights parameter.
+        assigned depends on the `sum_weights` parameter.
 
-        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.
-        If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
-        the weights of collapsed edges.
+        **Parameters** :
 
-        :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
-        stores other edge data in lists.
+        > *sum_weights* : `bool`
 
-        Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
-        weight attribute, this method assumes the weight of the edge is 1.
+        >> An optional boolean parameter. Determines how weights will be assigned to the final edges.
+        >> If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
+        >> the weights of collapsed edges.
+
+        **Return** :
+
+        > A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
+        > stores other edge data in lists.
+
+        **Note** :
+
+        > The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
+        > weight attribute, this method assumes the weight of the edge is 1.
 
         """
         gnew = MultiGraphPlus()

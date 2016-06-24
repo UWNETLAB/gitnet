@@ -1034,7 +1034,7 @@ table {
     
   
   <div id="sidebar">
-    <h1>Index</h1>
+    <img src="static/gitnet.png" height="250" width="250"/>
     <ul id="index">
 
 
@@ -1090,41 +1090,45 @@ table {
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">gitnet.log</span> <span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
-<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">edges_simple</span><span class="p">,</span> <span class="n">edges_changes</span>
+<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">net_edges_changes</span>
 
 
 <span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Log class for holding Git commit logs.</span>
+<span class="sd">    A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A Log&#39;s tags are automatically detected by the self.attributes() method. Attributes are produced in the order</span>
-<span class="sd">        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,</span>
-<span class="sd">        the attributes method will produce the tags in sorted order. The most important consequence of this ordering</span>
-<span class="sd">        is the order of columns in TSV output.</span>
-
-<span class="sd">        :return: A list of ordered reference hashes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A method for creating an extended descriptive output for the CommitLog subclass.</span>
+<span class="sd">        A method for creating extended descriptive output for the `Commitlog` subclass.</span>
 
-<span class="sd">        :param mode: Indicate an output mode. Currently implemented: &quot;default&quot;</span>
-<span class="sd">        :param exclude: A list of output tag strings to exclude from printing. Default is an empty list.</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        Output items currently implemented (and their tag for exclusion):</span>
-<span class="sd">            - &quot;summary&quot; : Prints the number of logs and creation date. Identical to str(self).</span>
-<span class="sd">            - &quot;authors&quot; : Prints the number of authors who commit to the repository.</span>
-<span class="sd">            - &quot;emails&quot; : Prints the ten most common email address domains used by more than one user.</span>
-<span class="sd">            - &quot;dates&quot; : Prints the date range for commits in the collection.</span>
-<span class="sd">            - &quot;changes&quot; : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
-<span class="sd">            - &quot;merges&quot; : Prints the number of merges in the collection.</span>
-<span class="sd">            - &quot;errors&quot; : Prints the number of parsing errors in the collection.</span>
+<span class="sd">        **Parameters**:</span>
+
+<span class="sd">        &gt; *mode* : `string`</span>
+
+<span class="sd">        &gt;&gt; Indicate an output mode. Currently only one implemented: &quot;default&quot;.</span>
+
+<span class="sd">        &gt; *param* : `list`</span>
+
+<span class="sd">        &gt;&gt; A list of output tag strings to exclude from printing. Defaults to an empty list.</span>
+
+<span class="sd">        **Return** `none`</span>
+
+<span class="sd">        *Output items* currently implemented (and their tag for exclusion):</span>
+
+<span class="sd">        &gt; *summary* : Prints the number of logs and creation date. Identical to `str(self)`.</span>
+
+<span class="sd">        &gt; *authors* : Prints the number of authors who commit to the repository.</span>
+
+<span class="sd">        &gt; *emails* : Prints the ten most common email address domains used by more than one user.</span>
+
+<span class="sd">        &gt; *dates* : Prints the date range for commits in the collection.</span>
+
+<span class="sd">        &gt; *changes* : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
+
+<span class="sd">        &gt; *merges* : Prints the number of merges in the collection.</span>
+
+<span class="sd">        &gt; *errors* : Prints the number of parsing errors in the collection.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Define included/excluded data summaries.</span>
@@ -1231,15 +1235,40 @@ table {
                     <span class="n">n_errors</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">])</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of parsing errors: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_errors</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        `Commitlog` tags are automatically detected by the `self.attributes()` method. Attributes are produced in the order</span>
+<span class="sd">        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in `get_tags`,</span>
+<span class="sd">        the attributes method will produce the tags in sorted order. The most important consequence of this ordering</span>
+<span class="sd">        is the order of columns in TSV output.</span>
+
+<span class="sd">        **Return** `list`</span>
+
+<span class="sd">        &gt; A list of ordered reference hashes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">ignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignoreif</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Looks for file/path names in &quot;files&quot; and &quot;changes&quot; that match (or does not match) pattern (a regular expression)</span>
-<span class="sd">        and moves them into &quot;f_ignore&quot; and &quot;ch_ignore&quot; respectively. Updates &quot;filters&quot; attribute with ignore summary.</span>
+<span class="sd">        Looks for file and path names in &quot;files&quot; and &quot;changes&quot; that match (or not) a pattern (regular expression)</span>
+<span class="sd">        and moves them into `f_ignore` and `ch_ignore` respectively. Updates `filters` attribute with ignore summary.</span>
 
-<span class="sd">        :param pattern: A string/regular expression.</span>
-<span class="sd">        :param ignoreif: If &quot;matches&quot; (default) files matching the pattern are ignored. If &quot;no match&quot;, files not</span>
-<span class="sd">            matching pattern are ignored.</span>
-<span class="sd">        :return: A new CommitLog object, same as self but with the appropriate files removed.</span>
+<span class="sd">        **Parameters*</span>
+
+<span class="sd">        &gt; *pattern* : `string`</span>
+
+<span class="sd">        &gt;&gt; A regular expression pattern specified by the user.</span>
+
+<span class="sd">        &gt; *ignoreif* : `string`</span>
+
+<span class="sd">        &gt;&gt; If `matches` (default) files matching the pattern are ignored. If `no match`, files not matching pattern are ignored.</span>
+
+<span class="sd">        **return**</span>
+
+<span class="sd">        &gt; A new `Commitlog` object, same as self but with the appropriate files removed.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
@@ -1265,10 +1294,18 @@ table {
 
     <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A method for quickly creating preset networks using CommitLog data.</span>
+<span class="sd">        A method for quickly creating preset networks using `Commitlog` data.</span>
 
-<span class="sd">        :param type: A string indicating which preset to use.</span>
-<span class="sd">        :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *type* : `string`</span>
+
+<span class="sd">        &gt;&gt; Indicates which preset to use.</span>
+
+<span class="sd">        **return** :</span>
+
+<span class="sd">        &gt; A `MultiGraphPlus` object constructed with `generate_network` according to the specified defaults.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;author/file/simple&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_network</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">)</span>
@@ -1286,7 +1323,7 @@ table {
                                          <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                          <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                          <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
+                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_changes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -1304,42 +1341,46 @@ table {
       <p id="gitnet.commit_log.CommitLog" class="name">class <span class="ident">CommitLog</span></p>
       
   
-    <div class="desc"><p>A Log class for holding Git commit logs.</p></div>
+    <div class="desc"><p>A subclass of <code>Log</code> for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog" class="source">
     <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Log class for holding Git commit logs.</span>
+<span class="sd">    A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A Log&#39;s tags are automatically detected by the self.attributes() method. Attributes are produced in the order</span>
-<span class="sd">        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,</span>
-<span class="sd">        the attributes method will produce the tags in sorted order. The most important consequence of this ordering</span>
-<span class="sd">        is the order of columns in TSV output.</span>
-
-<span class="sd">        :return: A list of ordered reference hashes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A method for creating an extended descriptive output for the CommitLog subclass.</span>
+<span class="sd">        A method for creating extended descriptive output for the `Commitlog` subclass.</span>
 
-<span class="sd">        :param mode: Indicate an output mode. Currently implemented: &quot;default&quot;</span>
-<span class="sd">        :param exclude: A list of output tag strings to exclude from printing. Default is an empty list.</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        Output items currently implemented (and their tag for exclusion):</span>
-<span class="sd">            - &quot;summary&quot; : Prints the number of logs and creation date. Identical to str(self).</span>
-<span class="sd">            - &quot;authors&quot; : Prints the number of authors who commit to the repository.</span>
-<span class="sd">            - &quot;emails&quot; : Prints the ten most common email address domains used by more than one user.</span>
-<span class="sd">            - &quot;dates&quot; : Prints the date range for commits in the collection.</span>
-<span class="sd">            - &quot;changes&quot; : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
-<span class="sd">            - &quot;merges&quot; : Prints the number of merges in the collection.</span>
-<span class="sd">            - &quot;errors&quot; : Prints the number of parsing errors in the collection.</span>
+<span class="sd">        **Parameters**:</span>
+
+<span class="sd">        &gt; *mode* : `string`</span>
+
+<span class="sd">        &gt;&gt; Indicate an output mode. Currently only one implemented: &quot;default&quot;.</span>
+
+<span class="sd">        &gt; *param* : `list`</span>
+
+<span class="sd">        &gt;&gt; A list of output tag strings to exclude from printing. Defaults to an empty list.</span>
+
+<span class="sd">        **Return** `none`</span>
+
+<span class="sd">        *Output items* currently implemented (and their tag for exclusion):</span>
+
+<span class="sd">        &gt; *summary* : Prints the number of logs and creation date. Identical to `str(self)`.</span>
+
+<span class="sd">        &gt; *authors* : Prints the number of authors who commit to the repository.</span>
+
+<span class="sd">        &gt; *emails* : Prints the ten most common email address domains used by more than one user.</span>
+
+<span class="sd">        &gt; *dates* : Prints the date range for commits in the collection.</span>
+
+<span class="sd">        &gt; *changes* : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
+
+<span class="sd">        &gt; *merges* : Prints the number of merges in the collection.</span>
+
+<span class="sd">        &gt; *errors* : Prints the number of parsing errors in the collection.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Define included/excluded data summaries.</span>
@@ -1446,15 +1487,40 @@ table {
                     <span class="n">n_errors</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">])</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of parsing errors: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_errors</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        `Commitlog` tags are automatically detected by the `self.attributes()` method. Attributes are produced in the order</span>
+<span class="sd">        specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in `get_tags`,</span>
+<span class="sd">        the attributes method will produce the tags in sorted order. The most important consequence of this ordering</span>
+<span class="sd">        is the order of columns in TSV output.</span>
+
+<span class="sd">        **Return** `list`</span>
+
+<span class="sd">        &gt; A list of ordered reference hashes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">ignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignoreif</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Looks for file/path names in &quot;files&quot; and &quot;changes&quot; that match (or does not match) pattern (a regular expression)</span>
-<span class="sd">        and moves them into &quot;f_ignore&quot; and &quot;ch_ignore&quot; respectively. Updates &quot;filters&quot; attribute with ignore summary.</span>
+<span class="sd">        Looks for file and path names in &quot;files&quot; and &quot;changes&quot; that match (or not) a pattern (regular expression)</span>
+<span class="sd">        and moves them into `f_ignore` and `ch_ignore` respectively. Updates `filters` attribute with ignore summary.</span>
 
-<span class="sd">        :param pattern: A string/regular expression.</span>
-<span class="sd">        :param ignoreif: If &quot;matches&quot; (default) files matching the pattern are ignored. If &quot;no match&quot;, files not</span>
-<span class="sd">            matching pattern are ignored.</span>
-<span class="sd">        :return: A new CommitLog object, same as self but with the appropriate files removed.</span>
+<span class="sd">        **Parameters*</span>
+
+<span class="sd">        &gt; *pattern* : `string`</span>
+
+<span class="sd">        &gt;&gt; A regular expression pattern specified by the user.</span>
+
+<span class="sd">        &gt; *ignoreif* : `string`</span>
+
+<span class="sd">        &gt;&gt; If `matches` (default) files matching the pattern are ignored. If `no match`, files not matching pattern are ignored.</span>
+
+<span class="sd">        **return**</span>
+
+<span class="sd">        &gt; A new `Commitlog` object, same as self but with the appropriate files removed.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
@@ -1480,10 +1546,18 @@ table {
 
     <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A method for quickly creating preset networks using CommitLog data.</span>
+<span class="sd">        A method for quickly creating preset networks using `Commitlog` data.</span>
 
-<span class="sd">        :param type: A string indicating which preset to use.</span>
-<span class="sd">        :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *type* : `string`</span>
+
+<span class="sd">        &gt;&gt; Indicates which preset to use.</span>
+
+<span class="sd">        **return** :</span>
+
+<span class="sd">        &gt; A `MultiGraphPlus` object constructed with `generate_network` according to the specified defaults.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;author/file/simple&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_network</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">)</span>
@@ -1501,7 +1575,7 @@ table {
                                          <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                          <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                          <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
+                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_changes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -1527,29 +1601,59 @@ table {
 
     
   
-    <div class="desc"><p>Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.
-Log objects should be passed a dictionary of dictionaries after initialization, or entries should be
-added to the empty dictionary in self.collection.</p>
-<p>:param dofd: A dictionary of dictionaries, which becomes self.collection. Defaults to empty.
-:param source: A string passed by the parser indicating the source of the data.
-:param path: A string passed by the parser indicating the path from which the data was accessed.
-:param key_type: A string passed by the parser indicating how data is keyed in the dicitonary (e.g. by hash.)
-:param filters: A list of strings summarizing how the Log has been filtered (using filter and ignore methods.)
-:var self.tags: Tags are generated using the get_tags method.</p></div>
+    <div class="desc"><p>Initializes the <code>Log</code> with a timestamp. Other fields default to an empty dictionary, or <code>none</code> unless otherwise specified.
+<code>Log</code> objects should be passed a dictionary of dictionaries after initialization, or entries should be
+added to the empty dictionary in <code>self.collection</code>.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>dofd</em> : <code>dictionary</code></p>
+<blockquote>
+<p>A dictionary of dictionaries, which becomes <code>self.collection</code>. Defaults to empty.</p>
+</blockquote>
+<p><em>source</em> : <code>string</code></p>
+<blockquote>
+<p>A string passed by the parser indicating the source of the data.</p>
+</blockquote>
+<p><em>path</em> : <code>string</code></p>
+<blockquote>
+<p>A string passed by the parser indicating the path from which the data was accessed.</p>
+</blockquote>
+<p><em>key_type</em> : <code>string</code></p>
+<blockquote>
+<p>A string passed by the parser indicating how data is keyed in the dicitonary (for example by hash).</p>
+</blockquote>
+<p><em>filters</em> : <code>list</code></p>
+<blockquote>
+<p>A list of strings summarizing how the Log has been filtered (using filter and ignore methods).</p>
+</blockquote>
+</blockquote>
+<p><em>var</em> : <code>self.tags</code> : <code>list</code></p>
+<blockquote>
+<blockquote>
+<p>Tags are generated using the get_tags method.</p>
+</blockquote>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.__init__', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.__init__" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dofd</span><span class="o">=</span><span class="p">{},</span> <span class="n">source</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initializes the Log with a timestamp. Other fields default to {} or none unless otherwise specified.</span>
-<span class="sd">    Log objects should be passed a dictionary of dictionaries after initialization, or entries should be</span>
-<span class="sd">    added to the empty dictionary in self.collection.</span>
-<span class="sd">    :param dofd: A dictionary of dictionaries, which becomes self.collection. Defaults to empty.</span>
-<span class="sd">    :param source: A string passed by the parser indicating the source of the data.</span>
-<span class="sd">    :param path: A string passed by the parser indicating the path from which the data was accessed.</span>
-<span class="sd">    :param key_type: A string passed by the parser indicating how data is keyed in the dicitonary (e.g. by hash.)</span>
-<span class="sd">    :param filters: A list of strings summarizing how the Log has been filtered (using filter and ignore methods.)</span>
-<span class="sd">    :var self.tags: Tags are generated using the get_tags method.</span>
+<span class="sd">    Initializes the `Log` with a timestamp. Other fields default to an empty dictionary, or `none` unless otherwise specified.</span>
+<span class="sd">    `Log` objects should be passed a dictionary of dictionaries after initialization, or entries should be</span>
+<span class="sd">    added to the empty dictionary in `self.collection`.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *dofd* : `dictionary`</span>
+<span class="sd">    &gt;&gt; A dictionary of dictionaries, which becomes `self.collection`. Defaults to empty.</span>
+<span class="sd">    &gt; *source* : `string`</span>
+<span class="sd">    &gt;&gt; A string passed by the parser indicating the source of the data.</span>
+<span class="sd">    &gt; *path* : `string`</span>
+<span class="sd">    &gt;&gt; A string passed by the parser indicating the path from which the data was accessed.</span>
+<span class="sd">    &gt; *key_type* : `string`</span>
+<span class="sd">    &gt;&gt; A string passed by the parser indicating how data is keyed in the dicitonary (for example by hash).</span>
+<span class="sd">    &gt; *filters* : `list`</span>
+<span class="sd">    &gt;&gt; A list of strings summarizing how the Log has been filtered (using filter and ignore methods).</span>
+<span class="sd">    *var* : `self.tags` : `list`</span>
+<span class="sd">    &gt;&gt; Tags are generated using the get_tags method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">dofd</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
@@ -1575,21 +1679,25 @@ added to the empty dictionary in self.collection.</p>
 
     
   
-    <div class="desc"><p>A method for determining what data has been recorded in this commit log.
-:return: A sorted list containing every key present in the Log's records. For example, the attributes for
-a local commit log would contain hashes ("hash"), author name ("author"), author email ("email"), etc.
-If the self.tags attribute has been defined for this object, tags appear by their order in self.tags. Any
-unrecognized tags will be added at the end.</p></div>
+    <div class="desc"><p>A method for determining what data has been recorded in this <code>Commitlog</code>.</p>
+<p><strong>Return</strong> : <code>list</code></p>
+<blockquote>
+<p>A sorted list containing every key present in the <code>Log</code>. For example, the attributes for
+a local <code>Commitlog</code> would contain hashes ("hash"), author name ("author"), author email ("email"), and several more.
+If the <code>self.tags</code> attribute has been defined for this object, tags appear by their order in <code>self.tags</code>. Any
+unrecognized tags will be added at the end.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.attributes', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.attributes" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A method for determining what data has been recorded in this commit log.</span>
-<span class="sd">    :return: A sorted list containing every key present in the Log&#39;s records. For example, the attributes for</span>
-<span class="sd">    a local commit log would contain hashes (&quot;hash&quot;), author name (&quot;author&quot;), author email (&quot;email&quot;), etc.</span>
-<span class="sd">    If the self.tags attribute has been defined for this object, tags appear by their order in self.tags. Any</span>
-<span class="sd">    unrecognized tags will be added at the end.</span>
+<span class="sd">    A method for determining what data has been recorded in this `Commitlog`.</span>
+<span class="sd">    **Return** : `list`</span>
+<span class="sd">    &gt; A sorted list containing every key present in the `Log`. For example, the attributes for</span>
+<span class="sd">    &gt; a local `Commitlog` would contain hashes (&quot;hash&quot;), author name (&quot;author&quot;), author email (&quot;email&quot;), and several more.</span>
+<span class="sd">    &gt; If the `self.tags` attribute has been defined for this object, tags appear by their order in `self.tags`. Any</span>
+<span class="sd">    &gt; unrecognized tags will be added at the end.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">attr</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="c1"># Add every key in the collection to a set object.</span>
@@ -1624,14 +1732,14 @@ unrecognized tags will be added at the end.</p></div>
     
   
     <div class="desc"><p>Gathers each unique author email combination from the log, and then prints them in a list.
-The intention is that the user can use these author names in the replace_val function.</p></div>
+The intention is that the user can use these author names in the <code>replace_val</code> function.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.author_email_list', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.author_email_list" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">author_email_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gathers each unique author email combination from the log, and then prints them in a list.</span>
-<span class="sd">    The intention is that the user can use these author names in the replace_val function.</span>
+<span class="sd">    The intention is that the user can use these author names in the `replace_val` function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">duplicates</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">selfcopy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1669,15 +1777,15 @@ The intention is that the user can use these author names in the replace_val fun
 
     
   
-    <div class="desc"><p>Interactively prints the contents of the Log collection, one record at a time.
-:return: None</p></div>
+    <div class="desc"><p>Interactively prints the contents of the Log collection, one record at a time.</p>
+<p><strong>Return</strong> : <code>None</code></p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.browse', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.browse" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">browse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interactively prints the contents of the Log collection, one record at a time.</span>
-<span class="sd">    :return: None</span>
+<span class="sd">    **Return** : `None`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;----- {} -----&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
@@ -1706,35 +1814,49 @@ The intention is that the user can use these author names in the replace_val fun
 
     
   
-    <div class="desc"><p>A method for creating an extended descriptive output for the CommitLog subclass.</p>
-<p>:param mode: Indicate an output mode. Currently implemented: "default"
-:param exclude: A list of output tag strings to exclude from printing. Default is an empty list.
-:return: None
-Output items currently implemented (and their tag for exclusion):
-    - "summary" : Prints the number of logs and creation date. Identical to str(self).
-    - "authors" : Prints the number of authors who commit to the repository.
-    - "emails" : Prints the ten most common email address domains used by more than one user.
-    - "dates" : Prints the date range for commits in the collection.
-    - "changes" : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.
-    - "merges" : Prints the number of merges in the collection.
-    - "errors" : Prints the number of parsing errors in the collection.</p></div>
+    <div class="desc"><p>A method for creating extended descriptive output for the <code>Commitlog</code> subclass.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<p><em>mode</em> : <code>string</code></p>
+<blockquote>
+<p>Indicate an output mode. Currently only one implemented: "default".</p>
+</blockquote>
+<p><em>param</em> : <code>list</code></p>
+<blockquote>
+<p>A list of output tag strings to exclude from printing. Defaults to an empty list.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>none</code></p>
+<p><em>Output items</em> currently implemented (and their tag for exclusion):</p>
+<blockquote>
+<p><em>summary</em> : Prints the number of logs and creation date. Identical to <code>str(self)</code>.</p>
+<p><em>authors</em> : Prints the number of authors who commit to the repository.</p>
+<p><em>emails</em> : Prints the ten most common email address domains used by more than one user.</p>
+<p><em>dates</em> : Prints the date range for commits in the collection.</p>
+<p><em>changes</em> : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</p>
+<p><em>merges</em> : Prints the number of merges in the collection.</p>
+<p><em>errors</em> : Prints the number of parsing errors in the collection.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.describe', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.describe" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A method for creating an extended descriptive output for the CommitLog subclass.</span>
-<span class="sd">    :param mode: Indicate an output mode. Currently implemented: &quot;default&quot;</span>
-<span class="sd">    :param exclude: A list of output tag strings to exclude from printing. Default is an empty list.</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    Output items currently implemented (and their tag for exclusion):</span>
-<span class="sd">        - &quot;summary&quot; : Prints the number of logs and creation date. Identical to str(self).</span>
-<span class="sd">        - &quot;authors&quot; : Prints the number of authors who commit to the repository.</span>
-<span class="sd">        - &quot;emails&quot; : Prints the ten most common email address domains used by more than one user.</span>
-<span class="sd">        - &quot;dates&quot; : Prints the date range for commits in the collection.</span>
-<span class="sd">        - &quot;changes&quot; : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
-<span class="sd">        - &quot;merges&quot; : Prints the number of merges in the collection.</span>
-<span class="sd">        - &quot;errors&quot; : Prints the number of parsing errors in the collection.</span>
+<span class="sd">    A method for creating extended descriptive output for the `Commitlog` subclass.</span>
+<span class="sd">    **Parameters**:</span>
+<span class="sd">    &gt; *mode* : `string`</span>
+<span class="sd">    &gt;&gt; Indicate an output mode. Currently only one implemented: &quot;default&quot;.</span>
+<span class="sd">    &gt; *param* : `list`</span>
+<span class="sd">    &gt;&gt; A list of output tag strings to exclude from printing. Defaults to an empty list.</span>
+<span class="sd">    **Return** `none`</span>
+<span class="sd">    *Output items* currently implemented (and their tag for exclusion):</span>
+<span class="sd">    &gt; *summary* : Prints the number of logs and creation date. Identical to `str(self)`.</span>
+<span class="sd">    &gt; *authors* : Prints the number of authors who commit to the repository.</span>
+<span class="sd">    &gt; *emails* : Prints the ten most common email address domains used by more than one user.</span>
+<span class="sd">    &gt; *dates* : Prints the date range for commits in the collection.</span>
+<span class="sd">    &gt; *changes* : Prints the mean and std. deviation of file changes, insertions, and deletions per commit.</span>
+<span class="sd">    &gt; *merges* : Prints the number of merges in the collection.</span>
+<span class="sd">    &gt; *errors* : Prints the number of parsing errors in the collection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Define included/excluded data summaries.</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
@@ -1856,18 +1978,22 @@ Output items currently implemented (and their tag for exclusion):
     
   
     <div class="desc"><p>Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
-have committed under multiple names. This will allow you to either replace the author names in the log, or
+have committed under multiple names. This will allow you to either replace the author names in the <code>Log</code>, or
 merge nodes once you have converted the log to a network.</p>
-<p>:return: A dictionary where keys are emails and values are the multiple authors associated with this email.</p></div>
+<p><strong>Return</strong> : <code>dictionary</code></p>
+<blockquote>
+<p>A dictionary where keys are emails and values are the multiple authors associated with this email.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.detect_dup_emails', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.detect_dup_emails" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">detect_dup_emails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds emails which are associated with multiple authors. This list should be a good indicator of authors which</span>
-<span class="sd">    have committed under multiple names. This will allow you to either replace the author names in the log, or</span>
+<span class="sd">    have committed under multiple names. This will allow you to either replace the author names in the `Log`, or</span>
 <span class="sd">    merge nodes once you have converted the log to a network.</span>
-<span class="sd">    :return: A dictionary where keys are emails and values are the multiple authors associated with this email.</span>
+<span class="sd">    **Return** : `dictionary`</span>
+<span class="sd">    &gt; A dictionary where keys are emails and values are the multiple authors associated with this email.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">duplicate_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">observed_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1911,15 +2037,19 @@ merge nodes once you have converted the log to a network.</p>
 
     
   
-    <div class="desc"><p>Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
-:return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.</p></div>
+    <div class="desc"><p>Converts the <code>Log</code> to a Pandas dataframe. Recommended method for analyzing attribute data in Python.</p>
+<p><strong>Return</strong> : <code>dataframe</code></p>
+<blockquote>
+<p>Returns a <code>pandas dataframe</code> object. Rows are commits by short-hash. Columns are commit attributes.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.df', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.df" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts the Log to a Pandas dataframe. Recommended method for analyzing attribute data in Python.</span>
-<span class="sd">    :return: Pandas dataframe. Rows are commits by short-hash. Columns are commit attributes.</span>
+<span class="sd">    Converts the `Log` to a Pandas dataframe. Recommended method for analyzing attribute data in Python.</span>
+<span class="sd">    **Return** : `dataframe`</span>
+<span class="sd">    &gt; Returns a `pandas dataframe` object. Rows are commits by short-hash. Columns are commit attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">retval</span>
@@ -1939,83 +2069,125 @@ merge nodes once you have converted the log to a network.</p>
 
     
   
-    <div class="desc"><p>A method which creates a new Log, containing only records which match certain criteria.
-:param tag: Denotes the tag by which the Log should be filtered. ("ALL" searches every value.)
-:param fun: A string denoting which predicate function to use.
-:param match: A string which the predicate function uses for comparison.
-:param negate: If negate is set to true, only entries which do not match will be kept.
-:param helper: Passing a function object over-rides 'fun'.
-:param summary: An optional summary string describing the filter operation. Recommended when using a custom
-helper function.
-:return: A new Log object identical to self but with only matching records.</p>
-<p>Details:
-Comparisons are usually made in the following way: fun(self.collection[sha][tag],match). This pattern should
-be followed when using custom helper functions.</p>
-<p>Predicates currently implemented:
-    - "equals" (Does the [tag] value exactly equal match? e.g. self.filter("author","equals","Jane"))
-        - If both values are strings, match can be a regular expression.
-    - "has" (Is match "in" the [tag] value? e.g. self.filter("email","has","@gmail.com"))
-        - If both values are strings, match can be a regular expression.
-    - Comparison operations. The values of tag, and match, must be comparable with &gt;, and &lt;. Note that unless
-    you have explicitly converted date strings to datetime objects (or something similar), these comparisons
-    are not valid for date strings.
-        - "&lt;" tag value less than match.
-        - "&lt;=" tag value less than or equal to match.
-        - "&gt;" tag value greater than match.
-        - "&gt;=" tag value greater than or equal to match.
-    - Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as
-        "Mon Apr 8 00:59:02 2016 -0400")
-        - "since" (Is the date since match? Inclusive.)
-        - "sincex" (Is the date since match? Exclusive.)
-        - "before" (Is the date before match? Inclusive.)
-        - "beforex" (Is the date before match? Exclusive.)</p>
+    <div class="desc"><p>A method which creates a new <code>Log</code>, containing only records which match certain criteria.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>tag</em> : <code>string</code></p>
+<blockquote>
+<p>Denotes the tag by which the Log should be filtered. ("ALL" searches every value).</p>
+</blockquote>
+<p><em>fun</em> : <code>string</code></p>
+<blockquote>
+<p>A string denoting which built-in function to use.</p>
+</blockquote>
+<p><em>match</em> : <code>string</code></p>
+<blockquote>
+<p>A string which the predicate function uses for comparison.</p>
+</blockquote>
+<p><em>negate</em> : <code>bool</code></p>
+<blockquote>
+<p>If negate is set to true, only entries which do not match will be kept.</p>
+</blockquote>
+<p><em>helper</em> : <code>None</code></p>
+<blockquote>
+<p>Passing a function object over-rides <code>fun</code>.</p>
+</blockquote>
+<p><em>summary</em> : <code>string</code></p>
+<blockquote>
+<p>An optional summary string describing the filter operation. Recommended when using a custom helper function.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>Log</code></p>
+<blockquote>
+<p>A new <code>Log</code> object identical to self but with only matching records.</p>
+</blockquote>
+<p><strong>Details</strong> :</p>
+<blockquote>
+<p>Comparisons are usually made in the following way: <code>fun(self.collection[sha][tag],match)</code>.
+This pattern should be followed when using custom helper functions.</p>
+<p><em>Predicates currently implemented</em> :</p>
+<blockquote>
+<p><code>equals</code> : (Does the [tag] value exactly equal match? e.g. <code>self.filter("author","equals","Jane")</code>)</p>
+<blockquote>
+<p>If both values are strings, match can be a regular expression.</p>
+</blockquote>
+<p><code>has</code> : (Is match "in" the [tag] value? e.g. <code>self.filter("email","has","@gmail.com")</code>)</p>
+<blockquote>
+<p>If both values are strings, match can be a regular expression.</p>
+</blockquote>
+<p>Comparison operations. The values of tag, and match, must be comparable with &gt;, and &lt;. Note that unless
+you have explicitly converted date strings to datetime objects (or something similar), these comparisons
+are not valid for date strings.</p>
+<blockquote>
+<p><code>&lt;</code> tag value less than match.
+<code>&lt;=</code> tag value less than or equal to match.
+<code>&gt;</code> tag value greater than match.
+<code>&gt;=</code> tag value greater than or equal to match.</p>
+</blockquote>
+<p>Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as "Mon Apr 8 00:59:02 2016 -0400")</p>
+<blockquote>
+<p><code>since</code> (Is the date since match? Inclusive).
+<code>sincex</code> (Is the date since match? Exclusive).
+<code>before</code> (Is the date before match? Inclusive).
+<code>beforex</code> (Is the date before match? Exclusive).</p>
+</blockquote>
+</blockquote>
+</blockquote>
 <p>Note that if a keyed value is a list, every item in the list is checked.</p>
-<p>Examples:
-my_log.filter("email", "equals", "bob@gmail.com")
-my_log.filter("email", "has", "@gmail.com")
-my_log.filter("email", "has", "@gmail.c[oa]m?")
-my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</p></div>
+<p><strong>Examples</strong> :</p>
+<blockquote>
+<p><code>my_log.filter("email", "equals", "bob@gmail.com")</code></p>
+<p><code>my_log.filter("email", "has", "@gmail.com")</code></p>
+<p><code>my_log.filter("email", "has", "@gmail.c[oa]m?")</code></p>
+<p><code>my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</code></p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.filter', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.filter" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A method which creates a new Log, containing only records which match certain criteria.</span>
-<span class="sd">    :param tag: Denotes the tag by which the Log should be filtered. (&quot;ALL&quot; searches every value.)</span>
-<span class="sd">    :param fun: A string denoting which predicate function to use.</span>
-<span class="sd">    :param match: A string which the predicate function uses for comparison.</span>
-<span class="sd">    :param negate: If negate is set to true, only entries which do not match will be kept.</span>
-<span class="sd">    :param helper: Passing a function object over-rides &#39;fun&#39;.</span>
-<span class="sd">    :param summary: An optional summary string describing the filter operation. Recommended when using a custom</span>
-<span class="sd">    helper function.</span>
-<span class="sd">    :return: A new Log object identical to self but with only matching records.</span>
-<span class="sd">    Details:</span>
-<span class="sd">    Comparisons are usually made in the following way: fun(self.collection[sha][tag],match). This pattern should</span>
-<span class="sd">    be followed when using custom helper functions.</span>
-<span class="sd">    Predicates currently implemented:</span>
-<span class="sd">        - &quot;equals&quot; (Does the [tag] value exactly equal match? e.g. self.filter(&quot;author&quot;,&quot;equals&quot;,&quot;Jane&quot;))</span>
-<span class="sd">            - If both values are strings, match can be a regular expression.</span>
-<span class="sd">        - &quot;has&quot; (Is match &quot;in&quot; the [tag] value? e.g. self.filter(&quot;email&quot;,&quot;has&quot;,&quot;@gmail.com&quot;))</span>
-<span class="sd">            - If both values are strings, match can be a regular expression.</span>
-<span class="sd">        - Comparison operations. The values of tag, and match, must be comparable with &gt;, and &lt;. Note that unless</span>
-<span class="sd">        you have explicitly converted date strings to datetime objects (or something similar), these comparisons</span>
-<span class="sd">        are not valid for date strings.</span>
-<span class="sd">            - &quot;&lt;&quot; tag value less than match.</span>
-<span class="sd">            - &quot;&lt;=&quot; tag value less than or equal to match.</span>
-<span class="sd">            - &quot;&gt;&quot; tag value greater than match.</span>
-<span class="sd">            - &quot;&gt;=&quot; tag value greater than or equal to match.</span>
-<span class="sd">        - Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as</span>
-<span class="sd">            &quot;Mon Apr 8 00:59:02 2016 -0400&quot;)</span>
-<span class="sd">            - &quot;since&quot; (Is the date since match? Inclusive.)</span>
-<span class="sd">            - &quot;sincex&quot; (Is the date since match? Exclusive.)</span>
-<span class="sd">            - &quot;before&quot; (Is the date before match? Inclusive.)</span>
-<span class="sd">            - &quot;beforex&quot; (Is the date before match? Exclusive.)</span>
+<span class="sd">    A method which creates a new `Log`, containing only records which match certain criteria.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *tag* : `string`</span>
+<span class="sd">    &gt;&gt; Denotes the tag by which the Log should be filtered. (&quot;ALL&quot; searches every value).</span>
+<span class="sd">    &gt; *fun* : `string`</span>
+<span class="sd">    &gt;&gt; A string denoting which built-in function to use.</span>
+<span class="sd">    &gt; *match* : `string`</span>
+<span class="sd">    &gt;&gt; A string which the predicate function uses for comparison.</span>
+<span class="sd">    &gt; *negate* : `bool`</span>
+<span class="sd">    &gt;&gt; If negate is set to true, only entries which do not match will be kept.</span>
+<span class="sd">    &gt; *helper* : `None`</span>
+<span class="sd">    &gt;&gt; Passing a function object over-rides `fun`.</span>
+<span class="sd">    &gt; *summary* : `string`</span>
+<span class="sd">    &gt;&gt; An optional summary string describing the filter operation. Recommended when using a custom helper function.</span>
+<span class="sd">    **Return** : `Log`</span>
+<span class="sd">    &gt; A new `Log` object identical to self but with only matching records.</span>
+<span class="sd">    **Details** :</span>
+<span class="sd">    &gt; Comparisons are usually made in the following way: `fun(self.collection[sha][tag],match)`.</span>
+<span class="sd">    &gt; This pattern should be followed when using custom helper functions.</span>
+<span class="sd">    &gt; *Predicates currently implemented* :</span>
+<span class="sd">    &gt;&gt; `equals` : (Does the [tag] value exactly equal match? e.g. `self.filter(&quot;author&quot;,&quot;equals&quot;,&quot;Jane&quot;)`)</span>
+<span class="sd">    &gt;&gt;&gt; If both values are strings, match can be a regular expression.</span>
+<span class="sd">    &gt;&gt; `has` : (Is match &quot;in&quot; the [tag] value? e.g. `self.filter(&quot;email&quot;,&quot;has&quot;,&quot;@gmail.com&quot;)`)</span>
+<span class="sd">    &gt;&gt;&gt; If both values are strings, match can be a regular expression.</span>
+<span class="sd">    &gt;&gt; Comparison operations. The values of tag, and match, must be comparable with &gt;, and &lt;. Note that unless</span>
+<span class="sd">    &gt;&gt; you have explicitly converted date strings to datetime objects (or something similar), these comparisons</span>
+<span class="sd">    &gt;&gt; are not valid for date strings.</span>
+<span class="sd">    &gt;&gt;&gt; `&lt;` tag value less than match.</span>
+<span class="sd">    &gt;&gt;&gt; `&lt;=` tag value less than or equal to match.</span>
+<span class="sd">    &gt;&gt;&gt; `&gt;` tag value greater than match.</span>
+<span class="sd">    &gt;&gt;&gt; `&gt;=` tag value greater than or equal to match.</span>
+<span class="sd">    &gt;&gt; Datetime comparisons. Note that tag must be date, and match must be a Git-formatted time (such as &quot;Mon Apr 8 00:59:02 2016 -0400&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; `since` (Is the date since match? Inclusive).</span>
+<span class="sd">    &gt;&gt;&gt; `sincex` (Is the date since match? Exclusive).</span>
+<span class="sd">    &gt;&gt;&gt; `before` (Is the date before match? Inclusive).</span>
+<span class="sd">    &gt;&gt;&gt; `beforex` (Is the date before match? Exclusive).</span>
 <span class="sd">    Note that if a keyed value is a list, every item in the list is checked.</span>
-<span class="sd">    Examples:</span>
-<span class="sd">    my_log.filter(&quot;email&quot;, &quot;equals&quot;, &quot;bob@gmail.com&quot;)</span>
-<span class="sd">    my_log.filter(&quot;email&quot;, &quot;has&quot;, &quot;@gmail.com&quot;)</span>
-<span class="sd">    my_log.filter(&quot;email&quot;, &quot;has&quot;, &quot;@gmail.c[oa]m?&quot;)</span>
-<span class="sd">    my_log.filter(&quot;date&quot;, &quot;since&quot;, &quot;Fri May 6 15:41:25 2016 -0400&quot;)</span>
+<span class="sd">    **Examples** :</span>
+<span class="sd">    &gt; `my_log.filter(&quot;email&quot;, &quot;equals&quot;, &quot;bob@gmail.com&quot;)`</span>
+<span class="sd">    &gt; `my_log.filter(&quot;email&quot;, &quot;has&quot;, &quot;@gmail.com&quot;)`</span>
+<span class="sd">    &gt; `my_log.filter(&quot;email&quot;, &quot;has&quot;, &quot;@gmail.c[oa]m?&quot;)`</span>
+<span class="sd">    &gt; `my_log.filter(&quot;date&quot;, &quot;since&quot;, &quot;Fri May 6 15:41:25 2016 -0400&quot;)`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This dictionary includes the currently built-in filtering predicates.</span>
     <span class="n">fun_reference</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;equals&quot;</span><span class="p">:</span> <span class="n">filter_equals</span><span class="p">,</span>
@@ -2084,45 +2256,67 @@ my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_edges">
-    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function edges_simple at 0x114890620&gt;, edge_attributes=[])</p>
+    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attributes=[])</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Generates bipartite edges present in each Log record.
-:param mode1: A record attribute (tag), which becomes the first node type.
-:param mode2: A record attribute (tag), which becomes the second node type.
-:param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.
-:param edge_attributes: A list of attributes to keep as attributes of the edge.
-:return: A generator object containing edges and their weights.</p>
-<p>Notes:
-Currently, two edge_helper functions are available in gitnet.gn_helpers:
-1. simple_edge
-    Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-2. changes_edge
-    Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-    Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-    corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").</p></div>
+    <div class="desc"><p>Generates bipartite edges present in each Log record.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>mode1</em> : <code>string</code></p>
+<blockquote>
+<p>A record attribute or tag, which becomes the first node type.</p>
+</blockquote>
+<p><em>mode2</em> : <code>string</code></p>
+<blockquote>
+<p>A record attribute or tag, which becomes the second node type.</p>
+</blockquote>
+<p><em>helper</em> : <code>function</code></p>
+<blockquote>
+<p>The function that computes the edges. Options are simple_edge (default) and changes_edge.</p>
+</blockquote>
+<p><em>edge_attributes</em> :</p>
+<blockquote>
+<p>A list of attributes to keep as attributes of the edge.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A generator object containing edges and their weights.</p>
+</blockquote>
+<p><strong>Notes</strong> :</p>
+<blockquote>
+<p>Currently, two edge_helper functions are available in gitnet.gn_helpers:</p>
+<blockquote>
+<p><code>simple_edge</code> : Creates an unweighted edge, and saves the attributes specified by edge_attributes.</p>
+<p><code>changes_edge</code> : Only to be used for author-file networks, with "changes" from "git log --stat" logs (as in a <code>Commitlog</code>).
+Computes edges between authors and files based on the number of lines changed in the corresponding changes (weight is 6 for <code>README.md | 6 +++---</code>).</p>
+</blockquote>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_edges', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_edges" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[]):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates bipartite edges present in each Log record.</span>
-<span class="sd">    :param mode1: A record attribute (tag), which becomes the first node type.</span>
-<span class="sd">    :param mode2: A record attribute (tag), which becomes the second node type.</span>
-<span class="sd">    :param helper: The function that computes the edges. Options are simple_edge (default) and changes_edge.</span>
-<span class="sd">    :param edge_attributes: A list of attributes to keep as attributes of the edge.</span>
-<span class="sd">    :return: A generator object containing edges and their weights.</span>
-<span class="sd">    Notes:</span>
-<span class="sd">    Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
-<span class="sd">    1. simple_edge</span>
-<span class="sd">        Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
-<span class="sd">    2. changes_edge</span>
-<span class="sd">        Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
-<span class="sd">        Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the</span>
-<span class="sd">        corresponding changes (e.g. weight is 6 for &quot;README.md | 6 +++---&quot;).</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *mode1* : `string`</span>
+<span class="sd">    &gt;&gt; A record attribute or tag, which becomes the first node type.</span>
+<span class="sd">    &gt; *mode2* : `string`</span>
+<span class="sd">    &gt;&gt; A record attribute or tag, which becomes the second node type.</span>
+<span class="sd">    &gt; *helper* : `function`</span>
+<span class="sd">    &gt;&gt; The function that computes the edges. Options are simple_edge (default) and changes_edge.</span>
+<span class="sd">    &gt; *edge_attributes* :</span>
+<span class="sd">    &gt;&gt; A list of attributes to keep as attributes of the edge.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; A generator object containing edges and their weights.</span>
+<span class="sd">    **Notes** :</span>
+<span class="sd">    &gt; Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
+<span class="sd">    &gt;&gt; `simple_edge` : Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
+<span class="sd">    &gt;&gt; `changes_edge` : Only to be used for author-file networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a `Commitlog`).</span>
+<span class="sd">    &gt;&gt; Computes edges between authors and files based on the number of lines changed in the corresponding changes (weight is 6 for `README.md | 6 +++---`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
         <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">]</span>
@@ -2149,56 +2343,102 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_network">
-    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function edges_simple at 0x114890620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
+    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
     </div>
     
 
     
   
     <div class="desc"><p>An abstract network generator. For networks that contain authors, any authors that made
-pull requests will not be transferred from the log.
-:param mode1: The tag string for the first mode type.
-:param mode2: The tag string for the second mode type.
-:param edge_helper: The helper function used to compute an edge.
-:param edge_attributes: The tag names of attributes to be saved for each edge.
-:param mode1_atom_attrs: The tag names of attributes to be saved once for each node of mode1.
-:param mode2_atom_attrs: The tag names of attributes to be saved repeatedly for each node of mode1.
-:param mode1_vector_attrs: The tag names of attributes to be saved once for each node of mode2.
-:param mode2_vector_attrs: The tag names of attributes to be saved repeatedly for each node of mode2.
-:return: A MultiGraphPlus object, which inherits from the NetworkX MultiGraph class.</p>
-<p>Notes:
-Currently, two edge_helper functions are available in gitnet.gn_helpers:
-1. simple_edge
-    Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-2. changes_edge
-    Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-    Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-    corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").</p></div>
+pull requests will not be transferred from the log.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>mode1</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the first mode type.</p>
+</blockquote>
+<p><em>mode2</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the second mode type.</p>
+</blockquote>
+<p><em>edge_helper</em> : <code>None</code></p>
+<blockquote>
+<p>The helper function used to compute an edge.</p>
+</blockquote>
+<p><em>edge_attributes</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved for each edge.</p>
+</blockquote>
+<p><em>mode1_atom_attrs</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved once for each node of mode1.</p>
+</blockquote>
+<p><em>mode2_atom_attrs</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved repeatedly for each node of mode1.</p>
+</blockquote>
+<p><em>mode1_vector_attrs</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved once for each node of mode2.</p>
+</blockquote>
+<p><em>mode2_vector_attrs</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved repeatedly for each node of mode2.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong></p>
+<blockquote>
+<p>A <code>MultiGraphPlus</code> object, which inherits from the NetworkX MultiGraph class.</p>
+</blockquote>
+<p><strong>Notes</strong> :</p>
+<p>Currently, two edge_helper functions are available in gitnet.gn_helpers:</p>
+<blockquote>
+<p><code>simple_edge</code></p>
+<blockquote>
+<p>Creates an unweighted edge, and saves the attributes specified by edge_attributes.</p>
+</blockquote>
+<p><code>changes_edge</code></p>
+<blockquote>
+<p>Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).</p>
+<p>Computes edges between authors and files based on the number of lines changed in the</p>
+<p>corresponding changes string (for example, the weight is 6 for <code>README.md | 6 +++---</code>).</p>
+</blockquote>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_network', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_network" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                      <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract network generator. For networks that contain authors, any authors that made</span>
 <span class="sd">    pull requests will not be transferred from the log.</span>
-<span class="sd">    :param mode1: The tag string for the first mode type.</span>
-<span class="sd">    :param mode2: The tag string for the second mode type.</span>
-<span class="sd">    :param edge_helper: The helper function used to compute an edge.</span>
-<span class="sd">    :param edge_attributes: The tag names of attributes to be saved for each edge.</span>
-<span class="sd">    :param mode1_atom_attrs: The tag names of attributes to be saved once for each node of mode1.</span>
-<span class="sd">    :param mode2_atom_attrs: The tag names of attributes to be saved repeatedly for each node of mode1.</span>
-<span class="sd">    :param mode1_vector_attrs: The tag names of attributes to be saved once for each node of mode2.</span>
-<span class="sd">    :param mode2_vector_attrs: The tag names of attributes to be saved repeatedly for each node of mode2.</span>
-<span class="sd">    :return: A MultiGraphPlus object, which inherits from the NetworkX MultiGraph class.</span>
-<span class="sd">    Notes:</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *mode1* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the first mode type.</span>
+<span class="sd">    &gt; *mode2* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the second mode type.</span>
+<span class="sd">    &gt; *edge_helper* : `None`</span>
+<span class="sd">    &gt;&gt; The helper function used to compute an edge.</span>
+<span class="sd">    &gt; *edge_attributes* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved for each edge.</span>
+<span class="sd">    &gt; *mode1_atom_attrs* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved once for each node of mode1.</span>
+<span class="sd">    &gt; *mode2_atom_attrs* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved repeatedly for each node of mode1.</span>
+<span class="sd">    &gt; *mode1_vector_attrs* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved once for each node of mode2.</span>
+<span class="sd">    &gt; *mode2_vector_attrs* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved repeatedly for each node of mode2.</span>
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A `MultiGraphPlus` object, which inherits from the NetworkX MultiGraph class.</span>
+<span class="sd">    **Notes** :</span>
 <span class="sd">    Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
-<span class="sd">    1. simple_edge</span>
-<span class="sd">        Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
-<span class="sd">    2. changes_edge</span>
-<span class="sd">        Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
-<span class="sd">        Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the</span>
-<span class="sd">        corresponding changes (e.g. weight is 6 for &quot;README.md | 6 +++---&quot;).</span>
+<span class="sd">    &gt; `simple_edge`</span>
+<span class="sd">    &gt;&gt; Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
+<span class="sd">    &gt; `changes_edge`</span>
+<span class="sd">    &gt;&gt; Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
+<span class="sd">    &gt;&gt; Computes edges between authors and files based on the number of lines changed in the</span>
+<span class="sd">    &gt;&gt; corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">MultiGraphPlus</span><span class="p">()</span>
     <span class="n">graph</span><span class="o">.</span><span class="n">mode1</span> <span class="o">=</span> <span class="n">mode1</span>
@@ -2229,39 +2469,73 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
 
     
   
-    <div class="desc"><p>Generates the bipartite nodes present in the Log object.
-:param mode1: The tag string for the first mode type.
-:param mode2: The tag string for the second mode type.
-:param keep_atom1: Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
-:param keep_vector1: Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
-:param keep_atom2: Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
-:param keep_vector2: Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
-:return: A list of tuples, i.e. ("node_id", {attribute_dictionary}).</p>
-<p>By default, each node should have a record in the following format:</p>
+    <div class="desc"><p>Generates the bipartite nodes present in the Log object.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>mode1</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the first mode type.</p>
+</blockquote>
+<p><em>mode2</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the second mode type.</p>
+</blockquote>
+<p><em>keep_atom1</em> : <code>list</code></p>
+<blockquote>
+<p>Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.</p>
+</blockquote>
+<p><em>keep_vector1</em> :  list</p>
+<blockquote>
+<p>Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.</p>
+</blockquote>
+<p><em>keep_atom2</em> : <code>list</code></p>
+<blockquote>
+<p>Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.</p>
+</blockquote>
+<p><em>keep_vector2</em> : <code>list</code></p>
+<blockquote>
+<p>Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A list of tuples, i.e. ("node_id", {attribute_dictionary}).</p>
+</blockquote>
+<p><em>By default, each node should have a record in the following format</em> :</p>
+<blockquote>
 <p>("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})</p>
 <p>With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:</p>
-<p>("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},
- atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",
- vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])</p></div>
+<p><code>("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},</code>
+<code>atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",</code>
+<code>vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])</code></p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_nodes', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_nodes" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">keep_atom1</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_vector1</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_atom2</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_vector2</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates the bipartite nodes present in the Log object.</span>
-<span class="sd">    :param mode1: The tag string for the first mode type.</span>
-<span class="sd">    :param mode2: The tag string for the second mode type.</span>
-<span class="sd">    :param keep_atom1: Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.</span>
-<span class="sd">    :param keep_vector1: Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.</span>
-<span class="sd">    :param keep_atom2: Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.</span>
-<span class="sd">    :param keep_vector2: Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.</span>
-<span class="sd">    :return: A list of tuples, i.e. (&quot;node_id&quot;, {attribute_dictionary}).</span>
-<span class="sd">    By default, each node should have a record in the following format:</span>
-<span class="sd">    (&quot;id_value&quot;,  {&quot;id&quot;: &quot;id_value&quot;, &quot;type&quot;: mode, &quot;records&quot;: [rkey1, rkey2, ..., rkeyn})</span>
-<span class="sd">    With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:</span>
-<span class="sd">    (&quot;id_value&quot; : {&quot;id&quot;: &quot;id_value&quot;, &quot;type&quot;: mode, &quot;records&quot;: [rkey1, rkey2, ..., rkeyn},</span>
-<span class="sd">     atom_tag_1: &quot;atom_value_1&quot;, ..., atom_tag_n: &quot;atom_value_n&quot;,</span>
-<span class="sd">     vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *mode1* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the first mode type.</span>
+<span class="sd">    &gt; *mode2* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the second mode type.</span>
+<span class="sd">    &gt; *keep_atom1* : `list`</span>
+<span class="sd">    &gt;&gt; Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.</span>
+<span class="sd">    &gt; *keep_vector1* :  list</span>
+<span class="sd">    &gt;&gt; Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.</span>
+<span class="sd">    &gt; *keep_atom2* : `list`</span>
+<span class="sd">    &gt;&gt; Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.</span>
+<span class="sd">    &gt; *keep_vector2* : `list`</span>
+<span class="sd">    &gt;&gt; Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; A list of tuples, i.e. (&quot;node_id&quot;, {attribute_dictionary}).</span>
+<span class="sd">    *By default, each node should have a record in the following format* :</span>
+<span class="sd">    &gt; (&quot;id_value&quot;,  {&quot;id&quot;: &quot;id_value&quot;, &quot;type&quot;: mode, &quot;records&quot;: [rkey1, rkey2, ..., rkeyn})</span>
+<span class="sd">    &gt; With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:</span>
+<span class="sd">    &gt; `(&quot;id_value&quot; : {&quot;id&quot;: &quot;id_value&quot;, &quot;type&quot;: mode, &quot;records&quot;: [rkey1, rkey2, ..., rkeyn},`</span>
+<span class="sd">    &gt; `atom_tag_1: &quot;atom_value_1&quot;, ..., atom_tag_n: &quot;atom_value_n&quot;,`</span>
+<span class="sd">    &gt; `vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
@@ -2332,21 +2606,25 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
 
     
   
-    <div class="desc"><p>A Log's tags are automatically detected by the self.attributes() method. Attributes are produced in the order
-specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,
+    <div class="desc"><p><code>Commitlog</code> tags are automatically detected by the <code>self.attributes()</code> method. Attributes are produced in the order
+specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in <code>get_tags</code>,
 the attributes method will produce the tags in sorted order. The most important consequence of this ordering
 is the order of columns in TSV output.</p>
-<p>:return: A list of ordered reference hashes.</p></div>
+<p><strong>Return</strong> <code>list</code></p>
+<blockquote>
+<p>A list of ordered reference hashes.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.get_tags', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.get_tags" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Log&#39;s tags are automatically detected by the self.attributes() method. Attributes are produced in the order</span>
-<span class="sd">    specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in get_tags,</span>
+<span class="sd">    `Commitlog` tags are automatically detected by the `self.attributes()` method. Attributes are produced in the order</span>
+<span class="sd">    specified in the get_tags method, with unexpected tags put at the end. If no tags are specified in `get_tags`,</span>
 <span class="sd">    the attributes method will produce the tags in sorted order. The most important consequence of this ordering</span>
 <span class="sd">    is the order of columns in TSV output.</span>
-<span class="sd">    :return: A list of ordered reference hashes.</span>
+<span class="sd">    **Return** `list`</span>
+<span class="sd">    &gt; A list of ordered reference hashes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
             <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
@@ -2366,23 +2644,37 @@ is the order of columns in TSV output.</p>
 
     
   
-    <div class="desc"><p>Looks for file/path names in "files" and "changes" that match (or does not match) pattern (a regular expression)
-and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" attribute with ignore summary.</p>
-<p>:param pattern: A string/regular expression.
-:param ignoreif: If "matches" (default) files matching the pattern are ignored. If "no match", files not
-    matching pattern are ignored.
-:return: A new CommitLog object, same as self but with the appropriate files removed.</p></div>
+    <div class="desc"><p>Looks for file and path names in "files" and "changes" that match (or not) a pattern (regular expression)
+and moves them into <code>f_ignore</code> and <code>ch_ignore</code> respectively. Updates <code>filters</code> attribute with ignore summary.</p>
+<p>*<em>Parameters</em></p>
+<blockquote>
+<p><em>pattern</em> : <code>string</code></p>
+<blockquote>
+<p>A regular expression pattern specified by the user.</p>
+</blockquote>
+<p><em>ignoreif</em> : <code>string</code></p>
+<blockquote>
+<p>If <code>matches</code> (default) files matching the pattern are ignored. If <code>no match</code>, files not matching pattern are ignored.</p>
+</blockquote>
+</blockquote>
+<p><strong>return</strong></p>
+<blockquote>
+<p>A new <code>Commitlog</code> object, same as self but with the appropriate files removed.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.ignore', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.ignore" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignoreif</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Looks for file/path names in &quot;files&quot; and &quot;changes&quot; that match (or does not match) pattern (a regular expression)</span>
-<span class="sd">    and moves them into &quot;f_ignore&quot; and &quot;ch_ignore&quot; respectively. Updates &quot;filters&quot; attribute with ignore summary.</span>
-<span class="sd">    :param pattern: A string/regular expression.</span>
-<span class="sd">    :param ignoreif: If &quot;matches&quot; (default) files matching the pattern are ignored. If &quot;no match&quot;, files not</span>
-<span class="sd">        matching pattern are ignored.</span>
-<span class="sd">    :return: A new CommitLog object, same as self but with the appropriate files removed.</span>
+<span class="sd">    Looks for file and path names in &quot;files&quot; and &quot;changes&quot; that match (or not) a pattern (regular expression)</span>
+<span class="sd">    and moves them into `f_ignore` and `ch_ignore` respectively. Updates `filters` attribute with ignore summary.</span>
+<span class="sd">    **Parameters*</span>
+<span class="sd">    &gt; *pattern* : `string`</span>
+<span class="sd">    &gt;&gt; A regular expression pattern specified by the user.</span>
+<span class="sd">    &gt; *ignoreif* : `string`</span>
+<span class="sd">    &gt;&gt; If `matches` (default) files matching the pattern are ignored. If `no match`, files not matching pattern are ignored.</span>
+<span class="sd">    **return**</span>
+<span class="sd">    &gt; A new `Commitlog` object, same as self but with the appropriate files removed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
@@ -2421,17 +2713,29 @@ and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" a
 
     
   
-    <div class="desc"><p>A method for quickly creating preset networks using CommitLog data.</p>
-<p>:param type: A string indicating which preset to use.
-:return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.</p></div>
+    <div class="desc"><p>A method for quickly creating preset networks using <code>Commitlog</code> data.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>type</em> : <code>string</code></p>
+<blockquote>
+<p>Indicates which preset to use.</p>
+</blockquote>
+</blockquote>
+<p><strong>return</strong> :</p>
+<blockquote>
+<p>A <code>MultiGraphPlus</code> object constructed with <code>generate_network</code> according to the specified defaults.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.network', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.network" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A method for quickly creating preset networks using CommitLog data.</span>
-<span class="sd">    :param type: A string indicating which preset to use.</span>
-<span class="sd">    :return: A MultiGraphPlus object constructed with generate_network according to the specified defaults.</span>
+<span class="sd">    A method for quickly creating preset networks using `Commitlog` data.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *type* : `string`</span>
+<span class="sd">    &gt;&gt; Indicates which preset to use.</span>
+<span class="sd">    **return** :</span>
+<span class="sd">    &gt; A `MultiGraphPlus` object constructed with `generate_network` according to the specified defaults.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;author/file/simple&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_network</span><span class="p">(</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">)</span>
@@ -2449,7 +2753,7 @@ and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" a
                                      <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                      <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                      <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                     <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
+                                     <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_changes</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -2468,21 +2772,43 @@ and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" a
 
     
   
-    <div class="desc"><p>Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.
-:param tag: The record tag string whose values will be checked (and replaced when appropriate.)
-:param cur_val: this is the value that the user wants to replace.
-:param new_val: this is the value that the user wants to use in the Log Object.</p>
-<p>Note: This method is particularly useful for combining duplicate names for the same author.</p></div>
+    <div class="desc"><p>Searches for user specified values in a specific tag in the <code>Log</code> and replaces them with a new value.
+This method is particularly useful for combining duplicate names for the same author.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>tag</em> : <code>string</code></p>
+<blockquote>
+<p>The record tag string whose values will be checked (and replaced when appropriate).</p>
+</blockquote>
+<p><em>cur_val</em> : <code>string</code></p>
+<blockquote>
+<p>This is the value that the user wants to replace.</p>
+</blockquote>
+<p><em>new_val</em> : <code>string</code></p>
+<blockquote>
+<p>This is the value that the user wants to use in the new <code>Log</code>.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>Log</code></p>
+<blockquote>
+<p>Returns a <code>Log</code> object with values that have been replaced according to user specifications.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.replace_val', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.replace_val" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">replace_val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">cur_val</span><span class="p">,</span> <span class="n">new_val</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Searches for user specified values in a specific tag in the Log Object, and replaces them with a new value.</span>
-<span class="sd">    :param tag: The record tag string whose values will be checked (and replaced when appropriate.)</span>
-<span class="sd">    :param cur_val: this is the value that the user wants to replace.</span>
-<span class="sd">    :param new_val: this is the value that the user wants to use in the Log Object.</span>
-<span class="sd">    Note: This method is particularly useful for combining duplicate names for the same author.</span>
+<span class="sd">    Searches for user specified values in a specific tag in the `Log` and replaces them with a new value.</span>
+<span class="sd">    This method is particularly useful for combining duplicate names for the same author.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *tag* : `string`</span>
+<span class="sd">    &gt;&gt; The record tag string whose values will be checked (and replaced when appropriate).</span>
+<span class="sd">    &gt; *cur_val* : `string`</span>
+<span class="sd">    &gt;&gt; This is the value that the user wants to replace.</span>
+<span class="sd">    &gt; *new_val* : `string`</span>
+<span class="sd">    &gt;&gt; This is the value that the user wants to use in the new `Log`.</span>
+<span class="sd">    **Return** : `Log`</span>
+<span class="sd">    &gt; Returns a `Log` object with values that have been replaced according to user specifications.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">selfcopy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2518,25 +2844,45 @@ and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" a
 
     
   
-    <div class="desc"><p>Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
-does not change the content strings by removing commas).
-:param ignore: Tags included in this list of strings will be ignored.
-:param fname: An optional string (defaults to None) indicating the path or file name to write to. If None, no
-file will be written.
-:param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.
-:return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)</p></div>
+    <div class="desc"><p>Converts the <code>Log</code> to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
+does not change the content strings by removing commas).</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>ignore</em> : <code>list</code></p>
+<blockquote>
+<p>Tags included in this list of strings will be ignored.</p>
+</blockquote>
+<p><em>fname</em> : <code>string</code></p>
+<blockquote>
+<p>An optional string (defaults to <code>None</code>) indicating the path or file name to write to. If <code>None</code>, no
+file will be written.</p>
+</blockquote>
+<p><em>empty_cols</em> :</p>
+<blockquote>
+<p>If True, export will include all Log subclass tags, even if not collected, giving empty columns.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>string</code></p>
+<blockquote>
+<p>A tab-delimited dataset in string form (or a summary statement if a file name was provided).</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.tsv', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.tsv" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">tsv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">fname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">empty_cols</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts the Log to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option</span>
+<span class="sd">    Converts the `Log` to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option</span>
 <span class="sd">    does not change the content strings by removing commas).</span>
-<span class="sd">    :param ignore: Tags included in this list of strings will be ignored.</span>
-<span class="sd">    :param fname: An optional string (defaults to None) indicating the path or file name to write to. If None, no</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *ignore* : `list`</span>
+<span class="sd">    &gt;&gt; Tags included in this list of strings will be ignored.</span>
+<span class="sd">    &gt; *fname* : `string`</span>
+<span class="sd">    &gt;&gt; An optional string (defaults to `None`) indicating the path or file name to write to. If `None`, no</span>
 <span class="sd">    file will be written.</span>
-<span class="sd">    :param empty_cols: If True, export will include all Log subclass tags, even if not collected, giving empty columns.</span>
-<span class="sd">    :return: A tab-delimited dataset in string form (or a summary statement if a file name was provided.)</span>
+<span class="sd">    &gt; *empty_cols* :</span>
+<span class="sd">    &gt;&gt; If True, export will include all Log subclass tags, even if not collected, giving empty columns.</span>
+<span class="sd">    **Return** : `string`</span>
+<span class="sd">    &gt; A tab-delimited dataset in string form (or a summary statement if a file name was provided).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get the tags present in the Log.</span>
     <span class="k">if</span> <span class="n">empty_cols</span><span class="p">:</span>
@@ -2627,17 +2973,29 @@ file will be written.
 
     
   
-    <div class="desc"><p>Returns a list containing all of the (keyless) values of a certain tag in the Log collection.
-:param tag: A collection tag. See subclass documentation for subclass-specific tags.
-:return: Returns a list of values (usually strings or numbers).</p></div>
+    <div class="desc"><p>Returns a list containing all of the (keyless) values of a certain tag in the Log collection.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>tag</em> : <code>string</code></p>
+<blockquote>
+<p>A collection tag. See subclass documentation for subclass-specific tags.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>Returns a list of values (usually strings or numbers).</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.vector', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.vector" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list containing all of the (keyless) values of a certain tag in the Log collection.</span>
-<span class="sd">    :param tag: A collection tag. See subclass documentation for subclass-specific tags.</span>
-<span class="sd">    :return: Returns a list of values (usually strings or numbers).</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *tag* : `string`</span>
+<span class="sd">    &gt;&gt; A collection tag. See subclass documentation for subclass-specific tags.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; Returns a list of values (usually strings or numbers).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
@@ -2659,47 +3017,77 @@ file will be written.
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.write_edges">
-    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function edges_simple at 0x114890620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
+    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Writes an edge list with attributes.
-:param fname: A string indicating the path or file name to write to.
-:param mode1: The tag string for the first mode type.
-:param mode2: The tag string for the second mode type.
-:param helper: The helper function used to generate the edges.
-:param edge_attribute: The tag names of attributes to be saved for each edge
-:return: None</p>
-<p>Notes:
-Currently, two edge_helper functions are available in gitnet.gn_helpers:
-1. simple_edge
-    Creates an unweighted edge, and saves the attributes specified by edge_attributes.
-2. changes_edge
-    Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
-    Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the
-    corresponding changes (e.g. weight is 6 for "README.md | 6 +++---").</p></div>
+    <div class="desc"><p>Writes an edge list with attributes.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>fname</em> : <code>string</code></p>
+<blockquote>
+<p>A string indicating the path or file name to write to.</p>
+</blockquote>
+<p><em>mode1</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the first mode type.</p>
+</blockquote>
+<p><em>mode2</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the second mode type.</p>
+</blockquote>
+<p><em>helper</em> : <code>None</code></p>
+<blockquote>
+<p>The helper function used to generate the edges.</p>
+</blockquote>
+<p><em>edge_attribute</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved for each edge.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>None</code></p>
+<p><strong>Notes</strong> :</p>
+<p>Currently, two edge_helper functions are available in gitnet.gn_helpers:</p>
+<blockquote>
+<p><code>simple_edge</code></p>
+<blockquote>
+<p>Creates an unweighted edge, and saves the attributes specified by edge_attributes.</p>
+</blockquote>
+<p><code>changes_edge</code></p>
+<blockquote>
+<p>Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).</p>
+<p>Computes edges between authors and files based on the number of lines changed in the</p>
+<p>corresponding changes string (for example, the weight is 6 for <code>README.md | 6 +++---</code>).</p>
+</blockquote>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.write_edges', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.write_edges" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">]):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes an edge list with attributes.</span>
-<span class="sd">    :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">    :param mode1: The tag string for the first mode type.</span>
-<span class="sd">    :param mode2: The tag string for the second mode type.</span>
-<span class="sd">    :param helper: The helper function used to generate the edges.</span>
-<span class="sd">    :param edge_attribute: The tag names of attributes to be saved for each edge</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    Notes:</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *fname* : `string`</span>
+<span class="sd">    &gt;&gt; A string indicating the path or file name to write to.</span>
+<span class="sd">    &gt; *mode1* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the first mode type.</span>
+<span class="sd">    &gt; *mode2* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the second mode type.</span>
+<span class="sd">    &gt; *helper* : `None`</span>
+<span class="sd">    &gt;&gt; The helper function used to generate the edges.</span>
+<span class="sd">    &gt; *edge_attribute* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved for each edge.</span>
+<span class="sd">    **Return** : `None`</span>
+<span class="sd">    **Notes** :</span>
 <span class="sd">    Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
-<span class="sd">    1. simple_edge</span>
-<span class="sd">        Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
-<span class="sd">    2. changes_edge</span>
-<span class="sd">        Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
-<span class="sd">        Computes edges between authors (mode1) and files (mode2) based on the number of lines changed in the</span>
-<span class="sd">        corresponding changes (e.g. weight is 6 for &quot;README.md | 6 +++---&quot;).</span>
+<span class="sd">    &gt; `simple_edge`</span>
+<span class="sd">    &gt;&gt; Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
+<span class="sd">    &gt; `changes_edge`</span>
+<span class="sd">    &gt;&gt; Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
+<span class="sd">    &gt;&gt; Computes edges between authors and files based on the number of lines changed in the</span>
+<span class="sd">    &gt;&gt; corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
     <span class="c1"># Define attributes</span>
@@ -2745,29 +3133,61 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
 
     
   
-    <div class="desc"><p>Writes a list of nodes with attributes.
-:param fname: A string indicating the path or file name to write to.
-:param mode1: The tag string for the first mode type.
-:param mode2: The tag string for the second mode type.
-:param keep_atom1: The tag names of attributes to be saved once for each node of mode1.
-:param keep_vector1: The tag names of attributes to be repeatedly once for each node of mode1.
-:param keep_atom2: The tag names of attributes to be saved once for each node of mode2.
-:param keep_vector2: The tag names of attributes to be repeatedly once for each node of mode2.
-:return: None</p></div>
+    <div class="desc"><p>Writes a list of nodes with attributes.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>fname</em> : <code>string</code></p>
+<blockquote>
+<p>A string indicating the path or file name to write to.</p>
+</blockquote>
+<p><em>mode1</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the first mode type.</p>
+</blockquote>
+<p><em>mode2</em> : <code>string</code></p>
+<blockquote>
+<p>The tag string for the second mode type.</p>
+</blockquote>
+<p><em>keep_atom1</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved once for each node of mode1.</p>
+</blockquote>
+<p><em>keep_vector1</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be repeatedly once for each node of mode1.</p>
+</blockquote>
+<p><em>keep_atom2</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be saved once for each node of mode2.</p>
+</blockquote>
+<p><em>keep_vector2</em> : <code>list</code></p>
+<blockquote>
+<p>The tag names of attributes to be repeatedly once for each node of mode2.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>None</code></p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.write_nodes', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.write_nodes" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">keep_atom1</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_vector1</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_atom2</span><span class="o">=</span><span class="p">[],</span> <span class="n">keep_vector2</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes a list of nodes with attributes.</span>
-<span class="sd">    :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">    :param mode1: The tag string for the first mode type.</span>
-<span class="sd">    :param mode2: The tag string for the second mode type.</span>
-<span class="sd">    :param keep_atom1: The tag names of attributes to be saved once for each node of mode1.</span>
-<span class="sd">    :param keep_vector1: The tag names of attributes to be repeatedly once for each node of mode1.</span>
-<span class="sd">    :param keep_atom2: The tag names of attributes to be saved once for each node of mode2.</span>
-<span class="sd">    :param keep_vector2: The tag names of attributes to be repeatedly once for each node of mode2.</span>
-<span class="sd">    :return: None</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *fname* : `string`</span>
+<span class="sd">    &gt;&gt; A string indicating the path or file name to write to.</span>
+<span class="sd">    &gt; *mode1* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the first mode type.</span>
+<span class="sd">    &gt; *mode2* : `string`</span>
+<span class="sd">    &gt;&gt; The tag string for the second mode type.</span>
+<span class="sd">    &gt; *keep_atom1* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved once for each node of mode1.</span>
+<span class="sd">    &gt; *keep_vector1* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be repeatedly once for each node of mode1.</span>
+<span class="sd">    &gt; *keep_atom2* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be saved once for each node of mode2.</span>
+<span class="sd">    &gt; *keep_vector2* : `list`</span>
+<span class="sd">    &gt;&gt; The tag names of attributes to be repeatedly once for each node of mode2.</span>
+<span class="sd">    **Return** : `None`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
     <span class="c1"># Define attributes</span>

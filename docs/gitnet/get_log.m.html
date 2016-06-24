@@ -1034,7 +1034,7 @@ table {
     
   
   <div id="sidebar">
-    <h1>Index</h1>
+    <img src="static/gitnet.png" height="250" width="250"/>
     <ul id="index">
 
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
@@ -1074,12 +1074,24 @@ table {
 
 <span class="k">def</span> <span class="nf">retrieve_commits</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;stat&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    retrieve_commits takes a file path string and a mode string and produces the  git log for the</span>
-<span class="sd">    specified directory. The default mode, &quot;stat&quot; retrieves the logs by running &quot;git log --stat&quot;. Modes include:</span>
-<span class="sd">    &quot;basic&quot; (&quot;git log&quot;), &quot;raw&quot; (&quot;git log --raw&quot;), and &quot;stat&quot; (&quot;git log --stat&quot;).</span>
-<span class="sd">    :param path: A string identifying the path to the target git repository.</span>
-<span class="sd">    :param mode: A string identifying the git log mode to be retrieved. Default mode is &quot;stat&quot;.</span>
-<span class="sd">    :return: Returns a large string containing the raw output from the repository&#39;s git log.</span>
+<span class="sd">    Takes a file path string and a mode string and produces the  git log for the</span>
+<span class="sd">    specified directory. The default mode, &quot;stat&quot; retrieves the logs by running &quot;git log --stat&quot;.</span>
+<span class="sd">    Modes include: &quot;basic&quot; (git log), &quot;raw&quot; (&quot;git log --raw&quot;), and &quot;stat&quot; (&quot;git log --stat&quot;).</span>
+
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *path* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string identifying the path to the target git repository.</span>
+
+<span class="sd">    &gt; *mode* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string identifying the git log mode to be retrieved. Default mode is &quot;stat&quot;.</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; Returns a large string containing the raw output from the repository&#39;s git log.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Attempting local git log retrieval...&quot;</span><span class="p">)</span>
     <span class="c1"># Log command modes, referenced by &quot;mode&quot; input.</span>
@@ -1107,15 +1119,25 @@ table {
 
 <span class="k">def</span> <span class="nf">identify</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry</span>
+<span class="sd">    A helper function for `parse_commits()`. It takes a string and attempts to identify it as an entry</span>
 <span class="sd">    field from a Git commit log.</span>
-<span class="sd">    :param s: A string. One line of standard git log output (in basic, raw, or stat mode.)</span>
-<span class="sd">    :return: A string identifying the type of data received.</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    identify(&quot;commit 5be676481b4051af62f21eb2c8601b3f6bafb195&quot;) =&gt; &quot;hash&quot;</span>
-<span class="sd">    identify(&quot;Author: JBWBecker &lt;joelbecker@gto.net&gt;&quot;) =&gt; &quot;author&quot;</span>
-<span class="sd">    identify(&quot;__init__.py                                  |   2 ++&quot;) =&gt; &quot;change&quot;</span>
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *s* : `string`</span>
+
+<span class="sd">    &gt;&gt; One line of standard git log output (in basic, raw, or stat mode).</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; A string identifying the type of data received.</span>
+
+<span class="sd">    **Examples** :</span>
+
+<span class="sd">    &gt; `identify(&quot;commit 5be676481b4051af62f21eb2c8601b3f6bafb195&quot;) =&gt; &quot;hash&quot;`</span>
+<span class="sd">    &gt; `identify(&quot;Author: JBWBecker &lt;joelbecker@gto.net&gt;&quot;) =&gt; &quot;author&quot;`</span>
+<span class="sd">    &gt; `identify(&quot;__init__.py | 2 ++&quot;) =&gt; &quot;change&quot;`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># identify checks whether the string matches an expected format. All matches are saved in a list.</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1151,17 +1173,30 @@ table {
 <span class="sd">    Parses a raw string containing a commit Log for a Git repository. It produces a dictionary</span>
 <span class="sd">    of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference</span>
 <span class="sd">    codes.</span>
-<span class="sd">    :param commit_str: Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.</span>
-<span class="sd">    :return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary</span>
-<span class="sd">    recording the data from one commit log.</span>
 
-<span class="sd">    Git log data types currently implemented: hash (&quot;hash&quot;), mode (&quot;mode&quot;), author name (&quot;author&quot;), author email</span>
-<span class="sd">    (&quot;email&quot;), date (&quot;date&quot;), commit message (&quot;message&quot;), merge (&quot;merge&quot;), summary (&quot;summary&quot;),</span>
-<span class="sd">    a list of change records (&quot;changes&quot;), files edited (&quot;fedits&quot;), lines inserted (&quot;inserts&quot;), lines deleted (&quot;deletes&quot;),</span>
-<span class="sd">    files changed (&quot;files&quot;).</span>
+<span class="sd">    **Parameters** :</span>
 
-<span class="sd">    Error data types currently implemented (with warnings): multiple patterns matched during parse (&quot;ER&quot;), no patterns</span>
-<span class="sd">    matched during parse (&quot;errors&quot;).</span>
+<span class="sd">    &gt; *commit_str* :</span>
+
+<span class="sd">    &gt;&gt; Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary</span>
+<span class="sd">    &gt; recording the data from one commit log.</span>
+
+<span class="sd">    *Git log data types currently implemented* :</span>
+
+<span class="sd">    &gt; hash (&quot;hash&quot;), mode (&quot;mode&quot;), author name (&quot;author&quot;), author email (&quot;email&quot;),</span>
+<span class="sd">    &gt; date (&quot;date&quot;), commit message (&quot;message&quot;), merge (&quot;merge&quot;), summary (&quot;summary&quot;),</span>
+<span class="sd">    &gt; a list of change records (&quot;changes&quot;), files edited (&quot;fedits&quot;), lines inserted (&quot;inserts&quot;),</span>
+<span class="sd">    &gt; lines deleted (&quot;deletes&quot;), files changed (&quot;files&quot;).</span>
+
+<span class="sd">    *Error data types currently implemented (with warnings)* :</span>
+
+<span class="sd">    &gt; Multiple patterns matched during parse (&quot;ER&quot;), no patterns</span>
+<span class="sd">    &gt; matched during parse (&quot;errors&quot;).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Split and clean retrieved logs, creating a list of strings and removing empty strings.</span>
     <span class="n">commit_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">commit_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)))</span>
@@ -1233,10 +1268,23 @@ table {
 <span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">commit_source</span><span class="o">=</span><span class="s2">&quot;local git&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function for gathering data from a local Git repository.</span>
-<span class="sd">    :param path: A string containing the path of the Git repository.</span>
-<span class="sd">    :param mode: The retrieval mode. Modes currently implemented: &quot;basic&quot;, &quot;raw&quot;, &quot;stat&quot;.</span>
-<span class="sd">    :param commit_source: The source of the Git repository, local is currently the only option.</span>
-<span class="sd">    :return: A CommitLog object.</span>
+
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *path* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string containing the path of the Git repository.</span>
+
+<span class="sd">    &gt; *mode* : `string`</span>
+
+<span class="sd">    &gt;&gt; The retrieval mode. Modes currently implemented: &quot;basic&quot;, &quot;raw&quot;, &quot;stat&quot;.</span>
+
+<span class="sd">    &gt; *commit_source* : `string`</span>
+
+<span class="sd">    &gt;&gt; The source of the Git repository, local is currently the only option.</span>
+
+<span class="sd">    **Returns** : `Commitlog`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">commit_source</span> <span class="o">==</span> <span class="s2">&quot;local git&quot;</span><span class="p">:</span>
         <span class="n">detect_key</span> <span class="o">=</span> <span class="s2">&quot;hash&quot;</span>
@@ -1264,21 +1312,46 @@ table {
 
     
   
-    <div class="desc"><p>A function for gathering data from a local Git repository.
-:param path: A string containing the path of the Git repository.
-:param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
-:param commit_source: The source of the Git repository, local is currently the only option.
-:return: A CommitLog object.</p></div>
+    <div class="desc"><p>A function for gathering data from a local Git repository.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>path</em> : <code>string</code></p>
+<blockquote>
+<p>A string containing the path of the Git repository.</p>
+</blockquote>
+<p><em>mode</em> : <code>string</code></p>
+<blockquote>
+<p>The retrieval mode. Modes currently implemented: "basic", "raw", "stat".</p>
+</blockquote>
+<p><em>commit_source</em> : <code>string</code></p>
+<blockquote>
+<p>The source of the Git repository, local is currently the only option.</p>
+</blockquote>
+</blockquote>
+<p><strong>Returns</strong> : <code>Commitlog</code></p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.get_log.get_log', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.get_log.get_log" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">commit_source</span><span class="o">=</span><span class="s2">&quot;local git&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function for gathering data from a local Git repository.</span>
-<span class="sd">    :param path: A string containing the path of the Git repository.</span>
-<span class="sd">    :param mode: The retrieval mode. Modes currently implemented: &quot;basic&quot;, &quot;raw&quot;, &quot;stat&quot;.</span>
-<span class="sd">    :param commit_source: The source of the Git repository, local is currently the only option.</span>
-<span class="sd">    :return: A CommitLog object.</span>
+
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *path* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string containing the path of the Git repository.</span>
+
+<span class="sd">    &gt; *mode* : `string`</span>
+
+<span class="sd">    &gt;&gt; The retrieval mode. Modes currently implemented: &quot;basic&quot;, &quot;raw&quot;, &quot;stat&quot;.</span>
+
+<span class="sd">    &gt; *commit_source* : `string`</span>
+
+<span class="sd">    &gt;&gt; The source of the Git repository, local is currently the only option.</span>
+
+<span class="sd">    **Returns** : `Commitlog`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">commit_source</span> <span class="o">==</span> <span class="s2">&quot;local git&quot;</span><span class="p">:</span>
         <span class="n">detect_key</span> <span class="o">=</span> <span class="s2">&quot;hash&quot;</span>
@@ -1304,28 +1377,49 @@ table {
 
     
   
-    <div class="desc"><p>identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry
-field from a Git commit log.
-:param s: A string. One line of standard git log output (in basic, raw, or stat mode.)
-:return: A string identifying the type of data received.</p>
-<p>Examples:
-identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") =&gt; "hash"
-identify("Author: JBWBecker <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#106;&#111;&#101;&#108;&#98;&#101;&#99;&#107;&#101;&#114;&#64;&#103;&#116;&#111;&#46;&#110;&#101;&#116;">&#106;&#111;&#101;&#108;&#98;&#101;&#99;&#107;&#101;&#114;&#64;&#103;&#116;&#111;&#46;&#110;&#101;&#116;</a>") =&gt; "author"
-identify("<strong>init</strong>.py                                  |   2 ++") =&gt; "change"</p></div>
+    <div class="desc"><p>A helper function for <code>parse_commits()</code>. It takes a string and attempts to identify it as an entry
+field from a Git commit log.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>s</em> : <code>string</code></p>
+<blockquote>
+<p>One line of standard git log output (in basic, raw, or stat mode).</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A string identifying the type of data received.</p>
+</blockquote>
+<p><strong>Examples</strong> :</p>
+<blockquote>
+<p><code>identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") =&gt; "hash"</code>
+<code>identify("Author: JBWBecker &lt;joelbecker@gto.net&gt;") =&gt; "author"</code>
+<code>identify("__init__.py | 2 ++") =&gt; "change"</code></p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.get_log.identify', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.get_log.identify" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">identify</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry</span>
+<span class="sd">    A helper function for `parse_commits()`. It takes a string and attempts to identify it as an entry</span>
 <span class="sd">    field from a Git commit log.</span>
-<span class="sd">    :param s: A string. One line of standard git log output (in basic, raw, or stat mode.)</span>
-<span class="sd">    :return: A string identifying the type of data received.</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    identify(&quot;commit 5be676481b4051af62f21eb2c8601b3f6bafb195&quot;) =&gt; &quot;hash&quot;</span>
-<span class="sd">    identify(&quot;Author: JBWBecker &lt;joelbecker@gto.net&gt;&quot;) =&gt; &quot;author&quot;</span>
-<span class="sd">    identify(&quot;__init__.py                                  |   2 ++&quot;) =&gt; &quot;change&quot;</span>
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *s* : `string`</span>
+
+<span class="sd">    &gt;&gt; One line of standard git log output (in basic, raw, or stat mode).</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; A string identifying the type of data received.</span>
+
+<span class="sd">    **Examples** :</span>
+
+<span class="sd">    &gt; `identify(&quot;commit 5be676481b4051af62f21eb2c8601b3f6bafb195&quot;) =&gt; &quot;hash&quot;`</span>
+<span class="sd">    &gt; `identify(&quot;Author: JBWBecker &lt;joelbecker@gto.net&gt;&quot;) =&gt; &quot;author&quot;`</span>
+<span class="sd">    &gt; `identify(&quot;__init__.py | 2 ++&quot;) =&gt; &quot;change&quot;`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># identify checks whether the string matches an expected format. All matches are saved in a list.</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1372,16 +1466,31 @@ identify("<strong>init</strong>.py                                  |   2 ++") =
   
     <div class="desc"><p>Parses a raw string containing a commit Log for a Git repository. It produces a dictionary
 of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference
-codes.
-:param commit_str: Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.
-:return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
+codes.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>commit_str</em> :</p>
+<blockquote>
+<p>Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
 recording the data from one commit log.</p>
-<p>Git log data types currently implemented: hash ("hash"), mode ("mode"), author name ("author"), author email
-("email"), date ("date"), commit message ("message"), merge ("merge"), summary ("summary"),
-a list of change records ("changes"), files edited ("fedits"), lines inserted ("inserts"), lines deleted ("deletes"),
-files changed ("files").</p>
-<p>Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
-matched during parse ("errors").</p></div>
+</blockquote>
+<p><em>Git log data types currently implemented</em> :</p>
+<blockquote>
+<p>hash ("hash"), mode ("mode"), author name ("author"), author email ("email"),
+date ("date"), commit message ("message"), merge ("merge"), summary ("summary"),
+a list of change records ("changes"), files edited ("fedits"), lines inserted ("inserts"),
+lines deleted ("deletes"), files changed ("files").</p>
+</blockquote>
+<p><em>Error data types currently implemented (with warnings)</em> :</p>
+<blockquote>
+<p>Multiple patterns matched during parse ("ER"), no patterns
+matched during parse ("errors").</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.get_log.parse_commits', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.get_log.parse_commits" class="source">
@@ -1390,17 +1499,30 @@ matched during parse ("errors").</p></div>
 <span class="sd">    Parses a raw string containing a commit Log for a Git repository. It produces a dictionary</span>
 <span class="sd">    of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference</span>
 <span class="sd">    codes.</span>
-<span class="sd">    :param commit_str: Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.</span>
-<span class="sd">    :return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary</span>
-<span class="sd">    recording the data from one commit log.</span>
 
-<span class="sd">    Git log data types currently implemented: hash (&quot;hash&quot;), mode (&quot;mode&quot;), author name (&quot;author&quot;), author email</span>
-<span class="sd">    (&quot;email&quot;), date (&quot;date&quot;), commit message (&quot;message&quot;), merge (&quot;merge&quot;), summary (&quot;summary&quot;),</span>
-<span class="sd">    a list of change records (&quot;changes&quot;), files edited (&quot;fedits&quot;), lines inserted (&quot;inserts&quot;), lines deleted (&quot;deletes&quot;),</span>
-<span class="sd">    files changed (&quot;files&quot;).</span>
+<span class="sd">    **Parameters** :</span>
 
-<span class="sd">    Error data types currently implemented (with warnings): multiple patterns matched during parse (&quot;ER&quot;), no patterns</span>
-<span class="sd">    matched during parse (&quot;errors&quot;).</span>
+<span class="sd">    &gt; *commit_str* :</span>
+
+<span class="sd">    &gt;&gt; Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary</span>
+<span class="sd">    &gt; recording the data from one commit log.</span>
+
+<span class="sd">    *Git log data types currently implemented* :</span>
+
+<span class="sd">    &gt; hash (&quot;hash&quot;), mode (&quot;mode&quot;), author name (&quot;author&quot;), author email (&quot;email&quot;),</span>
+<span class="sd">    &gt; date (&quot;date&quot;), commit message (&quot;message&quot;), merge (&quot;merge&quot;), summary (&quot;summary&quot;),</span>
+<span class="sd">    &gt; a list of change records (&quot;changes&quot;), files edited (&quot;fedits&quot;), lines inserted (&quot;inserts&quot;),</span>
+<span class="sd">    &gt; lines deleted (&quot;deletes&quot;), files changed (&quot;files&quot;).</span>
+
+<span class="sd">    *Error data types currently implemented (with warnings)* :</span>
+
+<span class="sd">    &gt; Multiple patterns matched during parse (&quot;ER&quot;), no patterns</span>
+<span class="sd">    &gt; matched during parse (&quot;errors&quot;).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Split and clean retrieved logs, creating a list of strings and removing empty strings.</span>
     <span class="n">commit_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">commit_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)))</span>
@@ -1483,23 +1605,47 @@ matched during parse ("errors").</p></div>
 
     
   
-    <div class="desc"><p>retrieve_commits takes a file path string and a mode string and produces the  git log for the
-specified directory. The default mode, "stat" retrieves the logs by running "git log --stat". Modes include:
-"basic" ("git log"), "raw" ("git log --raw"), and "stat" ("git log --stat").
-:param path: A string identifying the path to the target git repository.
-:param mode: A string identifying the git log mode to be retrieved. Default mode is "stat".
-:return: Returns a large string containing the raw output from the repository's git log.</p></div>
+    <div class="desc"><p>Takes a file path string and a mode string and produces the  git log for the
+specified directory. The default mode, "stat" retrieves the logs by running "git log --stat".
+Modes include: "basic" (git log), "raw" ("git log --raw"), and "stat" ("git log --stat").</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>path</em> : <code>string</code></p>
+<blockquote>
+<p>A string identifying the path to the target git repository.</p>
+</blockquote>
+<p><em>mode</em> : <code>string</code></p>
+<blockquote>
+<p>A string identifying the git log mode to be retrieved. Default mode is "stat".</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>Returns a large string containing the raw output from the repository's git log.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.get_log.retrieve_commits', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.get_log.retrieve_commits" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">retrieve_commits</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;stat&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    retrieve_commits takes a file path string and a mode string and produces the  git log for the</span>
-<span class="sd">    specified directory. The default mode, &quot;stat&quot; retrieves the logs by running &quot;git log --stat&quot;. Modes include:</span>
-<span class="sd">    &quot;basic&quot; (&quot;git log&quot;), &quot;raw&quot; (&quot;git log --raw&quot;), and &quot;stat&quot; (&quot;git log --stat&quot;).</span>
-<span class="sd">    :param path: A string identifying the path to the target git repository.</span>
-<span class="sd">    :param mode: A string identifying the git log mode to be retrieved. Default mode is &quot;stat&quot;.</span>
-<span class="sd">    :return: Returns a large string containing the raw output from the repository&#39;s git log.</span>
+<span class="sd">    Takes a file path string and a mode string and produces the  git log for the</span>
+<span class="sd">    specified directory. The default mode, &quot;stat&quot; retrieves the logs by running &quot;git log --stat&quot;.</span>
+<span class="sd">    Modes include: &quot;basic&quot; (git log), &quot;raw&quot; (&quot;git log --raw&quot;), and &quot;stat&quot; (&quot;git log --stat&quot;).</span>
+
+<span class="sd">    **Parameters** :</span>
+
+<span class="sd">    &gt; *path* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string identifying the path to the target git repository.</span>
+
+<span class="sd">    &gt; *mode* : `string`</span>
+
+<span class="sd">    &gt;&gt; A string identifying the git log mode to be retrieved. Default mode is &quot;stat&quot;.</span>
+
+<span class="sd">    **Return** :</span>
+
+<span class="sd">    &gt; Returns a large string containing the raw output from the repository&#39;s git log.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Attempting local git log retrieval...&quot;</span><span class="p">)</span>
     <span class="c1"># Log command modes, referenced by &quot;mode&quot; input.</span>

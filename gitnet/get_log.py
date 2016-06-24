@@ -7,12 +7,24 @@ from gitnet.commit_log import CommitLog
 
 def retrieve_commits(path, mode = "stat"):
     """
-    retrieve_commits takes a file path string and a mode string and produces the  git log for the
-    specified directory. The default mode, "stat" retrieves the logs by running "git log --stat". Modes include:
-    "basic" ("git log"), "raw" ("git log --raw"), and "stat" ("git log --stat").
-    :param path: A string identifying the path to the target git repository.
-    :param mode: A string identifying the git log mode to be retrieved. Default mode is "stat".
-    :return: Returns a large string containing the raw output from the repository's git log.
+    Takes a file path string and a mode string and produces the  git log for the
+    specified directory. The default mode, "stat" retrieves the logs by running "git log --stat".
+    Modes include: "basic" (git log), "raw" ("git log --raw"), and "stat" ("git log --stat").
+
+    **Parameters** :
+
+    > *path* : `string`
+
+    >> A string identifying the path to the target git repository.
+
+    > *mode* : `string`
+
+    >> A string identifying the git log mode to be retrieved. Default mode is "stat".
+
+    **Return** :
+
+    > Returns a large string containing the raw output from the repository's git log.
+
     """
     print("Attempting local git log retrieval...")
     # Log command modes, referenced by "mode" input.
@@ -40,15 +52,25 @@ def retrieve_commits(path, mode = "stat"):
 
 def identify(s):
     """
-    identify is a helper function for parse_commits(). It takes a string and attempts to identify it as an entry
+    A helper function for `parse_commits()`. It takes a string and attempts to identify it as an entry
     field from a Git commit log.
-    :param s: A string. One line of standard git log output (in basic, raw, or stat mode.)
-    :return: A string identifying the type of data received.
 
-    Examples:
-    identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") => "hash"
-    identify("Author: JBWBecker <joelbecker@gto.net>") => "author"
-    identify("__init__.py                                  |   2 ++") => "change"
+    **Parameters** :
+
+    > *s* : `string`
+
+    >> One line of standard git log output (in basic, raw, or stat mode).
+
+    **Return** :
+
+    > A string identifying the type of data received.
+
+    **Examples** :
+
+    > `identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") => "hash"`
+    > `identify("Author: JBWBecker <joelbecker@gto.net>") => "author"`
+    > `identify("__init__.py | 2 ++") => "change"`
+
     """
     # identify checks whether the string matches an expected format. All matches are saved in a list.
     matches = []
@@ -84,17 +106,30 @@ def parse_commits(commit_str):
     Parses a raw string containing a commit Log for a Git repository. It produces a dictionary
     of dictionaries keyed by an abbreviated commit hash, containing a series of data points indexed by short reference
     codes.
-    :param commit_str: Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.
-    :return: A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
-    recording the data from one commit log.
 
-    Git log data types currently implemented: hash ("hash"), mode ("mode"), author name ("author"), author email
-    ("email"), date ("date"), commit message ("message"), merge ("merge"), summary ("summary"),
-    a list of change records ("changes"), files edited ("fedits"), lines inserted ("inserts"), lines deleted ("deletes"),
-    files changed ("files").
+    **Parameters** :
 
-    Error data types currently implemented (with warnings): multiple patterns matched during parse ("ER"), no patterns
-    matched during parse ("errors").
+    > *commit_str* :
+
+    >> Raw commit log data, as produced by retreive_commits. Modes currently supported: Basic, Raw, Stat.
+
+    **Return** :
+
+    > A dictionary of dictionaries keyed by an abbreviated commit hash. Each sub-dictionary contains a dictionary
+    > recording the data from one commit log.
+
+    *Git log data types currently implemented* :
+
+    > hash ("hash"), mode ("mode"), author name ("author"), author email ("email"),
+    > date ("date"), commit message ("message"), merge ("merge"), summary ("summary"),
+    > a list of change records ("changes"), files edited ("fedits"), lines inserted ("inserts"),
+    > lines deleted ("deletes"), files changed ("files").
+
+    *Error data types currently implemented (with warnings)* :
+
+    > Multiple patterns matched during parse ("ER"), no patterns
+    > matched during parse ("errors").
+
     """
     # Split and clean retrieved logs, creating a list of strings and removing empty strings.
     commit_list = list(filter(lambda s: s != "",commit_str.split("\n")))
@@ -166,10 +201,23 @@ def parse_commits(commit_str):
 def get_log(path, mode="stat", commit_source="local git"):
     """
     A function for gathering data from a local Git repository.
-    :param path: A string containing the path of the Git repository.
-    :param mode: The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
-    :param commit_source: The source of the Git repository, local is currently the only option.
-    :return: A CommitLog object.
+
+    **Parameters** :
+
+    > *path* : `string`
+
+    >> A string containing the path of the Git repository.
+
+    > *mode* : `string`
+
+    >> The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
+
+    > *commit_source* : `string`
+
+    >> The source of the Git repository, local is currently the only option.
+
+    **Returns** : `Commitlog`
+
     """
     if commit_source == "local git":
         detect_key = "hash"

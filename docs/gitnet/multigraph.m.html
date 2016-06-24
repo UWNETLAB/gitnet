@@ -1034,7 +1034,7 @@ table {
     
   
   <div id="sidebar">
-    <h1>Index</h1>
+    <img src="static/gitnet.png" height="250" width="250"/>
     <ul id="index">
 
 
@@ -1135,15 +1135,21 @@ table {
 
     <span class="k">def</span> <span class="nf">write_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        write_graphml converts a MultiGraphPlus object to a graphml file.</span>
-<span class="sd">        :param self: MultiGraphPlus graph</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be</span>
-<span class="sd">            compressed.</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        This method will have the side effect of creating a file, specified by fpath.</span>
-<span class="sd">        This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
-<span class="sd">            a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
-<span class="sd">            attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;.</span>
+<span class="sd">        Converts a `MultiGraphPlus` object to a graphml file.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* :</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
+<span class="sd">        &gt; This method will have the side effect of creating a file, specified by fpath.</span>
+<span class="sd">        &gt; This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
+<span class="sd">        &gt; a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
+<span class="sd">        &gt; attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1176,15 +1182,39 @@ table {
                    <span class="n">weight_string</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A function to write an edgelist formatted for the tnet library for network analysis in R.</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">        :param mode_string: The name string of the mode node attribute.</span>
-<span class="sd">        :param weighted: Do the edges have weights? True or false.</span>
-<span class="sd">        :param time_string: the name string of the date/time node attribute.</span>
-<span class="sd">        :param node_index_string: Creates a new integer id attribute.</span>
-<span class="sd">        :param weight_string: The name of the weight node attribute.</span>
-<span class="sd">        :return: None</span>
 
-<span class="sd">        Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* : `string`</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to.</span>
+
+<span class="sd">        &gt; *mode_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name string of the mode node attribute.</span>
+
+<span class="sd">        &gt; *weighted* : `bool`</span>
+
+<span class="sd">        &gt;&gt; Do the edges have weights? True or false.</span>
+
+<span class="sd">        &gt; *time_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; the name string of the date/time node attribute.</span>
+
+<span class="sd">        &gt; *node_index_string* : `int`</span>
+
+<span class="sd">        &gt;&gt; Creates a new integer id attribute.</span>
+
+<span class="sd">        &gt; *weight_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name of the weight node attribute.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
+<span class="sd">        *Source* :</span>
+
+<span class="sd">        &gt; Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">modes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">mode1set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -1247,9 +1277,21 @@ table {
     <span class="k">def</span> <span class="nf">node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new node attribute.</span>
-<span class="sd">        :param name: The name of the new attribute.</span>
-<span class="sd">        :param helper: A helper function, which takes an attribute dict and produces the new attribute.</span>
-<span class="sd">        :return: A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *name* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name of the new attribute.</span>
+
+<span class="sd">        &gt; *helper* : `None`</span>
+
+<span class="sd">        &gt;&gt; A helper function, which takes an attribute dict and produces the new attribute.</span>
+
+<span class="sd">        **Return** :</span>
+
+<span class="sd">        &gt; A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
@@ -1259,13 +1301,35 @@ table {
     <span class="k">def</span> <span class="nf">quickplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="s2">&quot;4/sqrt(n)&quot;</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">default_colour</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a quick visualization of the network.</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">        :param k:</span>
-<span class="sd">        :param iterations:</span>
-<span class="sd">        :param layout: The type of layout to draw. (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;)</span>
-<span class="sd">        :param size: The size of the nodes. Default is 20.</span>
-<span class="sd">        :param default_colour:</span>
-<span class="sd">        :return: None</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* : `string`</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to.</span>
+
+<span class="sd">        &gt; *k* : `None`</span>
+
+<span class="sd">        &gt;&gt; Default function used for plotting.</span>
+
+<span class="sd">        &gt; *iterations* : `int`</span>
+
+<span class="sd">        &gt;&gt; Default number of iterations to run on the plot.</span>
+
+<span class="sd">        &gt; *layout* : `string`</span>
+
+<span class="sd">        &gt;&gt; The type of layout to draw, the available layouts are: (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;).</span>
+
+<span class="sd">        &gt; *size* : `int`</span>
+
+<span class="sd">        &gt;&gt; The size of the nodes. Default is 20.</span>
+
+<span class="sd">        &gt; *default_colour* : `string`</span>
+
+<span class="sd">        &gt;&gt; Only default nodes will be coloured with this colour.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
@@ -1344,12 +1408,20 @@ table {
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,</span>
-<span class="sd">        denstiy, and the average degree for one mode.</span>
-<span class="sd">        Prints a string that contains each of the items that make up the summary.</span>
+<span class="sd">        denstiy, and the average degree for one mode. Prints a string that contains each of the items that make up the summary.</span>
 <span class="sd">        Density is calculated using one of the modes of the original bipartite network graph.</span>
 
-<span class="sd">        :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended</span>
-<span class="sd">            maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *extra* : `bool`</span>
+
+<span class="sd">        &gt;&gt; Runs the low efficiency algorithms, which can be resource-intensive on large networks.</span>
+<span class="sd">        &gt;&gt; Recommended maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+
+<span class="sd">        **Returns** : `string`</span>
+
+<span class="sd">        &gt; Returns the descriptive string that contains information about the `MultiGraphPlus` object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mode1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode1</span>
         <span class="n">mode2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode2</span>
@@ -1408,15 +1480,29 @@ table {
     <span class="k">def</span> <span class="nf">node_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">show_warning</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2&#39;s edges will become</span>
-<span class="sd">            node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
-<span class="sd">            identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
-<span class="sd">            two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
-<span class="sd">            attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
-<span class="sd">        :param node1: The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
-<span class="sd">        :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
-<span class="sd">        :param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed</span>
-<span class="sd">        :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have</span>
-<span class="sd">        gained node2&#39;s edges.</span>
+<span class="sd">        node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
+<span class="sd">        identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
+<span class="sd">        two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
+<span class="sd">        attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *node1* : `string`</span>
+
+<span class="sd">        &gt;&gt; The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
+
+<span class="sd">        &gt; *node2* : `string`</span>
+
+<span class="sd">        &gt;&gt; The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
+
+<span class="sd">        &gt; *show_warning* : `bool`</span>
+
+<span class="sd">        &gt;&gt; A boolean parameter indicating whether overwrite warnings should be displayed.</span>
+
+<span class="sd">        **Return** : `MultiGraphPlus`</span>
+
+<span class="sd">        &gt; a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have gained node2&#39;s edges.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">merged_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -1465,17 +1551,25 @@ table {
     <span class="k">def</span> <span class="nf">collapse_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_weights</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is</span>
-<span class="sd">        assigned depends on the sum_weights parameter.</span>
+<span class="sd">        assigned depends on the `sum_weights` parameter.</span>
 
-<span class="sd">        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
-<span class="sd">        If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
-<span class="sd">        the weights of collapsed edges.</span>
+<span class="sd">        **Parameters** :</span>
 
-<span class="sd">        :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
-<span class="sd">        stores other edge data in lists.</span>
+<span class="sd">        &gt; *sum_weights* : `bool`</span>
 
-<span class="sd">        Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
-<span class="sd">        weight attribute, this method assumes the weight of the edge is 1.</span>
+<span class="sd">        &gt;&gt; An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
+<span class="sd">        &gt;&gt; If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
+<span class="sd">        &gt;&gt; the weights of collapsed edges.</span>
+
+<span class="sd">        **Return** :</span>
+
+<span class="sd">        &gt; A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
+<span class="sd">        &gt; stores other edge data in lists.</span>
+
+<span class="sd">        **Note** :</span>
+
+<span class="sd">        &gt; The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
+<span class="sd">        &gt; weight attribute, this method assumes the weight of the edge is 1.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gnew</span> <span class="o">=</span> <span class="n">MultiGraphPlus</span><span class="p">()</span>
@@ -1796,15 +1890,21 @@ G.edges(keys=True)
 
     <span class="k">def</span> <span class="nf">write_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        write_graphml converts a MultiGraphPlus object to a graphml file.</span>
-<span class="sd">        :param self: MultiGraphPlus graph</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be</span>
-<span class="sd">            compressed.</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        This method will have the side effect of creating a file, specified by fpath.</span>
-<span class="sd">        This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
-<span class="sd">            a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
-<span class="sd">            attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;.</span>
+<span class="sd">        Converts a `MultiGraphPlus` object to a graphml file.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* :</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
+<span class="sd">        &gt; This method will have the side effect of creating a file, specified by fpath.</span>
+<span class="sd">        &gt; This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
+<span class="sd">        &gt; a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
+<span class="sd">        &gt; attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1837,15 +1937,39 @@ G.edges(keys=True)
                    <span class="n">weight_string</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A function to write an edgelist formatted for the tnet library for network analysis in R.</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">        :param mode_string: The name string of the mode node attribute.</span>
-<span class="sd">        :param weighted: Do the edges have weights? True or false.</span>
-<span class="sd">        :param time_string: the name string of the date/time node attribute.</span>
-<span class="sd">        :param node_index_string: Creates a new integer id attribute.</span>
-<span class="sd">        :param weight_string: The name of the weight node attribute.</span>
-<span class="sd">        :return: None</span>
 
-<span class="sd">        Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* : `string`</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to.</span>
+
+<span class="sd">        &gt; *mode_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name string of the mode node attribute.</span>
+
+<span class="sd">        &gt; *weighted* : `bool`</span>
+
+<span class="sd">        &gt;&gt; Do the edges have weights? True or false.</span>
+
+<span class="sd">        &gt; *time_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; the name string of the date/time node attribute.</span>
+
+<span class="sd">        &gt; *node_index_string* : `int`</span>
+
+<span class="sd">        &gt;&gt; Creates a new integer id attribute.</span>
+
+<span class="sd">        &gt; *weight_string* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name of the weight node attribute.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
+<span class="sd">        *Source* :</span>
+
+<span class="sd">        &gt; Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">modes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">mode1set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -1908,9 +2032,21 @@ G.edges(keys=True)
     <span class="k">def</span> <span class="nf">node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new node attribute.</span>
-<span class="sd">        :param name: The name of the new attribute.</span>
-<span class="sd">        :param helper: A helper function, which takes an attribute dict and produces the new attribute.</span>
-<span class="sd">        :return: A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *name* : `string`</span>
+
+<span class="sd">        &gt;&gt; The name of the new attribute.</span>
+
+<span class="sd">        &gt; *helper* : `None`</span>
+
+<span class="sd">        &gt;&gt; A helper function, which takes an attribute dict and produces the new attribute.</span>
+
+<span class="sd">        **Return** :</span>
+
+<span class="sd">        &gt; A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
@@ -1920,13 +2056,35 @@ G.edges(keys=True)
     <span class="k">def</span> <span class="nf">quickplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="s2">&quot;4/sqrt(n)&quot;</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">default_colour</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a quick visualization of the network.</span>
-<span class="sd">        :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">        :param k:</span>
-<span class="sd">        :param iterations:</span>
-<span class="sd">        :param layout: The type of layout to draw. (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;)</span>
-<span class="sd">        :param size: The size of the nodes. Default is 20.</span>
-<span class="sd">        :param default_colour:</span>
-<span class="sd">        :return: None</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *fname* : `string`</span>
+
+<span class="sd">        &gt;&gt; A string indicating the path or file name to write to.</span>
+
+<span class="sd">        &gt; *k* : `None`</span>
+
+<span class="sd">        &gt;&gt; Default function used for plotting.</span>
+
+<span class="sd">        &gt; *iterations* : `int`</span>
+
+<span class="sd">        &gt;&gt; Default number of iterations to run on the plot.</span>
+
+<span class="sd">        &gt; *layout* : `string`</span>
+
+<span class="sd">        &gt;&gt; The type of layout to draw, the available layouts are: (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;).</span>
+
+<span class="sd">        &gt; *size* : `int`</span>
+
+<span class="sd">        &gt;&gt; The size of the nodes. Default is 20.</span>
+
+<span class="sd">        &gt; *default_colour* : `string`</span>
+
+<span class="sd">        &gt;&gt; Only default nodes will be coloured with this colour.</span>
+
+<span class="sd">        **Return** : `None`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
@@ -2005,12 +2163,20 @@ G.edges(keys=True)
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,</span>
-<span class="sd">        denstiy, and the average degree for one mode.</span>
-<span class="sd">        Prints a string that contains each of the items that make up the summary.</span>
+<span class="sd">        denstiy, and the average degree for one mode. Prints a string that contains each of the items that make up the summary.</span>
 <span class="sd">        Density is calculated using one of the modes of the original bipartite network graph.</span>
 
-<span class="sd">        :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended</span>
-<span class="sd">            maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *extra* : `bool`</span>
+
+<span class="sd">        &gt;&gt; Runs the low efficiency algorithms, which can be resource-intensive on large networks.</span>
+<span class="sd">        &gt;&gt; Recommended maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+
+<span class="sd">        **Returns** : `string`</span>
+
+<span class="sd">        &gt; Returns the descriptive string that contains information about the `MultiGraphPlus` object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mode1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode1</span>
         <span class="n">mode2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode2</span>
@@ -2069,15 +2235,29 @@ G.edges(keys=True)
     <span class="k">def</span> <span class="nf">node_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">show_warning</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2&#39;s edges will become</span>
-<span class="sd">            node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
-<span class="sd">            identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
-<span class="sd">            two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
-<span class="sd">            attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
-<span class="sd">        :param node1: The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
-<span class="sd">        :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
-<span class="sd">        :param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed</span>
-<span class="sd">        :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have</span>
-<span class="sd">        gained node2&#39;s edges.</span>
+<span class="sd">        node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
+<span class="sd">        identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
+<span class="sd">        two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
+<span class="sd">        attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
+
+<span class="sd">        **Parameters** :</span>
+
+<span class="sd">        &gt; *node1* : `string`</span>
+
+<span class="sd">        &gt;&gt; The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
+
+<span class="sd">        &gt; *node2* : `string`</span>
+
+<span class="sd">        &gt;&gt; The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
+
+<span class="sd">        &gt; *show_warning* : `bool`</span>
+
+<span class="sd">        &gt;&gt; A boolean parameter indicating whether overwrite warnings should be displayed.</span>
+
+<span class="sd">        **Return** : `MultiGraphPlus`</span>
+
+<span class="sd">        &gt; a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have gained node2&#39;s edges.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">merged_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -2126,17 +2306,25 @@ G.edges(keys=True)
     <span class="k">def</span> <span class="nf">collapse_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_weights</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is</span>
-<span class="sd">        assigned depends on the sum_weights parameter.</span>
+<span class="sd">        assigned depends on the `sum_weights` parameter.</span>
 
-<span class="sd">        :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
-<span class="sd">        If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
-<span class="sd">        the weights of collapsed edges.</span>
+<span class="sd">        **Parameters** :</span>
 
-<span class="sd">        :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
-<span class="sd">        stores other edge data in lists.</span>
+<span class="sd">        &gt; *sum_weights* : `bool`</span>
 
-<span class="sd">        Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
-<span class="sd">        weight attribute, this method assumes the weight of the edge is 1.</span>
+<span class="sd">        &gt;&gt; An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
+<span class="sd">        &gt;&gt; If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
+<span class="sd">        &gt;&gt; the weights of collapsed edges.</span>
+
+<span class="sd">        **Return** :</span>
+
+<span class="sd">        &gt; A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
+<span class="sd">        &gt; stores other edge data in lists.</span>
+
+<span class="sd">        **Note** :</span>
+
+<span class="sd">        &gt; The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
+<span class="sd">        &gt; weight attribute, this method assumes the weight of the edge is 1.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gnew</span> <span class="o">=</span> <span class="n">MultiGraphPlus</span><span class="p">()</span>
@@ -3250,28 +3438,44 @@ G.edges()
     
   
     <div class="desc"><p>Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
-assigned depends on the sum_weights parameter.</p>
-<p>:param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.
+assigned depends on the <code>sum_weights</code> parameter.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>sum_weights</em> : <code>bool</code></p>
+<blockquote>
+<p>An optional boolean parameter. Determines how weights will be assigned to the final edges.
 If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
 the weights of collapsed edges.</p>
-<p>:return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
 stores other edge data in lists.</p>
-<p>Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
-weight attribute, this method assumes the weight of the edge is 1.</p></div>
+</blockquote>
+<p><strong>Note</strong> :</p>
+<blockquote>
+<p>The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
+weight attribute, this method assumes the weight of the edge is 1.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.collapse_edges', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.collapse_edges" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">collapse_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_weights</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is</span>
-<span class="sd">    assigned depends on the sum_weights parameter.</span>
-<span class="sd">    :param sum_weights: An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
-<span class="sd">    If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
-<span class="sd">    the weights of collapsed edges.</span>
-<span class="sd">    :return: A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
-<span class="sd">    stores other edge data in lists.</span>
-<span class="sd">    Note: The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
-<span class="sd">    weight attribute, this method assumes the weight of the edge is 1.</span>
+<span class="sd">    assigned depends on the `sum_weights` parameter.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *sum_weights* : `bool`</span>
+<span class="sd">    &gt;&gt; An optional boolean parameter. Determines how weights will be assigned to the final edges.</span>
+<span class="sd">    &gt;&gt; If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of</span>
+<span class="sd">    &gt;&gt; the weights of collapsed edges.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and</span>
+<span class="sd">    &gt; stores other edge data in lists.</span>
+<span class="sd">    **Note** :</span>
+<span class="sd">    &gt; The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a</span>
+<span class="sd">    &gt; weight attribute, this method assumes the weight of the edge is 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gnew</span> <span class="o">=</span> <span class="n">MultiGraphPlus</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
@@ -3555,22 +3759,34 @@ list(G.degree_iter([0,1]))
     
   
     <div class="desc"><p>Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,
-denstiy, and the average degree for one mode.
-Prints a string that contains each of the items that make up the summary.
+denstiy, and the average degree for one mode. Prints a string that contains each of the items that make up the summary.
 Density is calculated using one of the modes of the original bipartite network graph.</p>
-<p>:param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended
-    maximum network size for the low efficiency algorithms is around 100 nodes.</p></div>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>extra</em> : <code>bool</code></p>
+<blockquote>
+<p>Runs the low efficiency algorithms, which can be resource-intensive on large networks.
+Recommended maximum network size for the low efficiency algorithms is around 100 nodes.</p>
+</blockquote>
+</blockquote>
+<p><strong>Returns</strong> : <code>string</code></p>
+<blockquote>
+<p>Returns the descriptive string that contains information about the <code>MultiGraphPlus</code> object.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.describe', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.describe" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides a summary of graph statistics. Includes basic statistics like the number of nodes, edges,</span>
-<span class="sd">    denstiy, and the average degree for one mode.</span>
-<span class="sd">    Prints a string that contains each of the items that make up the summary.</span>
+<span class="sd">    denstiy, and the average degree for one mode. Prints a string that contains each of the items that make up the summary.</span>
 <span class="sd">    Density is calculated using one of the modes of the original bipartite network graph.</span>
-<span class="sd">    :param extra: runs the low efficiency algorithms, which can be resource-intensive on large networks. Recommended</span>
-<span class="sd">        maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *extra* : `bool`</span>
+<span class="sd">    &gt;&gt; Runs the low efficiency algorithms, which can be resource-intensive on large networks.</span>
+<span class="sd">    &gt;&gt; Recommended maximum network size for the low efficiency algorithms is around 100 nodes.</span>
+<span class="sd">    **Returns** : `string`</span>
+<span class="sd">    &gt; Returns the descriptive string that contains information about the `MultiGraphPlus` object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mode1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode1</span>
     <span class="n">mode2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode2</span>
@@ -4477,19 +4693,35 @@ G.add_path([0,1,2,3])
 
     
   
-    <div class="desc"><p>Creates a new node attribute.
-:param name: The name of the new attribute.
-:param helper: A helper function, which takes an attribute dict and produces the new attribute.
-:return: A new MultiGraphPlus object, identical to self but with the desired attribute.</p></div>
+    <div class="desc"><p>Creates a new node attribute.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>name</em> : <code>string</code></p>
+<blockquote>
+<p>The name of the new attribute.</p>
+</blockquote>
+<p><em>helper</em> : <code>None</code></p>
+<blockquote>
+<p>A helper function, which takes an attribute dict and produces the new attribute.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A new MultiGraphPlus object, identical to self but with the desired attribute.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.node_attributes', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.node_attributes" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a new node attribute.</span>
-<span class="sd">    :param name: The name of the new attribute.</span>
-<span class="sd">    :param helper: A helper function, which takes an attribute dict and produces the new attribute.</span>
-<span class="sd">    :return: A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *name* : `string`</span>
+<span class="sd">    &gt;&gt; The name of the new attribute.</span>
+<span class="sd">    &gt; *helper* : `None`</span>
+<span class="sd">    &gt;&gt; A helper function, which takes an attribute dict and produces the new attribute.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; A new MultiGraphPlus object, identical to self but with the desired attribute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
@@ -4512,30 +4744,48 @@ G.add_path([0,1,2,3])
     
   
     <div class="desc"><p>Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2's edges will become
-    node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
-    identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the
-    two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic
-    attribute, node1's value will overwrite node2's value.
-:param node1: The identifier for a node. This node's attributes will persist to the merged node.
-:param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.
-:param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed
-:return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have
-gained node2's edges.</p></div>
+node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose
+identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the
+two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic
+attribute, node1's value will overwrite node2's value.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>node1</em> : <code>string</code></p>
+<blockquote>
+<p>The identifier for a node. This node's attributes will persist to the merged node.</p>
+</blockquote>
+<p><em>node2</em> : <code>string</code></p>
+<blockquote>
+<p>The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</p>
+</blockquote>
+<p><em>show_warning</em> : <code>bool</code></p>
+<blockquote>
+<p>A boolean parameter indicating whether overwrite warnings should be displayed.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>MultiGraphPlus</code></p>
+<blockquote>
+<p>a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have gained node2's edges.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.node_merge', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.node_merge" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">node_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">show_warning</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combines node1 and node2. After merge, node1 will remain, while node2 will be removed. node2&#39;s edges will become</span>
-<span class="sd">        node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
-<span class="sd">        identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
-<span class="sd">        two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
-<span class="sd">        attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
-<span class="sd">    :param node1: The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
-<span class="sd">    :param node2: The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
-<span class="sd">    :param show_warning: A boolean parameter indicating whether overwrite warnings should be displayed</span>
-<span class="sd">    :return: a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have</span>
-<span class="sd">    gained node2&#39;s edges.</span>
+<span class="sd">    node1 edges, while retaining all their edge attributes. Vector attributes of node1 and node2 whose</span>
+<span class="sd">    identifiers match will be combined, retaining all values. Atomic attributes which exist in only one of the</span>
+<span class="sd">    two nodes will be included in the merge node. Finally, if node1 and node2 contain a conflicting atomic</span>
+<span class="sd">    attribute, node1&#39;s value will overwrite node2&#39;s value.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *node1* : `string`</span>
+<span class="sd">    &gt;&gt; The identifier for a node. This node&#39;s attributes will persist to the merged node.</span>
+<span class="sd">    &gt; *node2* : `string`</span>
+<span class="sd">    &gt;&gt; The identifier for a second node. Any non-conflicting attributes will persist to the merged node.</span>
+<span class="sd">    &gt; *show_warning* : `bool`</span>
+<span class="sd">    &gt;&gt; A boolean parameter indicating whether overwrite warnings should be displayed.</span>
+<span class="sd">    **Return** : `MultiGraphPlus`</span>
+<span class="sd">    &gt; a new multigraphplus object which has merged nodes 1 and 2 together into node1, which will also have gained node2&#39;s edges.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">merged_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="c1"># Check: Both node1 and node2 exist in merged_graph</span>
@@ -5015,27 +5265,55 @@ G.number_of_selfloops()
 
     
   
-    <div class="desc"><p>Makes a quick visualization of the network.
-:param fname: A string indicating the path or file name to write to.
-:param k:
-:param iterations:
-:param layout: The type of layout to draw. ("spring", "circular", "shell", "spectral", or "random")
-:param size: The size of the nodes. Default is 20.
-:param default_colour:
-:return: None</p></div>
+    <div class="desc"><p>Makes a quick visualization of the network.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>fname</em> : <code>string</code></p>
+<blockquote>
+<p>A string indicating the path or file name to write to.</p>
+</blockquote>
+<p><em>k</em> : <code>None</code></p>
+<blockquote>
+<p>Default function used for plotting.</p>
+</blockquote>
+<p><em>iterations</em> : <code>int</code></p>
+<blockquote>
+<p>Default number of iterations to run on the plot.</p>
+</blockquote>
+<p><em>layout</em> : <code>string</code></p>
+<blockquote>
+<p>The type of layout to draw, the available layouts are: ("spring", "circular", "shell", "spectral", or "random").</p>
+</blockquote>
+<p><em>size</em> : <code>int</code></p>
+<blockquote>
+<p>The size of the nodes. Default is 20.</p>
+</blockquote>
+<p><em>default_colour</em> : <code>string</code></p>
+<blockquote>
+<p>Only default nodes will be coloured with this colour.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>None</code></p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.quickplot', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.quickplot" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">quickplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="s2">&quot;4/sqrt(n)&quot;</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">default_colour</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a quick visualization of the network.</span>
-<span class="sd">    :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">    :param k:</span>
-<span class="sd">    :param iterations:</span>
-<span class="sd">    :param layout: The type of layout to draw. (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;)</span>
-<span class="sd">    :param size: The size of the nodes. Default is 20.</span>
-<span class="sd">    :param default_colour:</span>
-<span class="sd">    :return: None</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *fname* : `string`</span>
+<span class="sd">    &gt;&gt; A string indicating the path or file name to write to.</span>
+<span class="sd">    &gt; *k* : `None`</span>
+<span class="sd">    &gt;&gt; Default function used for plotting.</span>
+<span class="sd">    &gt; *iterations* : `int`</span>
+<span class="sd">    &gt;&gt; Default number of iterations to run on the plot.</span>
+<span class="sd">    &gt; *layout* : `string`</span>
+<span class="sd">    &gt;&gt; The type of layout to draw, the available layouts are: (&quot;spring&quot;, &quot;circular&quot;, &quot;shell&quot;, &quot;spectral&quot;, or &quot;random&quot;).</span>
+<span class="sd">    &gt; *size* : `int`</span>
+<span class="sd">    &gt;&gt; The size of the nodes. Default is 20.</span>
+<span class="sd">    &gt; *default_colour* : `string`</span>
+<span class="sd">    &gt;&gt; Only default nodes will be coloured with this colour.</span>
+<span class="sd">    **Return** : `None`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">k</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">())</span>
@@ -5973,29 +6251,35 @@ G2.edges()
 
     
   
-    <div class="desc"><p>write_graphml converts a MultiGraphPlus object to a graphml file.
-:param self: MultiGraphPlus graph
-:param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be
-    compressed.
-:return: None
-This method will have the side effect of creating a file, specified by fpath.
+    <div class="desc"><p>Converts a <code>MultiGraphPlus</code> object to a graphml file.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>fname</em> :</p>
+<blockquote>
+<p>A string indicating the path or file name to write to. File names which end in <code>.gz</code> or <code>.bz2</code> will be compressed.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>None</code></p>
+<blockquote>
+<p>This method will have the side effect of creating a file, specified by fpath.
 This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
-    a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
-    attributes are preceded by 'n:' while edge attributes are preceded by 'e:'.</p></div>
+a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
+attributes are preceded by 'n:' while edge attributes are preceded by 'e:').</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.write_graphml', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.write_graphml" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    write_graphml converts a MultiGraphPlus object to a graphml file.</span>
-<span class="sd">    :param self: MultiGraphPlus graph</span>
-<span class="sd">    :param fname: A string indicating the path or file name to write to. File names which end in .gz or .bz2 will be</span>
-<span class="sd">        compressed.</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    This method will have the side effect of creating a file, specified by fpath.</span>
-<span class="sd">    This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
-<span class="sd">        a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
-<span class="sd">        attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;.</span>
+<span class="sd">    Converts a `MultiGraphPlus` object to a graphml file.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *fname* :</span>
+<span class="sd">    &gt;&gt; A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.</span>
+<span class="sd">    **Return** : `None`</span>
+<span class="sd">    &gt; This method will have the side effect of creating a file, specified by fpath.</span>
+<span class="sd">    &gt; This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into</span>
+<span class="sd">    &gt; a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node</span>
+<span class="sd">    &gt; attributes are preceded by &#39;n:&#39; while edge attributes are preceded by &#39;e:&#39;).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="n">warning</span> <span class="o">=</span> <span class="bp">False</span>
@@ -6034,15 +6318,39 @@ This method cannot use vector attributes within the graphml file. Instead, vecto
 
     
   
-    <div class="desc"><p>A function to write an edgelist formatted for the tnet library for network analysis in R.
-:param fname: A string indicating the path or file name to write to.
-:param mode_string: The name string of the mode node attribute.
-:param weighted: Do the edges have weights? True or false.
-:param time_string: the name string of the date/time node attribute.
-:param node_index_string: Creates a new integer id attribute.
-:param weight_string: The name of the weight node attribute.
-:return: None</p>
-<p>Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</p></div>
+    <div class="desc"><p>A function to write an edgelist formatted for the tnet library for network analysis in R.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>fname</em> : <code>string</code></p>
+<blockquote>
+<p>A string indicating the path or file name to write to.</p>
+</blockquote>
+<p><em>mode_string</em> : <code>string</code></p>
+<blockquote>
+<p>The name string of the mode node attribute.</p>
+</blockquote>
+<p><em>weighted</em> : <code>bool</code></p>
+<blockquote>
+<p>Do the edges have weights? True or false.</p>
+</blockquote>
+<p><em>time_string</em> : <code>string</code></p>
+<blockquote>
+<p>the name string of the date/time node attribute.</p>
+</blockquote>
+<p><em>node_index_string</em> : <code>int</code></p>
+<blockquote>
+<p>Creates a new integer id attribute.</p>
+</blockquote>
+<p><em>weight_string</em> : <code>string</code></p>
+<blockquote>
+<p>The name of the weight node attribute.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> : <code>None</code></p>
+<p><em>Source</em> :</p>
+<blockquote>
+<p>Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.multigraph.MultiGraphPlus.write_tnet', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.multigraph.MultiGraphPlus.write_tnet" class="source">
@@ -6050,14 +6358,22 @@ This method cannot use vector attributes within the graphml file. Instead, vecto
                <span class="n">weight_string</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function to write an edgelist formatted for the tnet library for network analysis in R.</span>
-<span class="sd">    :param fname: A string indicating the path or file name to write to.</span>
-<span class="sd">    :param mode_string: The name string of the mode node attribute.</span>
-<span class="sd">    :param weighted: Do the edges have weights? True or false.</span>
-<span class="sd">    :param time_string: the name string of the date/time node attribute.</span>
-<span class="sd">    :param node_index_string: Creates a new integer id attribute.</span>
-<span class="sd">    :param weight_string: The name of the weight node attribute.</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    Source: Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *fname* : `string`</span>
+<span class="sd">    &gt;&gt; A string indicating the path or file name to write to.</span>
+<span class="sd">    &gt; *mode_string* : `string`</span>
+<span class="sd">    &gt;&gt; The name string of the mode node attribute.</span>
+<span class="sd">    &gt; *weighted* : `bool`</span>
+<span class="sd">    &gt;&gt; Do the edges have weights? True or false.</span>
+<span class="sd">    &gt; *time_string* : `string`</span>
+<span class="sd">    &gt;&gt; the name string of the date/time node attribute.</span>
+<span class="sd">    &gt; *node_index_string* : `int`</span>
+<span class="sd">    &gt;&gt; Creates a new integer id attribute.</span>
+<span class="sd">    &gt; *weight_string* : `string`</span>
+<span class="sd">    &gt;&gt; The name of the weight node attribute.</span>
+<span class="sd">    **Return** : `None`</span>
+<span class="sd">    *Source* :</span>
+<span class="sd">    &gt; Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">mode1set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
