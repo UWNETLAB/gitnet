@@ -102,7 +102,7 @@ class GraphMLTests(unittest.TestCase):
                 if not isinstance(data[k], list):
                     self.assertEqual(data[k], rev.edge[n1][n2][k])
                 else:
-                    self.assertEqual(gitnet.helpers.list_scd_str(data[k]), rev.edge[n1][n2][k])
+                    self.assertEqual(gitnet.helpers.list_to_scd(data[k]), rev.edge[n1][n2][k])
 
     def test_warnings(self):
         """Are appropriate warnings being raised iff they should be?"""

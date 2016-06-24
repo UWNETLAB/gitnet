@@ -1,30 +1,43 @@
+"""
+>![](static/gitnet.png)
+"""
 import datetime as dt
 import re
 from gitnet.exceptions import InputError
 
 
 # Working with Git Log date strings
-def git_datetime(s):
+def datetime_git(s):
     """
     Turns a git date string into a datetime object.
-    :param s: A git-formatted date string.
-    :return: A datetime object.
+
+    **Parameters**
+
+    >*s* : `str`
+    >> A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"
+
+    **Return** `datetime`
     """
     return dt.datetime.strptime(s,"%a %b %d %H:%M:%S %Y %z")
 
 
-def reference_datetime(s):
+def datetime_reference(s):
     """
     Turns a Git date string, or a datetime object into a datetime.
-    :param s: String or Datetime
-    :return: Datetime
+
+    **Parameters**
+
+    >*s* : `str` or `datetime object`
+    >> Either a git-formatted string such as "Wed Mar 4 20:00:00 2015 -0400" or a datetime object.
+
+    **Return** `datetime`
     """
     if type(s) is dt.datetime:
         ref_date = s
     elif type(s) is str:
         git_date_p = re.compile("[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}")
         if bool(re.match(git_date_p, s)):
-            ref_date = git_datetime(s)
+            ref_date = datetime_git(s)
         else:
             raise InputError("Unrecognized date format. match should be a Git formatted date string "
                              "(e.g. 'Mon Apr 18 00:59:02 2016 -0400') or a datetime object.")
@@ -32,39 +45,105 @@ def reference_datetime(s):
 
 
 # Filtering functions.
-def since(s, match):
+def filter_since(s, match):
     """
-    A predicate determining if s is a date since match (inclusive).
-    :param s: A Git date string (e.g.  Sat Apr 2 07:25:25 2016 -0600).
-    :param match: A comparison date. Either a Git date string or a datetime object.
-    :return: True or False.
+    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates
+    inclusively, so if the dates are equal the function returns `True`.
+
+    **Parameters**
+
+    >*s* : `str`
+    >> A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"
+
+    >*match* : `str` or `datetime`
+    >> Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.
+
+    **Return** `bool`
+    > `True` if `s` is the same or a more recent date then `match`, otherwise `False`.
     """
-    dt_match = reference_datetime(match)
-    return git_datetime(s) >= dt_match
+    dt_match = datetime_reference(match)
+    return datetime_git(s) >= dt_match
 
 
-def before(s, match):
-    dt_match = reference_datetime(match)
-    return git_datetime(s) <= dt_match
+def filter_before(s, match):
+    """
+    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates
+    inclusively, so if the dates are equal the function will return `True`.
+
+    **Parameters**
+
+    >*s* : 'str'
+    >> A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"
+
+    >*match* : `str` or `datetime`
+    >> Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.
+
+    **Return** `bool`
+    > `True` if `s` is the same or a less recent date then `match`, otherwise `False`.
+    """
+
+    dt_match = datetime_reference(match)
+    return datetime_git(s) <= dt_match
 
 
-def sincex(s, match):
-    dt_match = reference_datetime(match)
-    return git_datetime(s) > dt_match
+def filter_sincex(s, match):
+    """
+    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates
+    exclusively, so if the dates are equal the function returns `False`.
+
+    **Parameters**
+
+    >*s* : `str`
+    >> A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"
+
+    >*match* : `str` or `datetime`
+    >> Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.
+
+    **Return** `bool`
+    > `True` if `s` is a more recent date then `match`, otherwise `False`.
+    """
+    dt_match = datetime_reference(match)
+    return datetime_git(s) > dt_match
 
 
-def beforex(s, match):
-    dt_match = reference_datetime(match)
-    return git_datetime(s) < dt_match
+def filter_beforex(s, match):
+    """
+    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates
+    exclusively, so if the dates are equal the function will return `False`.
+
+    **Parameters**
+
+    >*s* : 'str'
+    >> A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"
+
+    >*match* : `str` or `datetime`
+    >> Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.
+
+    **Return** `bool`
+    > `True` if `s` is a less recent date then `match`, otherwise `False`.
+    """
+    dt_match = datetime_reference(match)
+    return datetime_git(s) < dt_match
 
 
 def filter_regex(s, match, mode="match"):
     """
-    A predicate which determines whether "s" matches the regular expression "match".
-    :param s: An input string which is compared to the regex pattern.
-    :param match: A regular expression string.
-    :param mode: Indicates whether regex should be matched ("match") or searched for ("search")
-    :return: True or false.
+    A predicate which determines whether `s` matches the regular expression `match`.
+
+    **Parameters**
+
+    >*s* : `str`
+    >> An input string which is compared to the regex pattern.
+
+    >*match* : `str`
+    >> A regular expression string.
+
+    *mode* : `str`
+    >> A string to indicate whether the regular expression should be an exact match for `s` or if it should be searched
+    for within `s`. Defaults to `"match"`, but may also be `"search"`.
+
+    **Return** `bool`
+    > `True` if `s` matches or contains the regular expression `match`, otherwise `False`.
     """
     pattern = re.compile(match)
     if mode == "match":
@@ -76,9 +155,17 @@ def filter_regex(s, match, mode="match"):
 def filter_equals(x, match):
     """
     Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.
-    :param x: An input value.
-    :param match: A reference value.
-    :return: Are they the same?
+
+    **Parameters**
+
+    >*x* : `any`
+    >> Any value which you want to compare against `match`.
+
+    >*match* : `any`
+    >> A reference value to compare `x` with.
+
+    **Return** `bool`
+    >> `True` if `x` and `match` are the same, otherwise `False`.
     """
     if type(x) is str and type(match) is str:
         return filter_regex(x, match, mode="match")
@@ -89,9 +176,16 @@ def filter_equals(x, match):
 def filter_has(x,match):
     """
     Determines whether match is "in" x. If x and match are both strings, match can be a regular expression.
-    :param x: An input value.
-    :param match: A reference value.
-    :return: Is match in x?
+    **Parameters**
+
+    >*x* : `any`
+    >> A value which you want to compare against `match`.
+
+    >*match* : `any`
+    >> A reference value to compare `x` with.
+
+    **Return** `bool`
+    > `True` if `match` contains `x`, otherwise `False`.
     """
     if type(x) is str and type(match) is str:
         return filter_regex(x, match, mode="search")
@@ -105,10 +199,18 @@ def filter_has(x,match):
 def most_common(lst, n=1):
     """
     Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common
-     entry is in a tie, all these entries will be returned as well.
-    :param lst: A list of values.
-    :param n: An positive integer. The top n most common entries (occurring more than once) will be returned.
-    :return: A list of tuples, each containing a frequency integer and a value.
+    entry is in a tie, all these entries will be returned as well.
+
+    **Parameters**
+
+    >*lst* : `list`
+    >> A list of values.
+
+    >*n* : `int`
+    >> A positive integer, defaulting to 1, indicating how many entries to return.
+
+    **Return**
+    > A list of tuples, each containing a frequency integer and a value.
     """
     occurrences = {}
     # Count occurrences
@@ -145,9 +247,15 @@ def most_common(lst, n=1):
 
 def most_occurrences(lst):
     """
-    Produces the number of times the most common value appears
-    :param lst: A list of values.
-    :return: The occurences of the most common value.
+    Produces the number of times the most common value appears.
+
+    **Parameters**
+
+    >*lst* : `list`
+    >> A list of values.
+
+    **Return** `int`
+    > The number of times the most common value occurs.
     """
     occurrences = {}
     max = 0
@@ -165,12 +273,18 @@ def most_occurrences(lst):
     return max
 
 
-def list_scd_str(lst):
+def list_to_scd(lst):
     """
     Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings
     prior to joining.
-    :param lst: of items which are either strings, or objects which can be converted to strings using str()
-    :return: A String which includes each item within lst separated using semicolons.
+
+    **Parameters**
+
+    >*lst* : `list`
+    >> A list of items which are either strings or objects which can be converted to strings using `str()`
+
+    **Return** `str`
+    > A String which includes each item within `lst`, separated by semicolons.
     """
     new_lst = []
     for i in lst:
@@ -185,28 +299,54 @@ def list_scd_str(lst):
 
 
 # Network Edge Generator Functions
-def simple_edge(v1, v2, record, keep):
+def net_edges_simple(v1, v2, record, keep):
     """
-    Creates an edge between to vertices, with an associated dictionary of properties.
-    :param v1: The first vertex, any type.
-    :param v2: The second vertex, any type.
-    :param record: The current record in edge generation.
-    :param keep: The edge attributes to be kept from the record.
-    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})
+    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated
+    dictionary of properties.
+
+    **Parameters**
+
+    >*v1* : `any`
+    >> The first vertex.
+
+    >*v2* : `any`
+    >> The second vertex.
+
+    >*record* : `str`
+    >> The short hash string for the current record in edge generation.
+
+    >*keep* : `list`
+    >> A list of edge attributes to be kept from the CommitLog record.
+
+    **Record**
+    > An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`.
     """
     properties = {k: v for k, v in record.items() if k in keep}
     return (v1,v2, properties)
 
 
-def changes_edge(v1, v2, record, keep):
+def net_edges_changes(v1, v2, record, keep):
     """
-    Creates an edge between an "any" and a CommitLog file ("file"), weighted by the number of lines changed
-    in the file. Is a helper for Log.generate_edges().
-    :param v1: The first vertex, any type.
-    :param v2: Must be a file string (e.g. "my_dir/my_file.txt") as in CommitLog "files"
-    :param record: The current record in edge generation.
-    :param keep: The edge attributes to be kept from the record.
-    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})
+    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number
+    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type "files".
+
+    **Parameters**
+
+    >*v1* : `any`
+    >> The first vertex.
+
+    >*v2* : `str`
+    >> A string giving the id of a vertex whose type is "files".
+
+    >*record* : `str`
+    >> The short hash string for the current record in edge generation.
+
+    >*keep* : `list`
+    >> A list of edge attributes to be kept from the CommitLog record.
+
+    **Return**
+    > A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The
+    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.
     """
     properties = {k:v for k,v in record.items() if k in keep}
     # Get file name and change weight
@@ -235,20 +375,21 @@ def changes_edge(v1, v2, record, keep):
 
 
 # Network Attribute Helper Functions
-def author_file_node_colours(d):
+def node_colours(d):
     """
-    Creates default colourings for an author/file bipartite network.
-    :param d: The attribute dictionary for the node.
-    :return: A colour string.
+    Produces a node's default colour, determined by whether it is an author, python file, or c file. Created to be used
+    as a helper function for the MultiGraphPlus.node_attributes() method for use with a author/file bipartite network.
 
-    Colours:
-        Default: lightgrey
-        Author: dodgerblue
-        Python: tomato
-        C (code): gold
-        C (interface): goldenrod
+    **Parameters**
+
+    >*d* : `dict`
+    >> A node's attribute dictionary.
+
+    **Return**: `str`
+    > A colour string determined by the node's attributes. Nodes with a type 'author' return 'dodgerblue'. Python files
+    (ending in .py) return 'tomato'. C code files (ending in .cc) return 'gold'. C interface files (ending in .h)
+    return 'goldenrod'.
     """
-    # After Here is not being run
     if "type" not in d.keys():
         return "lightgrey"
     else:

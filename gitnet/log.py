@@ -4,8 +4,8 @@ import warnings
 import copy
 import subprocess as sub
 from gitnet.multigraph import MultiGraphPlus
-from gitnet.helpers import git_datetime, before, beforex, since, sincex, \
-    filter_has, filter_equals, simple_edge, changes_edge
+from gitnet.helpers import datetime_git, filter_before, filter_beforex, filter_since, filter_sincex, \
+    filter_has, filter_equals, net_edges_simple, net_edges_changes
 
 
 class Log(object):
@@ -246,10 +246,10 @@ class Log(object):
                          "<=": lambda x, val: x < val or x == val,
                          ">": lambda x, val: x > val,
                          ">=": lambda x, val: x > val or x == val,
-                         "since": since,
-                         "sincex": sincex,
-                         "before": before,
-                         "beforex": beforex}
+                         "since": filter_since,
+                         "sincex": filter_sincex,
+                         "before": filter_before,
+                         "beforex": filter_beforex}
         if tag == "date" and fun in ("<", "<=", ">", ">="):
             warnings.warn("Dates have been compared alphabetically with {}, "
                           "use Datetime comparisons to compare dates by time.".format(fun))
@@ -435,7 +435,7 @@ class Log(object):
             print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
         return selfcopy
 
-    def generate_edges(self, mode1, mode2, helper=simple_edge, edge_attributes=[]):
+    def generate_edges(self, mode1, mode2, helper=net_edges_simple, edge_attributes=[]):
         """
         Generates bipartite edges present in each Log record.
         :param mode1: A record attribute (tag), which becomes the first node type.
@@ -545,7 +545,7 @@ class Log(object):
             node_tuple_list.append((n,nodes[n]))
         return node_tuple_list
 
-    def generate_network(self, mode1, mode2, edge_helper=simple_edge, edge_attributes=[], mode1_atom_attrs=[],
+    def generate_network(self, mode1, mode2, edge_helper=net_edges_simple, edge_attributes=[], mode1_atom_attrs=[],
                          mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
         """
         An abstract network generator. For networks that contain authors, any authors that made
@@ -583,7 +583,7 @@ class Log(object):
             graph.add_edges_from([(edge[0], edge[1], edge[2])])
         return graph
 
-    def write_edges(self, fname, mode1, mode2, helper=simple_edge, edge_attribute=['weight', 'date']):
+    def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
         """
         Writes an edge list with attributes.
         :param fname: A string indicating the path or file name to write to.
@@ -620,7 +620,7 @@ class Log(object):
             for tag in edge_attribute:
                 if tag in edge[2].keys():
                     if tag == "date":
-                        date = git_datetime(edge[2]["date"]).date()
+                        date = datetime_git(edge[2]["date"]).date()
                         f.write(",{}-{}-{}".format(date.month, date.day, date.year))
                     else:
                         f.write(",{}".format(edge[2][tag]))

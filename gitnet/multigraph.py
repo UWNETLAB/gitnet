@@ -1,11 +1,11 @@
 import networkx as nx
 import warnings
 from gitnet.exceptions import MergeError
-from gitnet.helpers import list_scd_str
+from gitnet.helpers import list_to_scd
 import matplotlib.pyplot as plt
 import copy
 import numpy as np
-from gitnet.helpers import git_datetime
+from gitnet.helpers import datetime_git
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms import bipartite
 
@@ -38,14 +38,14 @@ class MultiGraphPlus(nx.MultiGraph):
                 if isinstance(graph.node[n][attr], list):
                     warning = True
                     warning_set = {'n:' + attr} | warning_set
-                    graph.node[n][attr] = list_scd_str(graph.node[n][attr])
+                    graph.node[n][attr] = list_to_scd(graph.node[n][attr])
 
         for n1, n2, data in graph.edges(data=True):
             for k in data:
                 if isinstance(data[k], list):
                     warning = True
                     warning_set = {'e:'+k} | warning_set
-                    data[k] = list_scd_str(data[k])
+                    data[k] = list_to_scd(data[k])
 
         if warning:
             warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
@@ -108,7 +108,7 @@ class MultiGraphPlus(nx.MultiGraph):
                 if time_string is not None and time_string in eDict:
                     edt = eDict[time_string]
                     if type(edt) is str:
-                        edt = git_datetime(eDict[time_string])
+                        edt = datetime_git(eDict[time_string])
                     e_time_string = edt.strftime("\"%y-%m-%d %H:%M:%S\"")
                 else:
                     e_time_string = ''

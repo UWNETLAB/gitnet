@@ -1,3 +1,3 @@
 #!/bin/bash
-# A script for generating the html documentation pages.
+# A script for generating html from our documentation.
 pdoc --html gitnet --overwrite

@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>gitnet.helpers API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content=">![](static/gitnet.png)" />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1040,21 +1040,21 @@ table {
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
       
   <ul>
-    <li class="mono"><a href="#gitnet.helpers.author_file_node_colours">author_file_node_colours</a></li>
-    <li class="mono"><a href="#gitnet.helpers.before">before</a></li>
-    <li class="mono"><a href="#gitnet.helpers.beforex">beforex</a></li>
-    <li class="mono"><a href="#gitnet.helpers.changes_edge">changes_edge</a></li>
     <li class="mono"><a href="#gitnet.helpers.datetime_git">datetime_git</a></li>
     <li class="mono"><a href="#gitnet.helpers.datetime_reference">datetime_reference</a></li>
+    <li class="mono"><a href="#gitnet.helpers.edges_changes">edges_changes</a></li>
+    <li class="mono"><a href="#gitnet.helpers.edges_simple">edges_simple</a></li>
+    <li class="mono"><a href="#gitnet.helpers.filter_before">filter_before</a></li>
+    <li class="mono"><a href="#gitnet.helpers.filter_beforex">filter_beforex</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_equals">filter_equals</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_has">filter_has</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_regex">filter_regex</a></li>
-    <li class="mono"><a href="#gitnet.helpers.list_scd_str">list_scd_str</a></li>
+    <li class="mono"><a href="#gitnet.helpers.filter_since">filter_since</a></li>
+    <li class="mono"><a href="#gitnet.helpers.filter_sincex">filter_sincex</a></li>
+    <li class="mono"><a href="#gitnet.helpers.list_to_scd">list_to_scd</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_common">most_common</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_occurrences">most_occurrences</a></li>
-    <li class="mono"><a href="#gitnet.helpers.simple_edge">simple_edge</a></li>
-    <li class="mono"><a href="#gitnet.helpers.since">since</a></li>
-    <li class="mono"><a href="#gitnet.helpers.sincex">sincex</a></li>
+    <li class="mono"><a href="#gitnet.helpers.node_colours">node_colours</a></li>
   </ul>
 
     </li>
@@ -1072,11 +1072,16 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">gitnet.helpers</span> module</h1>
-  
+  <blockquote>
+<p><img alt="" src="static/gitnet.png" /></p>
+</blockquote>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers" class="source">
-    <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+    <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&gt;![](static/gitnet.png)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
 
@@ -1088,8 +1093,8 @@ table {
 
 <span class="sd">    **Parameters**</span>
 
-<span class="sd">    *s* : `str`</span>
-<span class="sd">    &gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
 
 <span class="sd">    **Return** `datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1102,8 +1107,8 @@ table {
 
 <span class="sd">    **Parameters**</span>
 
-<span class="sd">    *s* : `str` or `datetime object`</span>
-<span class="sd">    &gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
+<span class="sd">    &gt;*s* : `str` or `datetime object`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
 
 <span class="sd">    **Return** `datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1120,11 +1125,10 @@ table {
 
 
 <span class="c1"># Filtering functions.</span>
-<span class="k">def</span> <span class="nf">since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">filter_since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`).  If the dates are equal,</span>
-<span class="sd">    the function returns `True`. Example. since(&quot;Fri Jan 10 10:12:34 2016 -0400&quot;, &quot;Sat Apr 2 07:25:25 2016 -0400&quot;)</span>
-<span class="sd">    returns `False`.</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates</span>
+<span class="sd">    inclusively, so if the dates are equal the function returns `True`.</span>
 
 <span class="sd">    **Parameters**</span>
 
@@ -1135,32 +1139,91 @@ table {
 <span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
 
 <span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is the same or a more recent date then `match`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
 
-<span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">filter_before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates</span>
+<span class="sd">    inclusively, so if the dates are equal the function will return `True`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : &#39;str&#39;</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is the same or a less recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
 
 
-<span class="k">def</span> <span class="nf">sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">filter_sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates</span>
+<span class="sd">    exclusively, so if the dates are equal the function returns `False`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is a more recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
 
 
-<span class="k">def</span> <span class="nf">beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">filter_beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates</span>
+<span class="sd">    exclusively, so if the dates are equal the function will return `False`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : &#39;str&#39;</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is a less recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
 
 
 <span class="k">def</span> <span class="nf">filter_regex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate which determines whether &quot;s&quot; matches the regular expression &quot;match&quot;.</span>
-<span class="sd">    :param s: An input string which is compared to the regex pattern.</span>
-<span class="sd">    :param match: A regular expression string.</span>
-<span class="sd">    :param mode: Indicates whether regex should be matched (&quot;match&quot;) or searched for (&quot;search&quot;)</span>
-<span class="sd">    :return: True or false.</span>
+<span class="sd">    A predicate which determines whether `s` matches the regular expression `match`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; An input string which is compared to the regex pattern.</span>
+
+<span class="sd">    &gt;*match* : `str`</span>
+<span class="sd">    &gt;&gt; A regular expression string.</span>
+
+<span class="sd">    *mode* : `str`</span>
+<span class="sd">    &gt;&gt; A string to indicate whether the regular expression should be an exact match for `s` or if it should be searched</span>
+<span class="sd">    for within `s`. Defaults to `&quot;match&quot;`, but may also be `&quot;search&quot;`.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` matches or contains the regular expression `match`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;match&quot;</span><span class="p">:</span>
@@ -1172,9 +1235,17 @@ table {
 <span class="k">def</span> <span class="nf">filter_equals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.</span>
-<span class="sd">    :param x: An input value.</span>
-<span class="sd">    :param match: A reference value.</span>
-<span class="sd">    :return: Are they the same?</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*x* : `any`</span>
+<span class="sd">    &gt;&gt; Any value which you want to compare against `match`.</span>
+
+<span class="sd">    &gt;*match* : `any`</span>
+<span class="sd">    &gt;&gt; A reference value to compare `x` with.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt;&gt; `True` if `x` and `match` are the same, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filter_regex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">)</span>
@@ -1185,9 +1256,16 @@ table {
 <span class="k">def</span> <span class="nf">filter_has</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether match is &quot;in&quot; x. If x and match are both strings, match can be a regular expression.</span>
-<span class="sd">    :param x: An input value.</span>
-<span class="sd">    :param match: A reference value.</span>
-<span class="sd">    :return: Is match in x?</span>
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*x* : `any`</span>
+<span class="sd">    &gt;&gt; A value which you want to compare against `match`.</span>
+
+<span class="sd">    &gt;*match* : `any`</span>
+<span class="sd">    &gt;&gt; A reference value to compare `x` with.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `match` contains `x`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filter_regex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">)</span>
@@ -1201,10 +1279,18 @@ table {
 <span class="k">def</span> <span class="nf">most_common</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common</span>
-<span class="sd">     entry is in a tie, all these entries will be returned as well.</span>
-<span class="sd">    :param lst: A list of values.</span>
-<span class="sd">    :param n: An positive integer. The top n most common entries (occurring more than once) will be returned.</span>
-<span class="sd">    :return: A list of tuples, each containing a frequency integer and a value.</span>
+<span class="sd">    entry is in a tie, all these entries will be returned as well.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of values.</span>
+
+<span class="sd">    &gt;*n* : `int`</span>
+<span class="sd">    &gt;&gt; A positive integer, defaulting to 1, indicating how many entries to return.</span>
+
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A list of tuples, each containing a frequency integer and a value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">occurrences</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Count occurrences</span>
@@ -1241,9 +1327,15 @@ table {
 
 <span class="k">def</span> <span class="nf">most_occurrences</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Produces the number of times the most common value appears</span>
-<span class="sd">    :param lst: A list of values.</span>
-<span class="sd">    :return: The occurences of the most common value.</span>
+<span class="sd">    Produces the number of times the most common value appears.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of values.</span>
+
+<span class="sd">    **Return** `int`</span>
+<span class="sd">    &gt; The number of times the most common value occurs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">occurrences</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="nb">max</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1261,12 +1353,18 @@ table {
     <span class="k">return</span> <span class="nb">max</span>
 
 
-<span class="k">def</span> <span class="nf">list_scd_str</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">list_to_scd</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings</span>
 <span class="sd">    prior to joining.</span>
-<span class="sd">    :param lst: of items which are either strings, or objects which can be converted to strings using str()</span>
-<span class="sd">    :return: A String which includes each item within lst separated using semicolons.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of items which are either strings or objects which can be converted to strings using `str()`</span>
+
+<span class="sd">    **Return** `str`</span>
+<span class="sd">    &gt; A String which includes each item within `lst`, separated by semicolons.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_lst</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
@@ -1281,28 +1379,54 @@ table {
 
 
 <span class="c1"># Network Edge Generator Functions</span>
-<span class="k">def</span> <span class="nf">simple_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an edge between to vertices, with an associated dictionary of properties.</span>
-<span class="sd">    :param v1: The first vertex, any type.</span>
-<span class="sd">    :param v2: The second vertex, any type.</span>
-<span class="sd">    :param record: The current record in edge generation.</span>
-<span class="sd">    :param keep: The edge attributes to be kept from the record.</span>
-<span class="sd">    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated</span>
+<span class="sd">    dictionary of properties.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
+
+<span class="sd">    &gt;*v2* : `any`</span>
+<span class="sd">    &gt;&gt; The second vertex.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Record**</span>
+<span class="sd">    &gt; An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">changes_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an edge between an &quot;any&quot; and a CommitLog file (&quot;file&quot;), weighted by the number of lines changed</span>
-<span class="sd">    in the file. Is a helper for Log.generate_edges().</span>
-<span class="sd">    :param v1: The first vertex, any type.</span>
-<span class="sd">    :param v2: Must be a file string (e.g. &quot;my_dir/my_file.txt&quot;) as in CommitLog &quot;files&quot;</span>
-<span class="sd">    :param record: The current record in edge generation.</span>
-<span class="sd">    :param keep: The edge attributes to be kept from the record.</span>
-<span class="sd">    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number</span>
+<span class="sd">    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type &quot;files&quot;.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
+
+<span class="sd">    &gt;*v2* : `str`</span>
+<span class="sd">    &gt;&gt; A string giving the id of a vertex whose type is &quot;files&quot;.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The</span>
+<span class="sd">    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
     <span class="c1"># Get file name and change weight</span>
@@ -1331,19 +1455,22 @@ table {
 
 
 <span class="c1"># Network Attribute Helper Functions</span>
-<span class="k">def</span> <span class="nf">author_file_node_colours</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">node_colours</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates default colourings for an author/file bipartite network.</span>
-<span class="sd">    :param d: The attribute dictionary for the node.</span>
-<span class="sd">    :return: A colour string.</span>
+<span class="sd">    Produces a node&#39;s default colour, determined by whether it is an author, python file, or c file. Created to be used</span>
+<span class="sd">    as a helper function for the MultiGraphPlus.node_attributes() method for use with a author/file bipartite network.</span>
 
-<span class="sd">    Colours:</span>
-<span class="sd">        Default: lightgrey</span>
-<span class="sd">        Author: dodgerblue</span>
-<span class="sd">        Python: tomato</span>
-<span class="sd">        C (code): gold</span>
-<span class="sd">        C (interface): goldenrod</span>
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*d* : `dict`</span>
+<span class="sd">    &gt;&gt; A node&#39;s attribute dictionary.</span>
+
+<span class="sd">    **Return**: `str`</span>
+<span class="sd">    &gt; A colour string determined by the node&#39;s attributes. Nodes with a type &#39;author&#39; return &#39;dodgerblue&#39;. Python files</span>
+<span class="sd">    (ending in .py) return &#39;tomato&#39;. C code files (ending in .cc) return &#39;gold&#39;. C interface files (ending in .h)</span>
+<span class="sd">    return &#39;goldenrod&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># After Here is not being run</span>
     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
@@ -1376,59 +1503,37 @@ table {
     <h2 class="section-title" id="header-functions">Functions</h2>
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.author_file_node_colours">
-    <p>def <span class="ident">author_file_node_colours</span>(</p><p>d)</p>
+    <div class="name def" id="gitnet.helpers.datetime_git">
+    <p>def <span class="ident">datetime_git</span>(</p><p>s)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Creates default colourings for an author/file bipartite network.
-:param d: The attribute dictionary for the node.
-:return: A colour string.</p>
-<p>Colours:
-    Default: lightgrey
-    Author: dodgerblue
-    Python: tomato
-    C (code): gold
-    C (interface): goldenrod</p></div>
+    <div class="desc"><p>Turns a git date string into a datetime object.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>datetime</code></p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.author_file_node_colours', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.author_file_node_colours" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">author_file_node_colours</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_git', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.datetime_git" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates default colourings for an author/file bipartite network.</span>
-<span class="sd">    :param d: The attribute dictionary for the node.</span>
-<span class="sd">    :return: A colour string.</span>
+<span class="sd">    Turns a git date string into a datetime object.</span>
 
-<span class="sd">    Colours:</span>
-<span class="sd">        Default: lightgrey</span>
-<span class="sd">        Author: dodgerblue</span>
-<span class="sd">        Python: tomato</span>
-<span class="sd">        C (code): gold</span>
-<span class="sd">        C (interface): goldenrod</span>
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    **Return** `datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># After Here is not being run</span>
-    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">type</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;author&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;dodgerblue&quot;</span>
-        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;files&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
-            <span class="nb">id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="s2">&quot;\.py$&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="s2">&quot;tomato&quot;</span>
-            <span class="k">elif</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="s2">&quot;\.cc$&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="s2">&quot;gold&quot;</span>
-            <span class="k">elif</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;\.h$&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="s2">&quot;goldenrod&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="s2">&quot;%a %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y %z&quot;</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1438,76 +1543,113 @@ table {
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.before">
-    <p>def <span class="ident">before</span>(</p><p>s, match)</p>
+    <div class="name def" id="gitnet.helpers.datetime_reference">
+    <p>def <span class="ident">datetime_reference</span>(</p><p>s)</p>
     </div>
     
 
     
   
+    <div class="desc"><p>Turns a Git date string, or a datetime object into a datetime.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code> or <code>datetime object</code></p>
+<blockquote>
+<p>Either a git-formatted string such as "Wed Mar 4 20:00:00 2015 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>datetime</code></p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.before', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.before" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.beforex">
-    <p>def <span class="ident">beforex</span>(</p><p>s, match)</p>
-    </div>
-    
-
-    
-  
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.beforex', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.beforex" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.changes_edge">
-    <p>def <span class="ident">changes_edge</span>(</p><p>v1, v2, record, keep)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Creates an edge between an "any" and a CommitLog file ("file"), weighted by the number of lines changed
-in the file. Is a helper for Log.generate_edges().
-:param v1: The first vertex, any type.
-:param v2: Must be a file string (e.g. "my_dir/my_file.txt") as in CommitLog "files"
-:param record: The current record in edge generation.
-:param keep: The edge attributes to be kept from the record.
-:return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.changes_edge', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.changes_edge" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">changes_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_reference', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.datetime_reference" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_reference</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an edge between an &quot;any&quot; and a CommitLog file (&quot;file&quot;), weighted by the number of lines changed</span>
-<span class="sd">    in the file. Is a helper for Log.generate_edges().</span>
-<span class="sd">    :param v1: The first vertex, any type.</span>
-<span class="sd">    :param v2: Must be a file string (e.g. &quot;my_dir/my_file.txt&quot;) as in CommitLog &quot;files&quot;</span>
-<span class="sd">    :param record: The current record in edge generation.</span>
-<span class="sd">    :param keep: The edge attributes to be kept from the record.</span>
-<span class="sd">    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</span>
+<span class="sd">    Turns a Git date string, or a datetime object into a datetime.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str` or `datetime object`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `datetime`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">git_date_p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">git_date_p</span><span class="p">,</span> <span class="n">s</span><span class="p">)):</span>
+            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
+                             <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ref_date</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.edges_changes">
+    <p>def <span class="ident">edges_changes</span>(</p><p>v1, v2, record, keep)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number
+of lines changed. The first vertex (<code>v1</code>) can be of any type. The second vertex (<code>v2</code>) must have the type "files".</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>v1</em> : <code>any</code></p>
+<blockquote>
+<p>The first vertex.</p>
+</blockquote>
+<p><em>v2</em> : <code>str</code></p>
+<blockquote>
+<p>A string giving the id of a vertex whose type is "files".</p>
+</blockquote>
+<p><em>record</em> : <code>str</code></p>
+<blockquote>
+<p>The short hash string for the current record in edge generation.</p>
+</blockquote>
+<p><em>keep</em> : <code>list</code></p>
+<blockquote>
+<p>A list of edge attributes to be kept from the CommitLog record.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong></p>
+<blockquote>
+<p>A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>. The
+edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in <code>v2</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.edges_changes', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.edges_changes" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">edges_changes</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between two vertices, weighted by the number</span>
+<span class="sd">    of lines changed. The first vertex (`v1`) can be of any type. The second vertex (`v2`) must have the type &quot;files&quot;.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
+
+<span class="sd">    &gt;*v2* : `str`</span>
+<span class="sd">    &gt;&gt; A string giving the id of a vertex whose type is &quot;files&quot;.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The</span>
+<span class="sd">    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
     <span class="c1"># Get file name and change weight</span>
@@ -1542,35 +1684,65 @@ in the file. Is a helper for Log.generate_edges().
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.datetime_git">
-    <p>def <span class="ident">datetime_git</span>(</p><p>s)</p>
+    <div class="name def" id="gitnet.helpers.edges_simple">
+    <p>def <span class="ident">edges_simple</span>(</p><p>v1, v2, record, keep)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Turns a git date string into a datetime object.</p>
+    <div class="desc"><p>A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated
+dictionary of properties.</p>
 <p><strong>Parameters</strong></p>
-<p><em>s</em> : <code>str</code></p>
 <blockquote>
-<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+<p><em>v1</em> : <code>any</code></p>
+<blockquote>
+<p>The first vertex.</p>
 </blockquote>
-<p><strong>Return</strong> <code>datetime</code></p></div>
+<p><em>v2</em> : <code>any</code></p>
+<blockquote>
+<p>The second vertex.</p>
+</blockquote>
+<p><em>record</em> : <code>str</code></p>
+<blockquote>
+<p>The short hash string for the current record in edge generation.</p>
+</blockquote>
+<p><em>keep</em> : <code>list</code></p>
+<blockquote>
+<p>A list of edge attributes to be kept from the CommitLog record.</p>
+</blockquote>
+</blockquote>
+<p><strong>Record</strong></p>
+<blockquote>
+<p>An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between <code>v1</code> and <code>v2</code>.</p>
+</blockquote></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_git', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.datetime_git" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.edges_simple', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.edges_simple" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Turns a git date string into a datetime object.</span>
+<span class="sd">    A helper function for the Log.generate_edges() method. Creates an edge between to vertices, with an associated</span>
+<span class="sd">    dictionary of properties.</span>
 
 <span class="sd">    **Parameters**</span>
 
-<span class="sd">    *s* : `str`</span>
-<span class="sd">    &gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+<span class="sd">    &gt;*v1* : `any`</span>
+<span class="sd">    &gt;&gt; The first vertex.</span>
 
-<span class="sd">    **Return** `datetime`</span>
+<span class="sd">    &gt;*v2* : `any`</span>
+<span class="sd">    &gt;&gt; The second vertex.</span>
+
+<span class="sd">    &gt;*record* : `str`</span>
+<span class="sd">    &gt;&gt; The short hash string for the current record in edge generation.</span>
+
+<span class="sd">    &gt;*keep* : `list`</span>
+<span class="sd">    &gt;&gt; A list of edge attributes to be kept from the CommitLog record.</span>
+
+<span class="sd">    **Record**</span>
+<span class="sd">    &gt; An tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="s2">&quot;%a %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y %z&quot;</span><span class="p">)</span>
+    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1580,44 +1752,106 @@ in the file. Is a helper for Log.generate_edges().
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.datetime_reference">
-    <p>def <span class="ident">datetime_reference</span>(</p><p>s)</p>
+    <div class="name def" id="gitnet.helpers.filter_before">
+    <p>def <span class="ident">filter_before</span>(</p><p>s, match)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Turns a Git date string, or a datetime object into a datetime.</p>
+    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) occurred before another date (<code>match</code>). This compares the dates
+inclusively, so if the dates are equal the function will return <code>True</code>.</p>
 <p><strong>Parameters</strong></p>
-<p><em>s</em> : <code>str</code> or <code>datetime object</code></p>
 <blockquote>
-<p>Either a git-formatted string such as "Wed Mar 4 20:00:00 2015 -0400" or a datetime object.</p>
+<p><em>s</em> : 'str'</p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
 </blockquote>
-<p><strong>Return</strong> <code>datetime</code></p></div>
+<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+<blockquote>
+<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>s</code> is the same or a less recent date then <code>match</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.datetime_reference', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.datetime_reference" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">datetime_reference</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_before', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.filter_before" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_before</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Turns a Git date string, or a datetime object into a datetime.</span>
+<span class="sd">    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates</span>
+<span class="sd">    inclusively, so if the dates are equal the function will return `True`.</span>
 
 <span class="sd">    **Parameters**</span>
 
-<span class="sd">    *s* : `str` or `datetime object`</span>
-<span class="sd">    &gt; Either a git-formatted string such as &quot;Wed Mar 4 20:00:00 2015 -0400&quot; or a datetime object.</span>
+<span class="sd">    &gt;*s* : &#39;str&#39;</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
 
-<span class="sd">    **Return** `datetime`</span>
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is the same or a less recent date then `match`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
-        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">s</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">git_date_p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">git_date_p</span><span class="p">,</span> <span class="n">s</span><span class="p">)):</span>
-            <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
-                             <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ref_date</span>
+
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dt_match</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.filter_beforex">
+    <p>def <span class="ident">filter_beforex</span>(</p><p>s, match)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) occurred before another date (<code>match</code>). This compares the dates
+exclusively, so if the dates are equal the function will return <code>False</code>.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : 'str'</p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+<blockquote>
+<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>s</code> is a less recent date then <code>match</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_beforex', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.filter_beforex" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_beforex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) occurred before another date (`match`). This compares the dates</span>
+<span class="sd">    exclusively, so if the dates are equal the function will return `False`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : &#39;str&#39;</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is a less recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dt_match</span>
 </pre></div>
 
   </div>
@@ -1634,19 +1868,41 @@ in the file. Is a helper for Log.generate_edges().
 
     
   
-    <div class="desc"><p>Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.
-:param x: An input value.
-:param match: A reference value.
-:return: Are they the same?</p></div>
+    <div class="desc"><p>Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>x</em> : <code>any</code></p>
+<blockquote>
+<p>Any value which you want to compare against <code>match</code>.</p>
+</blockquote>
+<p><em>match</em> : <code>any</code></p>
+<blockquote>
+<p>A reference value to compare <code>x</code> with.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<blockquote>
+<p><code>True</code> if <code>x</code> and <code>match</code> are the same, otherwise <code>False</code>.</p>
+</blockquote>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_equals', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.filter_equals" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_equals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether x and match are equal. If x and match are both strings, match can be a regular expression.</span>
-<span class="sd">    :param x: An input value.</span>
-<span class="sd">    :param match: A reference value.</span>
-<span class="sd">    :return: Are they the same?</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*x* : `any`</span>
+<span class="sd">    &gt;&gt; Any value which you want to compare against `match`.</span>
+
+<span class="sd">    &gt;*match* : `any`</span>
+<span class="sd">    &gt;&gt; A reference value to compare `x` with.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt;&gt; `True` if `x` and `match` are the same, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filter_regex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">)</span>
@@ -1669,18 +1925,37 @@ in the file. Is a helper for Log.generate_edges().
     
   
     <div class="desc"><p>Determines whether match is "in" x. If x and match are both strings, match can be a regular expression.
-:param x: An input value.
-:param match: A reference value.
-:return: Is match in x?</p></div>
+<strong>Parameters</strong></p>
+<blockquote>
+<p><em>x</em> : <code>any</code></p>
+<blockquote>
+<p>A value which you want to compare against <code>match</code>.</p>
+</blockquote>
+<p><em>match</em> : <code>any</code></p>
+<blockquote>
+<p>A reference value to compare <code>x</code> with.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>match</code> contains <code>x</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_has', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.filter_has" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_has</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">match</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether match is &quot;in&quot; x. If x and match are both strings, match can be a regular expression.</span>
-<span class="sd">    :param x: An input value.</span>
-<span class="sd">    :param match: A reference value.</span>
-<span class="sd">    :return: Is match in x?</span>
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*x* : `any`</span>
+<span class="sd">    &gt;&gt; A value which you want to compare against `match`.</span>
+
+<span class="sd">    &gt;*match* : `any`</span>
+<span class="sd">    &gt;&gt; A reference value to compare `x` with.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `match` contains `x`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filter_regex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">)</span>
@@ -1704,21 +1979,50 @@ in the file. Is a helper for Log.generate_edges().
 
     
   
-    <div class="desc"><p>A predicate which determines whether "s" matches the regular expression "match".
-:param s: An input string which is compared to the regex pattern.
-:param match: A regular expression string.
-:param mode: Indicates whether regex should be matched ("match") or searched for ("search")
-:return: True or false.</p></div>
+    <div class="desc"><p>A predicate which determines whether <code>s</code> matches the regular expression <code>match</code>.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>An input string which is compared to the regex pattern.</p>
+</blockquote>
+<p><em>match</em> : <code>str</code></p>
+<blockquote>
+<p>A regular expression string.</p>
+</blockquote>
+</blockquote>
+<p><em>mode</em> : <code>str</code></p>
+<blockquote>
+<blockquote>
+<p>A string to indicate whether the regular expression should be an exact match for <code>s</code> or if it should be searched
+for within <code>s</code>. Defaults to <code>"match"</code>, but may also be <code>"search"</code>.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>s</code> matches or contains the regular expression <code>match</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_regex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.filter_regex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_regex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate which determines whether &quot;s&quot; matches the regular expression &quot;match&quot;.</span>
-<span class="sd">    :param s: An input string which is compared to the regex pattern.</span>
-<span class="sd">    :param match: A regular expression string.</span>
-<span class="sd">    :param mode: Indicates whether regex should be matched (&quot;match&quot;) or searched for (&quot;search&quot;)</span>
-<span class="sd">    :return: True or false.</span>
+<span class="sd">    A predicate which determines whether `s` matches the regular expression `match`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; An input string which is compared to the regex pattern.</span>
+
+<span class="sd">    &gt;*match* : `str`</span>
+<span class="sd">    &gt;&gt; A regular expression string.</span>
+
+<span class="sd">    *mode* : `str`</span>
+<span class="sd">    &gt;&gt; A string to indicate whether the regular expression should be an exact match for `s` or if it should be searched</span>
+<span class="sd">    for within `s`. Defaults to `&quot;match&quot;`, but may also be `&quot;search&quot;`.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` matches or contains the regular expression `match`, otherwise `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;match&quot;</span><span class="p">:</span>
@@ -1734,26 +2038,149 @@ in the file. Is a helper for Log.generate_edges().
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.list_scd_str">
-    <p>def <span class="ident">list_scd_str</span>(</p><p>lst)</p>
+    <div class="name def" id="gitnet.helpers.filter_since">
+    <p>def <span class="ident">filter_since</span>(</p><p>s, match)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) has occurred since another date (<code>match</code>). This compares the dates
+inclusively, so if the dates are equal the function returns <code>True</code>.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+<blockquote>
+<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>s</code> is the same or a more recent date then <code>match</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_since', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.filter_since" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates</span>
+<span class="sd">    inclusively, so if the dates are equal the function returns `True`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is the same or a more recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.filter_sincex">
+    <p>def <span class="ident">filter_sincex</span>(</p><p>s, match)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) has occurred since another date (<code>match</code>). This compares the dates
+exclusively, so if the dates are equal the function returns <code>False</code>.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>s</em> : <code>str</code></p>
+<blockquote>
+<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+</blockquote>
+<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+<blockquote>
+<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>bool</code></p>
+<blockquote>
+<p><code>True</code> if <code>s</code> is a more recent date then <code>match</code>, otherwise <code>False</code>.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.filter_sincex', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.filter_sincex" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">filter_sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`). This compares the dates</span>
+<span class="sd">    exclusively, so if the dates are equal the function returns `False`.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*s* : `str`</span>
+<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+
+<span class="sd">    &gt;*match* : `str` or `datetime`</span>
+<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
+
+<span class="sd">    **Return** `bool`</span>
+<span class="sd">    &gt; `True` if `s` is a more recent date then `match`, otherwise `False`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.list_to_scd">
+    <p>def <span class="ident">list_to_scd</span>(</p><p>lst)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings
-prior to joining.
-:param lst: of items which are either strings, or objects which can be converted to strings using str()
-:return: A String which includes each item within lst separated using semicolons.</p></div>
+prior to joining.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>lst</em> : <code>list</code></p>
+<blockquote>
+<p>A list of items which are either strings or objects which can be converted to strings using <code>str()</code></p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>str</code></p>
+<blockquote>
+<p>A String which includes each item within <code>lst</code>, separated by semicolons.</p>
+</blockquote></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.list_scd_str', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.list_scd_str" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">list_scd_str</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.list_to_scd', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.list_to_scd" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">list_to_scd</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings</span>
 <span class="sd">    prior to joining.</span>
-<span class="sd">    :param lst: of items which are either strings, or objects which can be converted to strings using str()</span>
-<span class="sd">    :return: A String which includes each item within lst separated using semicolons.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of items which are either strings or objects which can be converted to strings using `str()`</span>
+
+<span class="sd">    **Return** `str`</span>
+<span class="sd">    &gt; A String which includes each item within `lst`, separated by semicolons.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_lst</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
@@ -1782,20 +2209,40 @@ prior to joining.
     
   
     <div class="desc"><p>Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common
- entry is in a tie, all these entries will be returned as well.
-:param lst: A list of values.
-:param n: An positive integer. The top n most common entries (occurring more than once) will be returned.
-:return: A list of tuples, each containing a frequency integer and a value.</p></div>
+entry is in a tie, all these entries will be returned as well.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>lst</em> : <code>list</code></p>
+<blockquote>
+<p>A list of values.</p>
+</blockquote>
+<p><em>n</em> : <code>int</code></p>
+<blockquote>
+<p>A positive integer, defaulting to 1, indicating how many entries to return.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong></p>
+<blockquote>
+<p>A list of tuples, each containing a frequency integer and a value.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.most_common', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.most_common" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">most_common</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common</span>
-<span class="sd">     entry is in a tie, all these entries will be returned as well.</span>
-<span class="sd">    :param lst: A list of values.</span>
-<span class="sd">    :param n: An positive integer. The top n most common entries (occurring more than once) will be returned.</span>
-<span class="sd">    :return: A list of tuples, each containing a frequency integer and a value.</span>
+<span class="sd">    entry is in a tie, all these entries will be returned as well.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of values.</span>
+
+<span class="sd">    &gt;*n* : `int`</span>
+<span class="sd">    &gt;&gt; A positive integer, defaulting to 1, indicating how many entries to return.</span>
+
+<span class="sd">    **Return**</span>
+<span class="sd">    &gt; A list of tuples, each containing a frequency integer and a value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">occurrences</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Count occurrences</span>
@@ -1844,17 +2291,32 @@ prior to joining.
 
     
   
-    <div class="desc"><p>Produces the number of times the most common value appears
-:param lst: A list of values.
-:return: The occurences of the most common value.</p></div>
+    <div class="desc"><p>Produces the number of times the most common value appears.</p>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<p><em>lst</em> : <code>list</code></p>
+<blockquote>
+<p>A list of values.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>int</code></p>
+<blockquote>
+<p>The number of times the most common value occurs.</p>
+</blockquote></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.most_occurrences', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.helpers.most_occurrences" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">most_occurrences</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Produces the number of times the most common value appears</span>
-<span class="sd">    :param lst: A list of values.</span>
-<span class="sd">    :return: The occurences of the most common value.</span>
+<span class="sd">    Produces the number of times the most common value appears.</span>
+
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of values.</span>
+
+<span class="sd">    **Return** `int`</span>
+<span class="sd">    &gt; The number of times the most common value occurs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">occurrences</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="nb">max</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1879,107 +2341,68 @@ prior to joining.
   
       
   <div class="item">
-    <div class="name def" id="gitnet.helpers.simple_edge">
-    <p>def <span class="ident">simple_edge</span>(</p><p>v1, v2, record, keep)</p>
+    <div class="name def" id="gitnet.helpers.node_colours">
+    <p>def <span class="ident">node_colours</span>(</p><p>d)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Creates an edge between to vertices, with an associated dictionary of properties.
-:param v1: The first vertex, any type.
-:param v2: The second vertex, any type.
-:param record: The current record in edge generation.
-:param keep: The edge attributes to be kept from the record.
-:return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.simple_edge', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.simple_edge" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">simple_edge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an edge between to vertices, with an associated dictionary of properties.</span>
-<span class="sd">    :param v1: The first vertex, any type.</span>
-<span class="sd">    :param v2: The second vertex, any type.</span>
-<span class="sd">    :param record: The current record in edge generation.</span>
-<span class="sd">    :param keep: The edge attributes to be kept from the record.</span>
-<span class="sd">    :return: An edge tuple, in format (id1, id2, {edge attribute dictionary})</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
-</pre></div>
-
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.since">
-    <p>def <span class="ident">since</span>(</p><p>s, match)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>A predicate function to determine if a date (<code>s</code>) has occurred since another date (<code>match</code>).  If the dates are equal,
-the function returns <code>True</code>. Example. since("Fri Jan 10 10:12:34 2016 -0400", "Sat Apr 2 07:25:25 2016 -0400")
-returns <code>False</code>.</p>
+    <div class="desc"><p>Produces a node's default colour, determined by whether it is an author, python file, or c file. Created to be used
+as a helper function for the MultiGraphPlus.node_attributes() method for use with a author/file bipartite network.</p>
 <p><strong>Parameters</strong></p>
 <blockquote>
-<p><em>s</em> : <code>str</code></p>
+<p><em>d</em> : <code>dict</code></p>
 <blockquote>
-<p>A git-formatted date string such as "Fri Jan 10 10:12:34 2016 -0400"</p>
+<p>A node's attribute dictionary.</p>
 </blockquote>
-<p><em>match</em> : <code>str</code> or <code>datetime</code></p>
+</blockquote>
+<p><strong>Return</strong>: <code>str</code></p>
 <blockquote>
-<p>Either a git-formatted date string such as "Sat Apr 2 07:25:25 2016 -0400" or a datetime object.</p>
-</blockquote>
-</blockquote>
-<p><strong>Return</strong> <code>bool</code></p></div>
+<p>A colour string determined by the node's attributes. Nodes with a type 'author' return 'dodgerblue'. Python files
+(ending in .py) return 'tomato'. C code files (ending in .cc) return 'gold'. C interface files (ending in .h)
+return 'goldenrod'.</p>
+</blockquote></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.since', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.since" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.node_colours', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.node_colours" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">node_colours</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A predicate function to determine if a date (`s`) has occurred since another date (`match`).  If the dates are equal,</span>
-<span class="sd">    the function returns `True`. Example. since(&quot;Fri Jan 10 10:12:34 2016 -0400&quot;, &quot;Sat Apr 2 07:25:25 2016 -0400&quot;)</span>
-<span class="sd">    returns `False`.</span>
+<span class="sd">    Produces a node&#39;s default colour, determined by whether it is an author, python file, or c file. Created to be used</span>
+<span class="sd">    as a helper function for the MultiGraphPlus.node_attributes() method for use with a author/file bipartite network.</span>
 
 <span class="sd">    **Parameters**</span>
 
-<span class="sd">    &gt;*s* : `str`</span>
-<span class="sd">    &gt;&gt; A git-formatted date string such as &quot;Fri Jan 10 10:12:34 2016 -0400&quot;</span>
+<span class="sd">    &gt;*d* : `dict`</span>
+<span class="sd">    &gt;&gt; A node&#39;s attribute dictionary.</span>
 
-<span class="sd">    &gt;*match* : `str` or `datetime`</span>
-<span class="sd">    &gt;&gt; Either a git-formatted date string such as &quot;Sat Apr 2 07:25:25 2016 -0400&quot; or a datetime object.</span>
-
-<span class="sd">    **Return** `bool`</span>
+<span class="sd">    **Return**: `str`</span>
+<span class="sd">    &gt; A colour string determined by the node&#39;s attributes. Nodes with a type &#39;author&#39; return &#39;dodgerblue&#39;. Python files</span>
+<span class="sd">    (ending in .py) return &#39;tomato&#39;. C code files (ending in .cc) return &#39;gold&#39;. C interface files (ending in .h)</span>
+<span class="sd">    return &#39;goldenrod&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dt_match</span>
-</pre></div>
 
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="gitnet.helpers.sincex">
-    <p>def <span class="ident">sincex</span>(</p><p>s, match)</p>
-    </div>
-    
-
-    
-  
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.sincex', this);">Show source &equiv;</a></p>
-  <div id="source-gitnet.helpers.sincex" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">sincex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-    <span class="n">dt_match</span> <span class="o">=</span> <span class="n">datetime_reference</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dt_match</span>
+    <span class="c1"># After Here is not being run</span>
+    <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;author&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;dodgerblue&quot;</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;files&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="s2">&quot;\.py$&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;tomato&quot;</span>
+            <span class="k">elif</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="s2">&quot;\.cc$&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;gold&quot;</span>
+            <span class="k">elif</span> <span class="n">filter_regex</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;\.h$&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;goldenrod&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
 </pre></div>
 
   </div>

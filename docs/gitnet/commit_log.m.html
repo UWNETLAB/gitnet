@@ -1090,7 +1090,7 @@ table {
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">gitnet.log</span> <span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
-<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">simple_edge</span><span class="p">,</span> <span class="n">changes_edge</span>
+<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">edges_simple</span><span class="p">,</span> <span class="n">edges_changes</span>
 
 
 <span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
@@ -1286,7 +1286,7 @@ table {
                                          <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                          <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                          <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">changes_edge</span><span class="p">)</span>
+                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -1501,7 +1501,7 @@ table {
                                          <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                          <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                          <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">changes_edge</span><span class="p">)</span>
+                                         <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -2024,10 +2024,10 @@ my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</p></div>
                      <span class="s2">&quot;&lt;=&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">val</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="n">val</span><span class="p">,</span>
                      <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">val</span><span class="p">,</span>
                      <span class="s2">&quot;&gt;=&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">val</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="n">val</span><span class="p">,</span>
-                     <span class="s2">&quot;since&quot;</span><span class="p">:</span> <span class="n">since</span><span class="p">,</span>
-                     <span class="s2">&quot;sincex&quot;</span><span class="p">:</span> <span class="n">sincex</span><span class="p">,</span>
-                     <span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">,</span>
-                     <span class="s2">&quot;beforex&quot;</span><span class="p">:</span> <span class="n">beforex</span><span class="p">}</span>
+                     <span class="s2">&quot;since&quot;</span><span class="p">:</span> <span class="n">filter_since</span><span class="p">,</span>
+                     <span class="s2">&quot;sincex&quot;</span><span class="p">:</span> <span class="n">filter_sincex</span><span class="p">,</span>
+                     <span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="n">filter_before</span><span class="p">,</span>
+                     <span class="s2">&quot;beforex&quot;</span><span class="p">:</span> <span class="n">filter_beforex</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;date&quot;</span> <span class="ow">and</span> <span class="n">fun</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Dates have been compared alphabetically with {}, &quot;</span>
                       <span class="s2">&quot;use Datetime comparisons to compare dates by time.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fun</span><span class="p">))</span>
@@ -2084,7 +2084,7 @@ my_log.filter("date", "since", "Fri May 6 15:41:25 2016 -0400")</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_edges">
-    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function simple_edge at 0x114758620&gt;, edge_attributes=[])</p>
+    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function edges_simple at 0x114890620&gt;, edge_attributes=[])</p>
     </div>
     
 
@@ -2107,7 +2107,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_edges', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_edges" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">simple_edge</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[]):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates bipartite edges present in each Log record.</span>
 <span class="sd">    :param mode1: A record attribute (tag), which becomes the first node type.</span>
@@ -2149,7 +2149,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_network">
-    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function simple_edge at 0x114758620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
+    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function edges_simple at 0x114890620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
     </div>
     
 
@@ -2177,7 +2177,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_network', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_network" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">simple_edge</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                      <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract network generator. For networks that contain authors, any authors that made</span>
@@ -2449,7 +2449,7 @@ and moves them into "f_ignore" and "ch_ignore" respectively. Updates "filters" a
                                      <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                                      <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span> <span class="s2">&quot;fedits&quot;</span><span class="p">],</span>
                                      <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">],</span>
-                                     <span class="n">edge_helper</span><span class="o">=</span><span class="n">changes_edge</span><span class="p">)</span>
+                                     <span class="n">edge_helper</span><span class="o">=</span><span class="n">edges_changes</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;{} is not a valid network preset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">))</span>
 </pre></div>
@@ -2659,7 +2659,7 @@ file will be written.
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.write_edges">
-    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function simple_edge at 0x114758620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
+    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function edges_simple at 0x114890620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
     </div>
     
 
@@ -2683,7 +2683,7 @@ Currently, two edge_helper functions are available in gitnet.gn_helpers:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.write_edges', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.write_edges" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">simple_edge</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">]):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">write_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">edges_simple</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes an edge list with attributes.</span>
 <span class="sd">    :param fname: A string indicating the path or file name to write to.</span>

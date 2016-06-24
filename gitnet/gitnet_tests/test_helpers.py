@@ -13,7 +13,7 @@ class DatetimeTests(unittest.TestCase):
         self.good_path = os.getcwd()
         self.my_log = gitnet.get_log(self.good_path)
 
-    def test_git_datetime(self):
+    def test_datetime_git(self):
         # Currently only used by write edges.
         self.my_log.write_edges("sample_datetime.txt", "author", "date", edge_attribute = ["author", "date"])
         with open("sample_datetime.txt", "r") as f:
@@ -22,7 +22,7 @@ class DatetimeTests(unittest.TestCase):
         sub.call(["rm", "-rf", "sample_datetime.txt"])
 
     def test_reference_datetime(self):
-        # Unsure how to test beyond git_datetime testing.
+        # Unsure how to test beyond datetime_git testing.
         # There is no requirement to test for bad datetimes, since commits cannot be made with a bad datetime.
         pass
 
@@ -44,47 +44,47 @@ class FilterTests(unittest.TestCase):
 
     def test_since(self):
         # Checking gitdatetimes work as expected
-        self.assertFalse(helpers.since(self.gdt1, self.gdt2))
-        self.assertTrue(helpers.since(self.gdt2, self.gdt2))
-        self.assertTrue(helpers.since(self.gdt3, self.gdt2))
+        self.assertFalse(helpers.filter_since(self.gdt1, self.gdt2))
+        self.assertTrue(helpers.filter_since(self.gdt2, self.gdt2))
+        self.assertTrue(helpers.filter_since(self.gdt3, self.gdt2))
 
         # Checking function works with datetimes as second argument
-        self.assertFalse(helpers.since(self.gdt1, self.dt2))
-        self.assertTrue(helpers.since(self.gdt2, self.dt2))
-        self.assertTrue(helpers.since(self.gdt3, self.dt2))
+        self.assertFalse(helpers.filter_since(self.gdt1, self.dt2))
+        self.assertTrue(helpers.filter_since(self.gdt2, self.dt2))
+        self.assertTrue(helpers.filter_since(self.gdt3, self.dt2))
 
     def test_before(self):
         # Checking gitdatetimes work as expected
-        self.assertTrue(helpers.before(self.gdt1, self.gdt2))
-        self.assertTrue(helpers.before(self.gdt2, self.gdt2))
-        self.assertFalse(helpers.before(self.gdt3, self.gdt2))
+        self.assertTrue(helpers.filter_before(self.gdt1, self.gdt2))
+        self.assertTrue(helpers.filter_before(self.gdt2, self.gdt2))
+        self.assertFalse(helpers.filter_before(self.gdt3, self.gdt2))
 
         # Checking function works with datetimes as second argument
-        self.assertTrue(helpers.before(self.gdt1, self.dt2))
-        self.assertTrue(helpers.before(self.gdt2, self.dt2))
-        self.assertFalse(helpers.before(self.gdt3, self.dt2))
+        self.assertTrue(helpers.filter_before(self.gdt1, self.dt2))
+        self.assertTrue(helpers.filter_before(self.gdt2, self.dt2))
+        self.assertFalse(helpers.filter_before(self.gdt3, self.dt2))
 
     def test_sincex(self):
         # Checking gitdatetimes work as expected
-        self.assertFalse(helpers.sincex(self.gdt1, self.gdt2))
-        self.assertFalse(helpers.sincex(self.gdt2, self.gdt2))
-        self.assertTrue(helpers.sincex(self.gdt3, self.gdt2))
+        self.assertFalse(helpers.filter_sincex(self.gdt1, self.gdt2))
+        self.assertFalse(helpers.filter_sincex(self.gdt2, self.gdt2))
+        self.assertTrue(helpers.filter_sincex(self.gdt3, self.gdt2))
 
         # Checking function works with datetimes as second argument
-        self.assertFalse(helpers.sincex(self.gdt1, self.dt2))
-        self.assertFalse(helpers.sincex(self.gdt2, self.dt2))
-        self.assertTrue(helpers.sincex(self.gdt3, self.dt2))
+        self.assertFalse(helpers.filter_sincex(self.gdt1, self.dt2))
+        self.assertFalse(helpers.filter_sincex(self.gdt2, self.dt2))
+        self.assertTrue(helpers.filter_sincex(self.gdt3, self.dt2))
 
     def test_beforex(self):
         # Checking gitdatetimes work as expected
-        self.assertTrue(helpers.beforex(self.gdt1, self.gdt2))
-        self.assertFalse(helpers.beforex(self.gdt2, self.gdt2))
-        self.assertFalse(helpers.beforex(self.gdt3, self.gdt2))
+        self.assertTrue(helpers.filter_beforex(self.gdt1, self.gdt2))
+        self.assertFalse(helpers.filter_beforex(self.gdt2, self.gdt2))
+        self.assertFalse(helpers.filter_beforex(self.gdt3, self.gdt2))
 
         # Checking function works with datetimes as second argument
-        self.assertTrue(helpers.beforex(self.gdt1, self.dt2))
-        self.assertFalse(helpers.beforex(self.gdt2, self.dt2))
-        self.assertFalse(helpers.beforex(self.gdt3, self.dt2))
+        self.assertTrue(helpers.filter_beforex(self.gdt1, self.dt2))
+        self.assertFalse(helpers.filter_beforex(self.gdt2, self.dt2))
+        self.assertFalse(helpers.filter_beforex(self.gdt3, self.dt2))
 
     def test_filter_regex(self):
         # Checking ?
@@ -193,10 +193,10 @@ class ListTests(unittest.TestCase):
         self.assertEqual(helpers.most_occurrences(self.repab), 2)
 
     def test_lst_scd_str(self):
-        self.assertIsInstance(helpers.list_scd_str(self.norep), str)
-        self.assertEqual(helpers.list_scd_str(self.norep), 'a;b;c')
-        self.assertEqual(helpers.list_scd_str(self.lofi), '1;2;3')
-        self.assertEqual(helpers.list_scd_str(self.lofl), '[2, 3];[\'a\', \'b\'];[1, \'c\']')
+        self.assertIsInstance(helpers.list_to_scd(self.norep), str)
+        self.assertEqual(helpers.list_to_scd(self.norep), 'a;b;c')
+        self.assertEqual(helpers.list_to_scd(self.lofi), '1;2;3')
+        self.assertEqual(helpers.list_to_scd(self.lofl), '[2, 3];[\'a\', \'b\'];[1, \'c\']')
 
 
 class EdgeGenTests(unittest.TestCase):
@@ -216,22 +216,22 @@ class EdgeGenTests(unittest.TestCase):
 
     def test_simple_edge(self):
         # Check return type
-        self.assertIsInstance(helpers.simple_edge("Alice", "file01", self.r3, ['date']), tuple)
+        self.assertIsInstance(helpers.net_edges_simple("Alice", "file01", self.r3, ['date']), tuple)
 
         # Check return values
-        self.assertTupleEqual(helpers.simple_edge("Alice", "readme.md", self.r1, ['date']),
+        self.assertTupleEqual(helpers.net_edges_simple("Alice", "readme.md", self.r1, ['date']),
                               ("Alice", "readme.md", {'date': 'Fri May 6 14:41:25 2016 -0400'} ))
-        self.assertTupleEqual(helpers.simple_edge("Alice", "raw_logs.txt", self.r2, ['date']),
+        self.assertTupleEqual(helpers.net_edges_simple("Alice", "raw_logs.txt", self.r2, ['date']),
                               ("Alice", "raw_logs.txt", {'date': 'Fri May 6 15:41:25 2016 -0400'}))
-        self.assertTupleEqual(helpers.simple_edge("Bob", "readme.md", self.r3, ['date']),
+        self.assertTupleEqual(helpers.net_edges_simple("Bob", "readme.md", self.r3, ['date']),
                               ("Bob", "readme.md", {'date': 'Fri May 6 14:50:22 2016 -0400'}))
 
     def test_change_edge(self):
         # Check return type
-        self.assertIsInstance(helpers.changes_edge('Alice', 'file78', self.r3, ['date']), tuple)
+        self.assertIsInstance(helpers.net_edges_changes('Alice', 'file78', self.r3, ['date']), tuple)
 
         # Check return values
-        self.assertTupleEqual(helpers.changes_edge('Alice', 'file78', self.r3, ['date']),
+        self.assertTupleEqual(helpers.net_edges_changes('Alice', 'file78', self.r3, ['date']),
                               ("Alice", 'file78', {'date': 'Fri May 6 14:50:22 2016 -0400'}))
 
 
@@ -241,12 +241,12 @@ class EdgeGenTests(unittest.TestCase):
         good_path = os.getcwd()
         nx_log = gitnet.get_log(good_path)
         nxr1 = nx_log.collection['1dc1602']
-        self.assertTupleEqual(helpers.changes_edge('Dan Schult', 'examples/drawing/knuth_miles.txt.gz', nxr1, ['date']),
+        self.assertTupleEqual(helpers.net_edges_changes('Dan Schult', 'examples/drawing/knuth_miles.txt.gz', nxr1, ['date']),
                               ('Dan Schult', 'examples/drawing/knuth_miles.txt.gz',
                                {'date': 'Fri Aug 7 11:02:04 2015 -0400',
                                 'weight': 1}))
 
-        self.assertTupleEqual(helpers.changes_edge('Dan Schult', 'networkx/algorithms/threshold.py', nxr1, ['date']),
+        self.assertTupleEqual(helpers.net_edges_changes('Dan Schult', 'networkx/algorithms/threshold.py', nxr1, ['date']),
                               ('Dan Schult', 'networkx/algorithms/threshold.py',
                                {'date': 'Fri Aug 7 11:02:04 2015 -0400',
                                 'weight': 910}))
@@ -274,20 +274,20 @@ class TestNetAttr(unittest.TestCase):
 
     def test_basic(self):
         """Ensure the function returns a string"""
-        res = helpers.author_file_node_colours(self.a_attr)
+        res = helpers.node_colours(self.a_attr)
         self.assertIsInstance(res, str)
 
     def test_no_type(self):
         """Are nodes with no type assigned lightgrey?"""
         notype = {'id': 'mystery',
                   'email': 'abc@alphabet.com'}
-        res = helpers.author_file_node_colours(notype)
+        res = helpers.node_colours(notype)
         self.assertEqual(res, "lightgrey")
 
     def test_authors(self):
         """Are authors assigned the correct colour?"""
-        a_res = helpers.author_file_node_colours(self.a_attr)
-        b_res = helpers.author_file_node_colours(self.b_attr)
+        a_res = helpers.node_colours(self.a_attr)
+        b_res = helpers.node_colours(self.b_attr)
 
         self.assertEqual(a_res, "dodgerblue")
         self.assertEqual(b_res, "dodgerblue")
@@ -295,10 +295,10 @@ class TestNetAttr(unittest.TestCase):
     def test_files(self):
         """Do files of the types .py, .cc, .h, etc give the correct colours?"""
         # Setting up results
-        res1 = helpers.author_file_node_colours(self.f1_attr)
-        res2 = helpers.author_file_node_colours(self.f2_attr)
-        res3 = helpers.author_file_node_colours(self.f3_attr)
-        res4 = helpers.author_file_node_colours(self.f4_attr)
+        res1 = helpers.node_colours(self.f1_attr)
+        res2 = helpers.node_colours(self.f2_attr)
+        res3 = helpers.node_colours(self.f3_attr)
+        res4 = helpers.node_colours(self.f4_attr)
 
         self.assertEqual(res1, "tomato")
         self.assertEqual(res2, "gold")
@@ -308,7 +308,7 @@ class TestNetAttr(unittest.TestCase):
     def test_files_noid(self):
         """Are file nodes with no id assigned lightgrey?"""
         noid = {'type': 'files'}
-        res = helpers.author_file_node_colours(noid)
+        res = helpers.node_colours(noid)
 
         self.assertEqual(res, "lightgrey")
 
@@ -316,7 +316,7 @@ class TestNetAttr(unittest.TestCase):
         """Are nodes whose type is neither files nor author assigned lightgrey?"""
         fnora = {'id': 'Uwaterloo',
                  'type': 'university'}
-        res = helpers.author_file_node_colours(fnora)
+        res = helpers.node_colours(fnora)
 
         self.assertEqual(res, "lightgrey")
 

@@ -2,7 +2,7 @@ import numpy as np
 import copy
 from gitnet.log import Log
 from gitnet.exceptions import InputError
-from gitnet.helpers import git_datetime, most_common, filter_regex, simple_edge, changes_edge
+from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes
 
 
 class CommitLog(Log):
@@ -102,7 +102,7 @@ class CommitLog(Log):
             early = None
             late = None
             for record in self.collection:
-                date = git_datetime(self.collection[record]["date"])
+                date = datetime_git(self.collection[record]["date"])
                 if early is None or date < early:
                     early = date
                 if late is None or date > late:
@@ -198,6 +198,6 @@ class CommitLog(Log):
                                          mode2_atom_attrs=[],
                                          mode1_vector_attrs=["hash", "fedits"],
                                          mode2_vector_attrs=["date", "hash"],
-                                         edge_helper=changes_edge)
+                                         edge_helper=net_edges_changes)
         else:
             raise InputError("{} is not a valid network preset.".format(type))
