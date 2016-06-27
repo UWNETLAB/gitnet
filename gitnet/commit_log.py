@@ -1,6 +1,3 @@
-"""
-![](static/gitnet.png)
-"""
 import numpy as np
 import copy
 from gitnet.log import Log

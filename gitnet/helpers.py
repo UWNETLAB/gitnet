@@ -1,6 +1,3 @@
-"""
->![](static/gitnet.png)
-"""
 import datetime as dt
 import re
 from gitnet.exceptions import InputError
