@@ -1,3 +1,19 @@
+# *********************************************************************************************
+# Copyright (C) 2016 Jillian Anderson, Joel Becker, Steve McColl and Dr. John McLevey
+#
+# This file is part of the gitnet package developed for Dr John McLevey's Networks Lab
+# at the University of Waterloo. For more information, see http://networkslab.org/gitnet/.
+#
+# gitnet is free software: you can redistribute it and/or modify it under the terms of a
+# GNU General Public License as published by the Free Software Foundation. gitnet is
+# distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with gitnet.
+# If not, see <http://www.gnu.org/licenses/>.
+# *********************************************************************************************
+
 import datetime as dt
 import re
 from gitnet.exceptions import InputError
