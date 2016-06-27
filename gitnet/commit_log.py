@@ -1,6 +1,5 @@
-"""
-![](static/gitnet.png)
-"""
+# Written by Jillain Anderson, Joel Becker, and Steve McColl for Dr. John McLevey's Networks Lab, University of Waterloo, 2016.
+# Permissive free software license - BSD/MIT.
 import numpy as np
 import copy
 from gitnet.log import Log

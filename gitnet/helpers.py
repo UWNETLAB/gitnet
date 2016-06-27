@@ -1,6 +1,5 @@
-"""
->![](static/gitnet.png)
-"""
+# Written by Jillain Anderson, Joel Becker, and Steve McColl for Dr. John McLevey's Networks Lab, University of Waterloo, 2016.
+# Permissive free software license - BSD/MIT.
 import datetime as dt
 import re
 from gitnet.exceptions import InputError
