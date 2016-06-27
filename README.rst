@@ -1,18 +1,14 @@
-===============
-*gitnet 0.0.1*
-===============
+*Overview*
+============
 
 ``gitnet`` is a Python 3 package with tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network datasets and visualizations. The primary purpose of ``gitnet`` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be of use to organizations, project managers, and curious coders.
-
-*Overview*
------------
 
 ``gitnet`` is currently under active development by the University of Waterloo's NetLab_. The current build offers flexible tools for working with local Git repositories. Future iterations will include support for creating networks using issue report and pull request data, tools for analyzing contributors' communication networks, reproducible data collection, and more tools for increased flexibility. If you are curious about the project, want tips regarding how to use ``gitnet``, find a bug, or wish to request a feature, please feel free to email a contributor or submit an issue report.
 
 .. _NetLab: http://networkslab.org/
 
 *A Quick (Meta) Example*
--------------------------
+-------------------------------
 
 ``gitnet`` makes it easy to collect, clean, and visualize local Git repositories. Here, we used it to create a network visualization of contributions to `.py` files in our Git repository.
 
@@ -33,7 +29,7 @@ This snippet imports ``gitnet``, creates a ``CommitLog`` from our local reposito
 .. image:: resources/gitnet_network.png
 
 *Retrieving Data*
-------------------
+---------------------------
 
 Currently, only local Git retrieval is supported. Use the `get_log()` function to create a ``CommitLog`` object, by passing a file path for the Git repository.
 
@@ -75,7 +71,7 @@ The basic methods available for `Log` and all its subclasses are as follows:
 +-----------------------+----------------------------------------------------------------------+
 | `.write_nodes()`      | Writes a list of nodes (with attributes) to a file.                  |
 +-----------------------+----------------------------------------------------------------------+
-| `.generate_network()` | Creates a network, producing a `MultiGraphPlus` object.        |
+| `.generate_network()` | Creates a network, producing a `MultiGraphPlus` object.              |
 +-----------------------+----------------------------------------------------------------------+
 
 *The CommitLog Subclass*
