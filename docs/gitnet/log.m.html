@@ -1034,7 +1034,9 @@ table {
     
   
   <div id="sidebar">
-    <img src="static/gitnet.png" height="250" width="250"/>
+    <a href="http://networkslab.org/gitnet/">
+<img src="static/gitnet.png" height="250" width="250"/>
+</a>
     <ul id="index">
 
 
@@ -1084,7 +1086,23 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.log', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.log" class="source">
-    <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <div class="codehilite"><pre><span></span><span class="c1"># *********************************************************************************************</span>
+<span class="c1"># Copyright (C) 2016 Jillian Anderson, Joel Becker, Steve McColl and Dr. John McLevey</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of the gitnet package developed for Dr John McLevey&#39;s Networks Lab</span>
+<span class="c1"># at the University of Waterloo. For more information, see http://networkslab.org/gitnet/.</span>
+<span class="c1">#</span>
+<span class="c1"># gitnet is free software: you can redistribute it and/or modify it under the terms of a</span>
+<span class="c1"># GNU General Public License as published by the Free Software Foundation. gitnet is</span>
+<span class="c1"># distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even</span>
+<span class="c1"># the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License along with gitnet.</span>
+<span class="c1"># If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># *********************************************************************************************</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">copy</span>
@@ -3510,7 +3528,7 @@ are not valid for date strings.</p>
             
   <div class="item">
     <div class="name def" id="gitnet.log.Log.generate_edges">
-    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attributes=[])</p>
+    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function net_edges_simple at 0x00000000076CF400&gt;, edge_attributes=[])</p>
     </div>
     
 
@@ -3597,7 +3615,7 @@ Computes edges between authors and files based on the number of lines changed in
             
   <div class="item">
     <div class="name def" id="gitnet.log.Log.generate_network">
-    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
+    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function net_edges_simple at 0x00000000076CF400&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
     </div>
     
 
@@ -4138,7 +4156,7 @@ file will be written.</p>
             
   <div class="item">
     <div class="name def" id="gitnet.log.Log.write_edges">
-    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function net_edges_simple at 0x114857620&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
+    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function net_edges_simple at 0x00000000076CF400&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
     </div>
     
 

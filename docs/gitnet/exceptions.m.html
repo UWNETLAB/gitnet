@@ -1034,7 +1034,9 @@ table {
     
   
   <div id="sidebar">
-    <img src="static/gitnet.png" height="250" width="250"/>
+    <a href="http://networkslab.org/gitnet/">
+<img src="static/gitnet.png" height="250" width="250"/>
+</a>
     <ul id="index">
 
 
@@ -1091,7 +1093,23 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.exceptions', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.exceptions" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">gitnetException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="c1"># *********************************************************************************************</span>
+<span class="c1"># Copyright (C) 2016 Jillian Anderson, Joel Becker, Steve McColl and Dr. John McLevey</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of the gitnet package developed for Dr John McLevey&#39;s Networks Lab</span>
+<span class="c1"># at the University of Waterloo. For more information, see http://networkslab.org/gitnet/.</span>
+<span class="c1">#</span>
+<span class="c1"># gitnet is free software: you can redistribute it and/or modify it under the terms of a</span>
+<span class="c1"># GNU General Public License as published by the Free Software Foundation. gitnet is</span>
+<span class="c1"># distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even</span>
+<span class="c1"># the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License along with gitnet.</span>
+<span class="c1"># If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># *********************************************************************************************</span>
+
+<span class="k">class</span> <span class="nc">gitnetException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
@@ -1474,7 +1492,6 @@ table {
       <p id="gitnet.exceptions.gitnetException" class="name">class <span class="ident">gitnetException</span></p>
       
   
-    <div class="desc"><p>Common base class for all non-exit exceptions.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.exceptions.gitnetException', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.exceptions.gitnetException" class="source">
