@@ -99,7 +99,7 @@
 
   code {
     background: #f9f9f9;
-  } 
+  }
 
   pre {
     background: #fefefe;
@@ -116,7 +116,7 @@
     .codehilite pre {
       margin: 0;
     }
-    .codehilite .err { background: #ff3300; color: #fff !important; } 
+    .codehilite .err { background: #ff3300; color: #fff !important; }
 
   table#module-list {
     font-size: 110%;
@@ -221,14 +221,14 @@
     }
 
     .source_link a {
-      background: #ffc300;
-      font-weight: 400;
-      font-size: .75em;
+      background: #fac366;
+      font-weight: 600;
+      font-size: .85em;
       text-transform: uppercase;
       color: #fff;
       text-shadow: 1px 1px 0 #f4b700;
-      
-      padding: 3px 8px;
+
+      padding: 5px 12px;
       border-radius: 2px;
       transition: background .3s ease-in-out;
     }

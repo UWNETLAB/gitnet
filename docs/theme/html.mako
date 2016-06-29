@@ -412,17 +412,8 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-
-  <link rel="alternate" href="http://networkslab.org/gitnet/index.xml" type="application/rss+xml" title="gitnet">
-
-
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="http://networkslab.org/gitnet/css/bootstrap.min.css" />
   <link rel="stylesheet" href="http://networkslab.org/gitnet/css/main.css" />
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
   <link rel="stylesheet" href="http://networkslab.org/gitnet/css/pygment_highlights.css" />
-
 
   <meta property="og:title" content="gitnet" />
   <meta property="og:type" content="website" />
