@@ -136,3 +136,10 @@ Then, initialize a `Log` with the dictionary of dictionaries.
 If you wish to request or contribute support for a new data source, please contact the developers. Further documentation can be found here_.
 
 .. _here: http://networkslab.org/gitnet/page/documentation/
+
+*To-Do*
+--------------
+
+As a project in development, Gitnet will have a list of potential issues, updates, and features. Any external requests can be made on our GitHub project page.
+
+- Fix for the PyGraphViz dependency on Windows. Further investigate the reasons for 'agedge' error.
