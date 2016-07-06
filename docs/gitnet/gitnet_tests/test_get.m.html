@@ -1076,6 +1076,7 @@ table {
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertNotIn">assertNotIn</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertNotIsInstance">assertNotIsInstance</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertNotRegex">assertNotRegex</a></li>
+    <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertNotRegexpMatches">assertNotRegexpMatches</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertRaises">assertRaises</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertRaisesRegex">assertRaisesRegex</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestBigGit.assertRaisesRegexp">assertRaisesRegexp</a></li>
@@ -1150,6 +1151,7 @@ table {
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertNotIn">assertNotIn</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertNotIsInstance">assertNotIsInstance</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertNotRegex">assertNotRegex</a></li>
+    <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertNotRegexpMatches">assertNotRegexpMatches</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertRaises">assertRaises</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertRaisesRegex">assertRaisesRegex</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetError.assertRaisesRegexp">assertRaisesRegexp</a></li>
@@ -1225,6 +1227,7 @@ table {
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertNotIn">assertNotIn</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertNotIsInstance">assertNotIsInstance</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertNotRegex">assertNotRegex</a></li>
+    <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertNotRegexpMatches">assertNotRegexpMatches</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertRaises">assertRaises</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertRaisesRegex">assertRaisesRegex</a></li>
     <li class="mono"><a href="#gitnet.gitnet_tests.test_get.TestGetLog.assertRaisesRegexp">assertRaisesRegexp</a></li>
@@ -1438,6 +1441,31 @@ table {
       <p id="gitnet.gitnet_tests.test_get.TestBigGit" class="name">class <span class="ident">TestBigGit</span></p>
       
   
+    <div class="desc"><p>A class whose instances are single test cases.</p>
+<p>By default, the test code itself should be placed in a method named
+'runTest'.</p>
+<p>If the fixture may be used for many test cases, create as
+many test methods as are needed. When instantiating such a TestCase
+subclass, specify in the constructor arguments the name of the test method
+that the instance is to execute.</p>
+<p>Test authors should subclass TestCase for their own tests. Construction
+and deconstruction of the test's environment ('fixture') can be
+implemented by overriding the 'setUp' and 'tearDown' methods respectively.</p>
+<p>If it is necessary to override the <strong>init</strong> method, the base class
+<strong>init</strong> method must always be called. It is important that subclasses
+should not change the signature of their <strong>init</strong> method, since instances
+of the classes are instantiated automatically by parts of the framework
+in order to be run.</p>
+<p>When subclassing TestCase, you can set these attributes:
+<em> failureException: determines which exception will be raised when
+    the instance's assertion methods fail; test methods raising this
+    exception will be deemed to have 'failed' rather than 'errored'.
+</em> longMessage: determines whether long messages (including repr of
+    objects used in assert methods) will be printed on failure in <em>addition</em>
+    to any explicit message passed.
+* maxDiff: sets the maximum length of a diff in failure messages
+    by assert methods using difflib. It is looked up as an instance
+    attribute so can be configured by individual tests if required.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit" class="source">
@@ -2504,11 +2532,12 @@ operator.</p></div>
         <span class="n">unexpected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">unexpected_regex</span><span class="p">)</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex matched&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
-                                           <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s1">&#39;Regex matched: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
+            <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+            <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -2519,20 +2548,44 @@ operator.</p></div>
   
             
   <div class="item">
-    <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertRaises">
-    <p>def <span class="ident">assertRaises</span>(</p><p>self, excClass, callableObj=None, *args, **kwargs)</p>
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertNotRegexpMatches">
+    <p>def <span class="ident">assertNotRegexpMatches</span>(</p><p>*args, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Fail unless an exception of class excClass is raised
-by callableObj when invoked with arguments args and keyword
-arguments kwargs. If a different type of exception is
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.assertNotRegexpMatches', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.assertNotRegexpMatches" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">deprecated_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;Please use {0} instead.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">original_func</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">original_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertRaises">
+    <p>def <span class="ident">assertRaises</span>(</p><p>self, expected_exception, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Fail unless an exception of class expected_exception is raised
+by the callable when invoked with specified positional and
+keyword arguments. If a different type of exception is
 raised, it will not be caught, and the test case will be
 deemed to have suffered an error, exactly as for an
 unexpected exception.</p>
-<p>If called with callableObj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertRaises(SomeException):
      do_something()
@@ -2552,14 +2605,14 @@ self.assertEqual(the_exception.error_code, 3)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.assertRaises', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.assertRaises" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excClass</span><span class="p">,</span> <span class="n">callableObj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class excClass is raised</span>
-<span class="sd">       by callableObj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs. If a different type of exception is</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class expected_exception is raised</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments. If a different type of exception is</span>
 <span class="sd">       raised, it will not be caught, and the test case will be</span>
 <span class="sd">       deemed to have suffered an error, exactly as for an</span>
 <span class="sd">       unexpected exception.</span>
-<span class="sd">       If called with callableObj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertRaises(SomeException):</span>
 <span class="sd">                do_something()</span>
@@ -2573,8 +2626,8 @@ self.assertEqual(the_exception.error_code, 3)
 <span class="sd">           the_exception = cm.exception</span>
 <span class="sd">           self.assertEqual(the_exception.error_code, 3)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">excClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -2585,7 +2638,7 @@ self.assertEqual(the_exception.error_code, 3)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertRaisesRegex">
-    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -2596,30 +2649,27 @@ self.assertEqual(the_exception.error_code, 3)
     expected_exception: Exception class expected to be raised.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertRaisesRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertRaisesRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.assertRaisesRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.assertRaisesRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaisesRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                      <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                      <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a raised exception matches a regex.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        expected_exception: Exception class expected to be raised.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertRaisesRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                   <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -2670,8 +2720,10 @@ self.assertEqual(the_exception.error_code, 3)
         <span class="k">assert</span> <span class="n">expected_regex</span><span class="p">,</span> <span class="s2">&quot;expected_regex must not be empty.&quot;</span>
         <span class="n">expected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">expected_regex</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex didn&#39;t match&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> not found in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s2">&quot;Regex didn&#39;t match: </span><span class="si">%r</span><span class="s2"> not found in </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -2946,19 +2998,19 @@ difference method).</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertWarns">
-    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, *args, **kwargs)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Fail unless a warning of class warnClass is triggered
-by callable_obj when invoked with arguments args and keyword
-arguments kwargs.  If a different type of warning is
+by the callable when invoked with specified positional and
+keyword arguments.  If a different type of warning is
 triggered, it will not be handled: depending on the other
 warning filtering rules in effect, it might be silenced, printed
 out, or raised as an exception.</p>
-<p>If called with callable_obj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertWarns(SomeWarning):
      do_something()
@@ -2980,14 +3032,14 @@ self.assertEqual(the_warning.some_attribute, 147)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.assertWarns', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.assertWarns" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Fail unless a warning of class warnClass is triggered</span>
-<span class="sd">       by callable_obj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs.  If a different type of warning is</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments.  If a different type of warning is</span>
 <span class="sd">       triggered, it will not be handled: depending on the other</span>
 <span class="sd">       warning filtering rules in effect, it might be silenced, printed</span>
 <span class="sd">       out, or raised as an exception.</span>
-<span class="sd">       If called with callable_obj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertWarns(SomeWarning):</span>
 <span class="sd">                do_something()</span>
@@ -3003,8 +3055,8 @@ self.assertEqual(the_warning.some_attribute, 147)
 <span class="sd">           the_warning = cm.warning</span>
 <span class="sd">           self.assertEqual(the_warning.some_attribute, 147)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -3015,7 +3067,7 @@ self.assertEqual(the_warning.some_attribute, 147)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestBigGit.assertWarnsRegex">
-    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -3029,16 +3081,15 @@ are considered successful matches.</p>
     expected_warning: Warning class expected to be triggered.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertWarnsRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertWarnsRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.assertWarnsRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.assertWarnsRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarnsRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                     <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a triggered warning matches a regexp.</span>
 <span class="sd">    Basic functioning is similar to assertWarns() with the addition</span>
 <span class="sd">    that only warnings whose messages also match the regular expression</span>
@@ -3047,15 +3098,13 @@ are considered successful matches.</p>
 <span class="sd">        expected_warning: Warning class expected to be triggered.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertWarnsRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                  <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -3491,6 +3540,7 @@ tearDown.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for setting up the test fixture before exercising it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.setUp', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.setUp" class="source">
@@ -3623,6 +3673,7 @@ block, allowing further test code to be executed.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for deconstructing the test fixture after testing it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestBigGit.tearDown', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestBigGit.tearDown" class="source">
@@ -3742,6 +3793,31 @@ block, allowing further test code to be executed.</p></div>
       <p id="gitnet.gitnet_tests.test_get.TestGetError" class="name">class <span class="ident">TestGetError</span></p>
       
   
+    <div class="desc"><p>A class whose instances are single test cases.</p>
+<p>By default, the test code itself should be placed in a method named
+'runTest'.</p>
+<p>If the fixture may be used for many test cases, create as
+many test methods as are needed. When instantiating such a TestCase
+subclass, specify in the constructor arguments the name of the test method
+that the instance is to execute.</p>
+<p>Test authors should subclass TestCase for their own tests. Construction
+and deconstruction of the test's environment ('fixture') can be
+implemented by overriding the 'setUp' and 'tearDown' methods respectively.</p>
+<p>If it is necessary to override the <strong>init</strong> method, the base class
+<strong>init</strong> method must always be called. It is important that subclasses
+should not change the signature of their <strong>init</strong> method, since instances
+of the classes are instantiated automatically by parts of the framework
+in order to be run.</p>
+<p>When subclassing TestCase, you can set these attributes:
+<em> failureException: determines which exception will be raised when
+    the instance's assertion methods fail; test methods raising this
+    exception will be deemed to have 'failed' rather than 'errored'.
+</em> longMessage: determines whether long messages (including repr of
+    objects used in assert methods) will be printed on failure in <em>addition</em>
+    to any explicit message passed.
+* maxDiff: sets the maximum length of a diff in failure messages
+    by assert methods using difflib. It is looked up as an instance
+    attribute so can be configured by individual tests if required.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError" class="source">
@@ -4807,11 +4883,12 @@ operator.</p></div>
         <span class="n">unexpected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">unexpected_regex</span><span class="p">)</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex matched&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
-                                           <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s1">&#39;Regex matched: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
+            <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+            <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -4822,20 +4899,44 @@ operator.</p></div>
   
             
   <div class="item">
-    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertRaises">
-    <p>def <span class="ident">assertRaises</span>(</p><p>self, excClass, callableObj=None, *args, **kwargs)</p>
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertNotRegexpMatches">
+    <p>def <span class="ident">assertNotRegexpMatches</span>(</p><p>*args, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Fail unless an exception of class excClass is raised
-by callableObj when invoked with arguments args and keyword
-arguments kwargs. If a different type of exception is
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.assertNotRegexpMatches', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.gitnet_tests.test_get.TestGetError.assertNotRegexpMatches" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">deprecated_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;Please use {0} instead.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">original_func</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">original_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertRaises">
+    <p>def <span class="ident">assertRaises</span>(</p><p>self, expected_exception, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Fail unless an exception of class expected_exception is raised
+by the callable when invoked with specified positional and
+keyword arguments. If a different type of exception is
 raised, it will not be caught, and the test case will be
 deemed to have suffered an error, exactly as for an
 unexpected exception.</p>
-<p>If called with callableObj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertRaises(SomeException):
      do_something()
@@ -4855,14 +4956,14 @@ self.assertEqual(the_exception.error_code, 3)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.assertRaises', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.assertRaises" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excClass</span><span class="p">,</span> <span class="n">callableObj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class excClass is raised</span>
-<span class="sd">       by callableObj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs. If a different type of exception is</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class expected_exception is raised</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments. If a different type of exception is</span>
 <span class="sd">       raised, it will not be caught, and the test case will be</span>
 <span class="sd">       deemed to have suffered an error, exactly as for an</span>
 <span class="sd">       unexpected exception.</span>
-<span class="sd">       If called with callableObj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertRaises(SomeException):</span>
 <span class="sd">                do_something()</span>
@@ -4876,8 +4977,8 @@ self.assertEqual(the_exception.error_code, 3)
 <span class="sd">           the_exception = cm.exception</span>
 <span class="sd">           self.assertEqual(the_exception.error_code, 3)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">excClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -4888,7 +4989,7 @@ self.assertEqual(the_exception.error_code, 3)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertRaisesRegex">
-    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -4899,30 +5000,27 @@ self.assertEqual(the_exception.error_code, 3)
     expected_exception: Exception class expected to be raised.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertRaisesRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertRaisesRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.assertRaisesRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.assertRaisesRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaisesRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                      <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                      <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a raised exception matches a regex.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        expected_exception: Exception class expected to be raised.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertRaisesRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                   <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -4973,8 +5071,10 @@ self.assertEqual(the_exception.error_code, 3)
         <span class="k">assert</span> <span class="n">expected_regex</span><span class="p">,</span> <span class="s2">&quot;expected_regex must not be empty.&quot;</span>
         <span class="n">expected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">expected_regex</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex didn&#39;t match&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> not found in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s2">&quot;Regex didn&#39;t match: </span><span class="si">%r</span><span class="s2"> not found in </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -5249,19 +5349,19 @@ difference method).</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertWarns">
-    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, *args, **kwargs)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Fail unless a warning of class warnClass is triggered
-by callable_obj when invoked with arguments args and keyword
-arguments kwargs.  If a different type of warning is
+by the callable when invoked with specified positional and
+keyword arguments.  If a different type of warning is
 triggered, it will not be handled: depending on the other
 warning filtering rules in effect, it might be silenced, printed
 out, or raised as an exception.</p>
-<p>If called with callable_obj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertWarns(SomeWarning):
      do_something()
@@ -5283,14 +5383,14 @@ self.assertEqual(the_warning.some_attribute, 147)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.assertWarns', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.assertWarns" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Fail unless a warning of class warnClass is triggered</span>
-<span class="sd">       by callable_obj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs.  If a different type of warning is</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments.  If a different type of warning is</span>
 <span class="sd">       triggered, it will not be handled: depending on the other</span>
 <span class="sd">       warning filtering rules in effect, it might be silenced, printed</span>
 <span class="sd">       out, or raised as an exception.</span>
-<span class="sd">       If called with callable_obj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertWarns(SomeWarning):</span>
 <span class="sd">                do_something()</span>
@@ -5306,8 +5406,8 @@ self.assertEqual(the_warning.some_attribute, 147)
 <span class="sd">           the_warning = cm.warning</span>
 <span class="sd">           self.assertEqual(the_warning.some_attribute, 147)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -5318,7 +5418,7 @@ self.assertEqual(the_warning.some_attribute, 147)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetError.assertWarnsRegex">
-    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -5332,16 +5432,15 @@ are considered successful matches.</p>
     expected_warning: Warning class expected to be triggered.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertWarnsRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertWarnsRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.assertWarnsRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.assertWarnsRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarnsRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                     <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a triggered warning matches a regexp.</span>
 <span class="sd">    Basic functioning is similar to assertWarns() with the addition</span>
 <span class="sd">    that only warnings whose messages also match the regular expression</span>
@@ -5350,15 +5449,13 @@ are considered successful matches.</p>
 <span class="sd">        expected_warning: Warning class expected to be triggered.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertWarnsRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                  <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -5794,6 +5891,7 @@ tearDown.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for setting up the test fixture before exercising it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.setUp', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.setUp" class="source">
@@ -5926,6 +6024,7 @@ block, allowing further test code to be executed.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for deconstructing the test fixture after testing it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetError.tearDown', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetError.tearDown" class="source">
@@ -6059,6 +6158,31 @@ block, allowing further test code to be executed.</p></div>
       <p id="gitnet.gitnet_tests.test_get.TestGetLog" class="name">class <span class="ident">TestGetLog</span></p>
       
   
+    <div class="desc"><p>A class whose instances are single test cases.</p>
+<p>By default, the test code itself should be placed in a method named
+'runTest'.</p>
+<p>If the fixture may be used for many test cases, create as
+many test methods as are needed. When instantiating such a TestCase
+subclass, specify in the constructor arguments the name of the test method
+that the instance is to execute.</p>
+<p>Test authors should subclass TestCase for their own tests. Construction
+and deconstruction of the test's environment ('fixture') can be
+implemented by overriding the 'setUp' and 'tearDown' methods respectively.</p>
+<p>If it is necessary to override the <strong>init</strong> method, the base class
+<strong>init</strong> method must always be called. It is important that subclasses
+should not change the signature of their <strong>init</strong> method, since instances
+of the classes are instantiated automatically by parts of the framework
+in order to be run.</p>
+<p>When subclassing TestCase, you can set these attributes:
+<em> failureException: determines which exception will be raised when
+    the instance's assertion methods fail; test methods raising this
+    exception will be deemed to have 'failed' rather than 'errored'.
+</em> longMessage: determines whether long messages (including repr of
+    objects used in assert methods) will be printed on failure in <em>addition</em>
+    to any explicit message passed.
+* maxDiff: sets the maximum length of a diff in failure messages
+    by assert methods using difflib. It is looked up as an instance
+    attribute so can be configured by individual tests if required.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog" class="source">
@@ -7153,11 +7277,12 @@ operator.</p></div>
         <span class="n">unexpected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">unexpected_regex</span><span class="p">)</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex matched&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
-                                           <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-                                           <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s1">&#39;Regex matched: </span><span class="si">%r</span><span class="s1"> matches </span><span class="si">%r</span><span class="s1"> in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">text</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()],</span>
+            <span class="n">unexpected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+            <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -7168,20 +7293,44 @@ operator.</p></div>
   
             
   <div class="item">
-    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertRaises">
-    <p>def <span class="ident">assertRaises</span>(</p><p>self, excClass, callableObj=None, *args, **kwargs)</p>
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertNotRegexpMatches">
+    <p>def <span class="ident">assertNotRegexpMatches</span>(</p><p>*args, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Fail unless an exception of class excClass is raised
-by callableObj when invoked with arguments args and keyword
-arguments kwargs. If a different type of exception is
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.assertNotRegexpMatches', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.assertNotRegexpMatches" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">deprecated_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;Please use {0} instead.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">original_func</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">original_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertRaises">
+    <p>def <span class="ident">assertRaises</span>(</p><p>self, expected_exception, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Fail unless an exception of class expected_exception is raised
+by the callable when invoked with specified positional and
+keyword arguments. If a different type of exception is
 raised, it will not be caught, and the test case will be
 deemed to have suffered an error, exactly as for an
 unexpected exception.</p>
-<p>If called with callableObj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertRaises(SomeException):
      do_something()
@@ -7201,14 +7350,14 @@ self.assertEqual(the_exception.error_code, 3)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.assertRaises', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.assertRaises" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excClass</span><span class="p">,</span> <span class="n">callableObj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class excClass is raised</span>
-<span class="sd">       by callableObj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs. If a different type of exception is</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaises</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fail unless an exception of class expected_exception is raised</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments. If a different type of exception is</span>
 <span class="sd">       raised, it will not be caught, and the test case will be</span>
 <span class="sd">       deemed to have suffered an error, exactly as for an</span>
 <span class="sd">       unexpected exception.</span>
-<span class="sd">       If called with callableObj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertRaises(SomeException):</span>
 <span class="sd">                do_something()</span>
@@ -7222,8 +7371,8 @@ self.assertEqual(the_exception.error_code, 3)
 <span class="sd">           the_exception = cm.exception</span>
 <span class="sd">           self.assertEqual(the_exception.error_code, 3)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">excClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">callableObj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaises&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -7234,7 +7383,7 @@ self.assertEqual(the_exception.error_code, 3)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertRaisesRegex">
-    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertRaisesRegex</span>(</p><p>self, expected_exception, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -7245,30 +7394,27 @@ self.assertEqual(the_exception.error_code, 3)
     expected_exception: Exception class expected to be raised.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertRaisesRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertRaisesRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.assertRaisesRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.assertRaisesRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertRaisesRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                      <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                      <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a raised exception matches a regex.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        expected_exception: Exception class expected to be raised.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertRaisesRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                   <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertRaisesContext</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertRaisesRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -7319,8 +7465,10 @@ self.assertEqual(the_exception.error_code, 3)
         <span class="k">assert</span> <span class="n">expected_regex</span><span class="p">,</span> <span class="s2">&quot;expected_regex must not be empty.&quot;</span>
         <span class="n">expected_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">expected_regex</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Regex didn&#39;t match&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1"> not found in </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">standardMsg</span> <span class="o">=</span> <span class="s2">&quot;Regex didn&#39;t match: </span><span class="si">%r</span><span class="s2"> not found in </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">expected_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># _formatMessage ensures the longMessage option is respected</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">standardMsg</span><span class="p">)</span>
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">failureException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
@@ -7595,19 +7743,19 @@ difference method).</p></div>
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertWarns">
-    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarns</span>(</p><p>self, expected_warning, *args, **kwargs)</p>
     </div>
     
 
     
   
     <div class="desc"><p>Fail unless a warning of class warnClass is triggered
-by callable_obj when invoked with arguments args and keyword
-arguments kwargs.  If a different type of warning is
+by the callable when invoked with specified positional and
+keyword arguments.  If a different type of warning is
 triggered, it will not be handled: depending on the other
 warning filtering rules in effect, it might be silenced, printed
 out, or raised as an exception.</p>
-<p>If called with callable_obj omitted or None, will return a
+<p>If called with the callable and arguments omitted, will return a
 context object used like this::</p>
 <div class="codehilite"><pre><span></span> with self.assertWarns(SomeWarning):
      do_something()
@@ -7629,14 +7777,14 @@ self.assertEqual(the_warning.some_attribute, 147)
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.assertWarns', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.assertWarns" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Fail unless a warning of class warnClass is triggered</span>
-<span class="sd">       by callable_obj when invoked with arguments args and keyword</span>
-<span class="sd">       arguments kwargs.  If a different type of warning is</span>
+<span class="sd">       by the callable when invoked with specified positional and</span>
+<span class="sd">       keyword arguments.  If a different type of warning is</span>
 <span class="sd">       triggered, it will not be handled: depending on the other</span>
 <span class="sd">       warning filtering rules in effect, it might be silenced, printed</span>
 <span class="sd">       out, or raised as an exception.</span>
-<span class="sd">       If called with callable_obj omitted or None, will return a</span>
+<span class="sd">       If called with the callable and arguments omitted, will return a</span>
 <span class="sd">       context object used like this::</span>
 <span class="sd">            with self.assertWarns(SomeWarning):</span>
 <span class="sd">                do_something()</span>
@@ -7652,8 +7800,8 @@ self.assertEqual(the_warning.some_attribute, 147)
 <span class="sd">           the_warning = cm.warning</span>
 <span class="sd">           self.assertEqual(the_warning.some_attribute, 147)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarns&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -7664,7 +7812,7 @@ self.assertEqual(the_warning.some_attribute, 147)
             
   <div class="item">
     <div class="name def" id="gitnet.gitnet_tests.test_get.TestGetLog.assertWarnsRegex">
-    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, callable_obj=None, *args, **kwargs)</p>
+    <p>def <span class="ident">assertWarnsRegex</span>(</p><p>self, expected_warning, expected_regex, *args, **kwargs)</p>
     </div>
     
 
@@ -7678,16 +7826,15 @@ are considered successful matches.</p>
     expected_warning: Warning class expected to be triggered.
     expected_regex: Regex (re pattern object or string) expected
             to be found in error message.
-    callable_obj: Function to be called.
+    args: Function to be called and extra positional args.
+    kwargs: Extra kwargs.
     msg: Optional message used in case of failure. Can only be used
-            when assertWarnsRegex is used as a context manager.
-    args: Extra args.
-    kwargs: Extra kwargs.</p></div>
+            when assertWarnsRegex is used as a context manager.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.assertWarnsRegex', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.assertWarnsRegex" class="source">
     <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">assertWarnsRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_warning</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">,</span>
-                     <span class="n">callable_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Asserts that the message in a triggered warning matches a regexp.</span>
 <span class="sd">    Basic functioning is similar to assertWarns() with the addition</span>
 <span class="sd">    that only warnings whose messages also match the regular expression</span>
@@ -7696,15 +7843,13 @@ are considered successful matches.</p>
 <span class="sd">        expected_warning: Warning class expected to be triggered.</span>
 <span class="sd">        expected_regex: Regex (re pattern object or string) expected</span>
 <span class="sd">                to be found in error message.</span>
-<span class="sd">        callable_obj: Function to be called.</span>
+<span class="sd">        args: Function to be called and extra positional args.</span>
+<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">        msg: Optional message used in case of failure. Can only be used</span>
 <span class="sd">                when assertWarnsRegex is used as a context manager.</span>
-<span class="sd">        args: Extra args.</span>
-<span class="sd">        kwargs: Extra kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span>
-                                  <span class="n">expected_regex</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">callable_obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">_AssertWarnsContext</span><span class="p">(</span><span class="n">expected_warning</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">expected_regex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="s1">&#39;assertWarnsRegex&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -8140,6 +8285,7 @@ tearDown.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for setting up the test fixture before exercising it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.setUp', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.setUp" class="source">
@@ -8273,6 +8419,7 @@ block, allowing further test code to be executed.</p></div>
 
     
   
+    <div class="desc"><p>Hook method for deconstructing the test fixture after testing it.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.gitnet_tests.test_get.TestGetLog.tearDown', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.gitnet_tests.test_get.TestGetLog.tearDown" class="source">
