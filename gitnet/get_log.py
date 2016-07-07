@@ -19,9 +19,10 @@ import os
 import warnings
 from gitnet.exceptions import RepositoryError, ParseError, InputError
 from gitnet.commit_log import CommitLog
+import subprocess as sub
 
 
-def retrieve_commits(path, mode = "stat"):
+def retrieve_commits(path, mode="stat"):
     """
     Takes a file path string and a mode string and produces the  git log for the
     specified directory. The default mode, "stat" retrieves the logs by running "git log --stat".
@@ -239,7 +240,7 @@ def get_log(path, mode="stat", commit_source="local git"):
         detect_key = "hash"
     else:
         detect_key = "unknown"
-    return CommitLog(dofd = parse_commits(retrieve_commits(path,mode)),
-                     source = commit_source,
-                     path = path,
-                     key_type = detect_key)
+    return CommitLog(dofd=parse_commits(retrieve_commits(path, mode)),
+                     source=commit_source,
+                     path=path,
+                     key_type=detect_key)
