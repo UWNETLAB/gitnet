@@ -14,7 +14,7 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************************************
 
-from .get_log import get_log
+from .get_log import get_log, new_get_log
 from .exceptions import RepositoryError, ParseError, InputError
 from .log import Log
 from .commit_log import CommitLog

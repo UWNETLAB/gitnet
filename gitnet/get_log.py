@@ -272,7 +272,7 @@ def new_helper(path, mode="stat"):
     # Iterate through the lines and place them in the dictionary
     collection = {}
     sha = ""
-    for line in (iter(proc.stdout.readline, b'')):
+    for line in generate(proc.stdout):
         string = line.decode('utf-8')
 
         # Identify and parse the string
@@ -390,3 +390,15 @@ def new_identify(s):
         warnings.warn("Unexpected parsing behaviour. <{}> did not match any input patterns during parsing,"
                       " so was identified as 'other'.".format(s))
         return "none"
+
+
+def generate(stdout):
+    while True:
+        line = stdout.readline()
+        length = len(line)
+        if length > 1:
+            yield line
+        elif length == 1:
+            pass
+        else:
+            break
