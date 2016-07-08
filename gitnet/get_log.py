@@ -20,6 +20,7 @@ import warnings
 from gitnet.exceptions import RepositoryError, ParseError, InputError
 from gitnet.commit_log import CommitLog
 import subprocess as sub
+import line_profiler
 
 
 def retrieve_commits(path, mode="stat"):
@@ -214,7 +215,6 @@ def parse_commits(commit_str):
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
     return collection
 
-
 def get_log(path, mode="stat", commit_source="local git"):
     """
     A function for gathering data from a local Git repository.
@@ -246,6 +246,7 @@ def get_log(path, mode="stat", commit_source="local git"):
                      key_type=detect_key)
 
 
+# New implementations
 def new_get_log(path, mode="stat", commit_source="local git"):
     if commit_source == "local git":
         detect_key = "hash"
@@ -393,12 +394,174 @@ def new_identify(s):
 
 
 def generate(stdout):
-    while True:
-        line = stdout.readline()
-        length = len(line)
-        if length > 1:
+    line = stdout.readline()
+    while line != b"":
+        if len(line) > 1:
             yield line
-        elif length == 1:
-            pass
+        line = stdout.readline()
+
+
+# Version 3
+def get_log_v3(path, mode="stat", commit_source="local git"):
+    if commit_source == "local git":
+        detect_key = "hash"
+    else:
+        detect_key = "unknown"
+    return CommitLog(dofd=helper_v3(path, mode),
+                     source=commit_source,
+                     path=path,
+                     key_type=detect_key)
+
+
+def helper_v3(path, mode="stat"):
+    print("Attempting local git log retrieval...")
+    # Log command modes, referenced by "mode" input.
+    log_commands = {"basic": ["git", "log"], "raw": ["git", "log", "--raw"], "stat": ["git", "log", "--stat"]}
+    if mode not in log_commands.keys():
+        raise InputError("{} is not a valid retrieval mode.".format(mode))
+
+    # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
+    work_dir = os.getcwd()
+    os.chdir(path)
+    proc = sub.Popen(log_commands[mode], stdout=sub.PIPE)
+    stdout = generate(proc.stdout)
+
+    # Iterate through the lines and place them in the dictionary
+    collection = {}
+    sha = ""
+    for line in stdout:
+        string = line.decode('utf-8')
+
+        # Identify and parse the string
+        if string != "\n":
+            id = identify_v3(string)
+            # Commit Hash?
+            if id == "hash":
+                sha = string[7:14]
+                collection[sha] = {}
+                collection[sha]["hash"] = string[7:]
+                collection[sha]["mode"] = mode
+
+            # File change record?
+            elif id == "change":
+                if "changes" in collection[sha].keys():
+                    collection[sha]["changes"].append(string[1:])
+                    collection[sha]["files"].append(string.split("|")[0].replace(" ", ""))
+                else:
+                    collection[sha]["changes"] = [string[1:]]
+                    collection[sha]["files"] = [string.split("|")[0].replace(" ", "")]
+
+            # Message?
+            elif id == "message":
+                if "message" in collection[sha].keys():
+                    collection[sha]["message"] += " " + string[4:]
+                else:
+                    collection[sha]["message"] = string[4:]
+
+            # Author?
+            elif id == "author":
+                collection[sha]["author"] = string.split("<")[0][8:-1]
+                collection[sha]["email"] = string.split("<")[1][:-1]
+
+            # Date?
+            elif id == "date":
+                collection[sha]["date"] = string[8:]
+
+            # Summary?
+            elif id == "summary":
+                collection[sha]["summary"] = string[1:]
+                # Filter numbers
+                temp = string.split(",")
+                for s in temp:
+                    num = int("".join(list(filter(str.isdigit, s))))
+                    if "file" in s and "change" in s:
+                        collection[sha]["fedits"] = num
+                    if "insert" in s:
+                        collection[sha]["inserts"] = num
+                    if "delet" in s:
+                        collection[sha]["deletes"] = num
+
+            # Merge?
+            elif id == "merge":
+                collection[sha]["merge"] = string[6:]
+
+            # Error?
+            elif id == "multiple" or id == "none":
+                if "errors" in collection[sha].keys():
+                    collection[sha]["errors"].append(string)
+                else:
+                    collection[sha]["errors"] = [string]
+            else:
+                warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line, id))
+    os.chdir(work_dir)
+
+    # If the retrieval was unsuccessful, raise an error.
+    if len(collection) == 0:
+        print("Raising error.")
+        if "true" in str(sub.Popen("git rev-parse --is-inside-work-tree", stdout=sub.PIPE).stdout):
+            raise RepositoryError("{} is not a Git repository.".format(path))
         else:
-            break
+            raise RepositoryError("{} has no commits.".format(path))
+    # If the retrieval was successful, print a summary."
+    print("Got {} log records from: {}".format(len(collection), path))
+
+    return collection
+
+
+def identify_v3(s):
+    """
+    A helper function for `parse_commits()`. It takes a string and attempts to identify it as an entry
+    field from a Git commit log.
+
+    **Parameters** :
+
+    > *s* : `string`
+
+    >> One line of standard git log output (in basic, raw, or stat mode).
+
+    **Return** :
+
+    > A string identifying the type of data received.
+
+    **Examples** :
+
+    > `identify("commit 5be676481b4051af62f21eb2c8601b3f6bafb195") => "hash"`
+    > `identify("Author: JBWBecker <joelbecker@gto.net>") => "author"`
+    > `identify("__init__.py | 2 ++") => "change"`
+
+    """
+    # identify checks whether the string matches an expected format. All matches are saved in a list.
+    matches = []
+
+    # Change?
+    if (s[0] == " " and s[:4] != "    " and "|" in s) or (s[0] == ":" and type(int(s[1:8])) == int):
+        matches.append("change")
+    # Message?
+    elif s[:4] == "    ":
+        matches.append("message")
+    # Hash?
+    elif s[:6] == "commit" and len(s) == 48:
+        matches.append("hash")
+    # Author?
+    elif s[:7] == "Author:":
+        matches.append("author")
+    # Date?
+    elif s[:5] == "Date:":
+        matches.append("date")
+    # Summary?
+    elif s[0] == " " and s[:4] != "    " and (("insertion" in s and "(+)" in s) or ("deletion" in s and "(-)" in s)):
+        matches.append("summary")
+    # Merge?
+    elif s[:6] == "Merge:":
+        matches.append("merge")
+    # If only one match was found, produce that string. Otherwise, produce "other" and raise a Warning.
+    if len(matches) == 1:
+        return matches[0]
+    elif len(matches) > 1:
+        warnings.warn("Unexpected parsing behaviour. <{}> matched multiple input patterns ({}) during parsing,"
+                      " so was identified as 'other'.".format(s,matches))
+        return "multiple"
+    else:
+        warnings.warn("Unexpected parsing behaviour. <{}> did not match any input patterns during parsing,"
+                      " so was identified as 'other'.".format(s))
+        return "none"
