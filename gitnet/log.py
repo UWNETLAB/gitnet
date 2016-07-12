@@ -389,7 +389,7 @@ class Log(object):
                 del new_log.collection[record]
         return new_log
 
-    def tsv(self, ignore=[], fname=None, empty_cols=False):
+    def tsv(self, fname, ignore=[], empty_cols=False):
         """
         Converts the `Log` to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
         does not change the content strings by removing commas).
