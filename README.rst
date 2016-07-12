@@ -142,7 +142,7 @@ If you wish to request or contribute support for a new data source, please conta
 ------------------
 
 - Pre-alpha, leaving stage two of development and entering stage three.
-- Gitnet is currently in version 0.0.8. After entering Alpha, regular updates on feature changes and bug fixes will be published with each version release.
+- Gitnet is currently in unofficial version 0.0.8. After entering Alpha and publishing an official release, regular updates on feature changes and bug fixes will be published with each version release.
 - Entering the first round of user testing, as of yet all tests done have been either unit testing or internal.
 
 
@@ -151,7 +151,13 @@ If you wish to request or contribute support for a new data source, please conta
 
 As a project in development, Gitnet will have a list of potential issues, updates, and features.
 Any external requests and issue reports can be made on our GitHub project page.
+We appreciate any comments from developers and researchers who stumble upon our work.
 
 - Solve problems related to the pygraphviz dependency on Windows. Some users may encounter difficulty running `graph.quickplot()` as a result.
+  - May not be possible given the general inaccessibility of the graphviz software interface.
 - Increase efficiency of internal log parsing. Some large projects can take up to several minutes to process.
+  - Currently in progress, some significant improvements have been made, although ahead of any official release.
 - Include remote log extraction. One of the biggest caveats of gitnet is that you have to spend a significant amount of time downloading large projects.
+- Include additional export options for users of additional visualization packages, and who want to export dynamic network data.
+- Include additional custom classes for more VCS types and mailing lists.
+- Better quickplot visualizations, with default colours and optional labels.

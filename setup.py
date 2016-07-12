@@ -33,7 +33,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-    keywords='research open-source github social-networks collaboration',
+    keywords='research open-source github social-networks collaboration linux',
     packages=find_packages(exclude=['tests']),
     install_requires=['bash', 'networkx', 'matplotlib'],
     test_suite='gitnet.tests',
