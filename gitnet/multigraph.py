@@ -15,6 +15,7 @@
 # *********************************************************************************************
 
 import networkx as nx
+import os
 import warnings
 from gitnet.exceptions import MergeError
 from gitnet.helpers import list_to_scd
@@ -251,58 +252,58 @@ class MultiGraphPlus(nx.MultiGraph):
         print("Plotting...")
         if layout in ["dot", "neato", "fdp", "circo"]:
             nx.draw(copy_net,
-                    pos=graphviz_layout(copy_net, prog=layout),
-                    node_size=size,
-                    font_size=5,
-                    node_color=colour_list,
-                    linewidths=.5,
-                    edge_color="DarkGray",
-                    width=.1)
+                pos=graphviz_layout(copy_net, prog=layout),
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         if layout == "spring":
             nx.draw(copy_net,
-                    pos=nx.spring_layout(copy_net, k=k, iterations=iterations),
-                    node_size=size,
-                    font_size=5,
-                    node_color=colour_list,
-                    linewidths=.5,
-                    edge_color="DarkGray",
-                    width=.1)
+                pos=nx.spring_layout(copy_net, k=k, iterations=iterations),
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         elif layout == "circular":
             nx.draw_circular(copy_net,
-                             node_size=size,
-                             font_size=5,
-                             node_color=colour_list,
-                             linewidths=.5,
-                             edge_color="DarkGray",
-                             width=.1)
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         elif layout == "shell":
             nx.draw_shell(copy_net,
-                          node_size=size,
-                          font_size=5,
-                          node_color=colour_list,
-                          linewidths=.5,
-                          edge_color="DarkGray",
-                          width=.1)
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         elif layout == "spectral":
             nx.draw_spectral(copy_net,
-                             node_size=size,
-                             font_size=5,
-                             node_color=colour_list,
-                             linewidths=.5,
-                             edge_color="DarkGray",
-                             width=.1)
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         elif layout == "random":
             nx.draw_random(copy_net,
-                           node_size=size,
-                           font_size=5,
-                           node_color=colour_list,
-                           linewidths=.5,
-                           edge_color="DarkGray",
-                           width=.1)
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
         # Save figure if applicable
         if fname is not None:
             plt.savefig(fname, bbox_inches="tight")
-            print("Wrote file: {}".format(fname))
+            print("Wrote file: {} to {}".format(fname, os.getcwd()))
 
     def describe(self, extra=False):
         """
