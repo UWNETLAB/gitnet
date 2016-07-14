@@ -795,6 +795,17 @@ class Log(object):
         edges = self.generate_edges(mode1, mode2, helper=edge_helper, edge_attributes=edge_attributes)
         for edge in edges:
             graph.add_edges_from([(edge[0], edge[1], edge[2])])
+        for n in graph.nodes():
+            if graph.node[n]['type'] == 'author':
+                graph.node[n]['colour'] = 'slateblue'
+            elif ".py" in graph.node[n]['id']:
+                graph.node[n]['colour'] = 'palegreen'
+            elif ".cc" in graph.node[n]['id']:
+                graph.node[n]['colour'] = 'darkmagenta'
+            elif ".sh" in graph.node[n]['id']:
+                graph.node[n]["colour"] = "khaki"
+            elif ".html" in graph.node[n]["id"]:
+                graph.node[n]["colour"] = "crimson"
         return graph
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
