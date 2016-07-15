@@ -799,13 +799,15 @@ class Log(object):
             if graph.node[n]['type'] == 'author':
                 graph.node[n]['colour'] = 'oldlace'
             elif ".py" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'lightcoral'
+                graph.node[n]['colour'] = 'springgreen'
             elif ".cc" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'lightsage'
+                graph.node[n]['colour'] = 'seagreen'
             elif ".sh" in graph.node[n]['id']:
                 graph.node[n]["colour"] = "slateblue"
             elif ".html" in graph.node[n]["id"]:
-                graph.node[n]["colour"] = "orchid"
+                graph.node[n]["colour"] = "plum"
+            else:
+                graph.node[n]['colour'] = 'lightgrey'
         return graph
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):

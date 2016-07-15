@@ -21,12 +21,15 @@
    gn_log = gn_log.ignore("\.py$",ignoreif = "no match")
 
    gn_net = gn_log.network("author/file")
-   gn_net = gn_net.node_attributes("colour", helper = gn.author_file_node_colours)
-   gn_net.quickplot(layout = "spring", fname = "quick.png", size = 40)
+   gn_net.quickplot("plot.pdf", layout = "spring")
 
-This snippet imports ``gitnet``, creates a ``CommitLog`` from our local repository, uses a regular expression to ignore files with names that do not end with ``.py``, creates a ``MultiGraphPlus`` object using presets for a bipartite author/file network, adds default file colourings to the graph's node attributes, and saves a basic visualization of the network. (By default, author nodes are coloured blue and python files are coloured red.) The result looks like this:
+This snippet imports ``gitnet``, creates a ``CommitLog`` from our local repository, uses a regular expression to ignore files with names that do not end with ``.py``, creates a ``MultiGraphPlus`` object using presets for a bipartite author/file network, and saves a basic visualization of the network. (By default, author nodes are coloured white and python files are coloured light red.) The result looks like this:
 
-.. image:: resources/gitnet_network.png
+.. image:: resources/gitnet_plot_py.png
+
+Additionally, you can export data retrieved by gitnet in either ``grapml`` or plaintext edgelist format. This data can then be used in the statistical programming language R, to create visualizations like this one:
+
+.. image:: resources/gitnet_plot_r.png
 
 *Retrieving Data*
 ---------------------------
