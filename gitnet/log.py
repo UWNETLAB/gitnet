@@ -723,7 +723,7 @@ class Log(object):
             node_tuple_list.append((n,nodes[n]))
         return node_tuple_list
 
-    def generate_network(self, mode1, mode2, edge_helper=net_edges_simple, edge_attributes=[], mode1_atom_attrs=[],
+    def generate_network(self, mode1, mode2, colours=None, edge_helper=net_edges_simple, edge_attributes=[], mode1_atom_attrs=[],
                          mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
         """
         An abstract network generator. For networks that contain authors, any authors that made
@@ -796,19 +796,29 @@ class Log(object):
         edges = self.generate_edges(mode1, mode2, helper=edge_helper, edge_attributes=edge_attributes)
         for edge in edges:
             graph.add_edges_from([(edge[0], edge[1], edge[2])])
-        for n in graph.nodes():
-            if graph.node[n]['type'] == 'author':
-                graph.node[n]['colour'] = 'oldlace'
-            elif ".py" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'springgreen'
-            elif ".cc" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'seagreen'
-            elif ".sh" in graph.node[n]['id']:
-                graph.node[n]["colour"] = "slateblue"
-            elif ".html" in graph.node[n]["id"]:
-                graph.node[n]["colour"] = "plum"
-            else:
-                graph.node[n]['colour'] = 'lightgrey'
+        if colours != None:
+            if colours == 'simple':
+                for n in graph.nodes():
+                    if graph.node[n]['type'] == mode1:
+                        graph.node[n]['colour'] = 'oldlace'
+                    if graph.node[n]['type'] == mode2:
+                        graph.node[n]['colour'] = 'lightcoral'
+            elif colours == 'complex':
+                for n in graph.nodes():
+                    if graph.node[n]['type'] == 'author':
+                        graph.node[n]['colour'] = 'oldlace'
+                    elif ".py" in graph.node[n]['id']:
+                        graph.node[n]['colour'] = 'springgreen'
+                    elif ".cc" in graph.node[n]['id']:
+                        graph.node[n]['colour'] = 'seagreen'
+                    elif ".md" in graph.node[n]['id']:
+                        graph.node[n]['colour'] = 'orange'
+                    elif ".sh" in graph.node[n]['id']:
+                        graph.node[n]["colour"] = "slateblue"
+                    elif ".html" in graph.node[n]["id"]:
+                        graph.node[n]["colour"] = "plum"
+                    else:
+                        graph.node[n]['colour'] = 'lightgrey'
         return graph
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
