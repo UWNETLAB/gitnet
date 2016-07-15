@@ -797,15 +797,15 @@ class Log(object):
             graph.add_edges_from([(edge[0], edge[1], edge[2])])
         for n in graph.nodes():
             if graph.node[n]['type'] == 'author':
-                graph.node[n]['colour'] = 'slateblue'
+                graph.node[n]['colour'] = 'oldlace'
             elif ".py" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'palegreen'
+                graph.node[n]['colour'] = 'lightcoral'
             elif ".cc" in graph.node[n]['id']:
-                graph.node[n]['colour'] = 'darkmagenta'
+                graph.node[n]['colour'] = 'lightsage'
             elif ".sh" in graph.node[n]['id']:
-                graph.node[n]["colour"] = "khaki"
+                graph.node[n]["colour"] = "slateblue"
             elif ".html" in graph.node[n]["id"]:
-                graph.node[n]["colour"] = "crimson"
+                graph.node[n]["colour"] = "orchid"
         return graph
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
