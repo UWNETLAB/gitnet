@@ -487,6 +487,7 @@ class Log(object):
         if fname is not None:
             f.close()
             out = "Data written to {}".format(fname)
+        print(out)
         return out
 
     def df(self):

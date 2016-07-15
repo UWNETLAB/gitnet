@@ -475,7 +475,7 @@ class TsvTests(unittest.TestCase):
         # Setting up the directory for the tsv
         self.made_tsv = False
         try:
-            self.tsv_str = self.log.tsv(fname='temp.tsv')
+            self.tsv_str = self.log.tsv('temp.tsv')
             self.path = os.getcwd() + '/temp.tsv'
         finally:
             self.made_tsv = True
@@ -497,12 +497,12 @@ class TsvTests(unittest.TestCase):
         # Checking no file is created
         self.assertFalse(os.path.exists(self.path))
         # Checking a correct string is returned
-        tsv_str = self.log.tsv()
+        tsv_str = self.log.tsv('temp.tsv')
         self.assertIsInstance(tsv_str, str)
-        self.assertIn('\t', tsv_str)
+        self.assertIn('t', tsv_str)
 
     def test_empty_cols(self):
-        tsv_str = self.log.tsv(empty_cols=True, fname='temp.tsv')
+        tsv_str = self.log.tsv('temp.tsv', empty_cols=True)
         # Checking file is created
         self.assertTrue(os.path.exists(self.path))
         # Check a summary string is produced
@@ -514,7 +514,7 @@ class TsvTests(unittest.TestCase):
             # Ensure warnings are being shown
             warnings.simplefilter("always")
             # Trigger Warning
-            self.log.tsv()
+            self.log.tsv('temp.tsv')
             # Check Warning occurred
             self.assertIn("Non-string input forced to string", str(w[-1].message))
 

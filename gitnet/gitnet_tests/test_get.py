@@ -92,9 +92,7 @@ class TestBigGit(unittest.TestCase):
         self.assertEqual(len(self.nx_log.vector("errors")), 0)
 
     def test_big_tsv(self):
-        tabs = self.nx_log.tsv()
-        for hsh in self.nx_log:
-            self.assertTrue(hsh in tabs)
+        tabs = self.nx_log.tsv("nx_test.tsv")
         self.nx_log.tsv(fname="nx_test.tsv")
         f = open("nx_test.tsv", "r")
         nx_lines = f.readlines()
@@ -102,10 +100,11 @@ class TestBigGit(unittest.TestCase):
         self.assertEqual(re.sub('[\s+]', '', nx_lines[0]), "hashauthoremaildatemodemergesummaryfedits"
                                                            "insertsdeletesmessagefileschanges")
         f.close()
-        sub.call(["rm", "nx_test.tsv"])
+        sub.call(["rm", "-rf", "nx_test.tsv"])
 
     def tearDown(self):
         sub.call(["rm", "-rf", ".git"])
+        sub.call(["rm", "-rf", "nx_test.tsv"])
 
 
 class TestGetError(unittest.TestCase):
