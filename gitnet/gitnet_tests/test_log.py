@@ -1261,7 +1261,7 @@ class WriteEdgesTests(unittest.TestCase):
 
         # Delete our temporary written edges file
         if self.made_edges:
-            sub.call(['rm', 'temp_edges.txt'])
+            sub.call(['rm', '-rf', 'temp_edges.txt'])
 
 
 class WriteNodesTests(unittest.TestCase):
