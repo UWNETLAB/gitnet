@@ -804,21 +804,21 @@ class Log(object):
                     if graph.node[n]['type'] == mode2:
                         graph.node[n]['colour'] = 'lightcoral'
             elif colours == 'complex':
-                for n in graph.nodes():
-                    if graph.node[n]['type'] == 'author':
-                        graph.node[n]['colour'] = 'oldlace'
-                    elif ".py" in graph.node[n]['id']:
-                        graph.node[n]['colour'] = 'springgreen'
-                    elif ".cc" in graph.node[n]['id']:
-                        graph.node[n]['colour'] = 'seagreen'
-                    elif ".md" in graph.node[n]['id']:
-                        graph.node[n]['colour'] = 'orange'
-                    elif ".sh" in graph.node[n]['id']:
-                        graph.node[n]["colour"] = "slateblue"
-                    elif ".html" in graph.node[n]["id"]:
-                        graph.node[n]["colour"] = "plum"
-                    else:
-                        graph.node[n]['colour'] = 'lightgrey'
+                    for n in graph.nodes():
+                        if graph.node[n]['type'] == 'author':
+                            graph.node[n]['colour'] = 'oldlace'
+                        elif ".py" in graph.node[n]['id']:
+                            graph.node[n]['colour'] = 'springgreen'
+                        elif ".cc" in graph.node[n]['id']:
+                            graph.node[n]['colour'] = 'seagreen'
+                        elif ".md" in graph.node[n]['id']:
+                            graph.node[n]['colour'] = 'orange'
+                        elif ".sh" in graph.node[n]['id']:
+                            graph.node[n]["colour"] = "slateblue"
+                        elif ".html" in graph.node[n]["id"]:
+                            graph.node[n]["colour"] = "plum"
+                        else:
+                            graph.node[n]['colour'] = 'lightgrey'
         return graph
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):

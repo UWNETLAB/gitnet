@@ -209,6 +209,28 @@ class TestNetworkGeneratorSmall(unittest.TestCase):
             self.assertEqual(n[1],net2.node[n[0]])
         self.assertEqual(len(net),len(net2))
 
+    def test_no_colours(self):
+        net = self.my_log.generate_network('author', 'files', colours=None)
+        nodes = str(net.nodes(data=True))
+        print(nodes)
+        self.assertIn('Bob' and 'Alice', nodes)
+        # self.assertIn(not 'colour', nodes)
+        # self.assertIn(not 'lightcoral', nodes)
+        # self.assertIn(not 'oldlace', nodes)
+
+    def test_simple_colours(self):
+        net = self.my_log.generate_network('author', 'files', colours='simple')
+        nodes = str(net.nodes(data=True))
+        #print(nodes)
+        self.assertIn("'id': 'readme.md'" and "'type': 'files'" and "'colour': 'lightcoral'", nodes)
+        self.assertIn("'id': 'Alice'" and "'type': 'author'" and "'colour': 'oldlace'", nodes)
+
+    def test_complex_colours(self):
+        net = self.my_log.generate_network('author', 'files', colours='complex')
+        nodes = str(net.nodes(data=True))
+        self.assertIn("'id': 'readme.md'" and "'type': 'files'" and "'colour': 'lightgrey'", nodes)
+        self.assertIn("'id': 'Alice'" and "'type': 'author'" and "'colour': 'oldlace'", nodes)
+
     def tearDown(self):
         sub.call(["rm","-rf",".git"])
 
