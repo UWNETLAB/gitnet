@@ -16,6 +16,7 @@
 
 import pandas as pd
 import datetime as dt
+import os
 import warnings
 import copy
 import subprocess as sub
@@ -819,7 +820,9 @@ class Log(object):
                             graph.node[n]["colour"] = "plum"
                         else:
                             graph.node[n]['colour'] = 'lightgrey'
+        print('Created a MultiGraphPlus network object with {} nodes and {} edges.'.format(graph.number_of_nodes(), graph.number_of_edges()))
         return graph
+
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
         """
@@ -893,7 +896,7 @@ class Log(object):
             f.write("\n")
         # Close file and print summary.
         f.close()
-        print("Wrote edgelist with attributes to {}.".format(fname))
+        print("Wrote edgelist with attributes to {} in {}.".format(fname, os.getcwd()))
 
     def write_nodes(self, fname, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
         """
@@ -970,4 +973,4 @@ class Log(object):
                 else:
                     f.write("\n")
         f.close()
-        print("Wrote node attributes to {}.".format(fname))
+        print("Wrote node attributes to {} in {}.".format(fname, os.getcwd()))
