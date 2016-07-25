@@ -740,6 +740,14 @@ class Log(object):
 
         >> The tag string for the second mode type.
 
+        > *colours* : `string`
+
+        >> The string that specifies the colour preset desired by the user.
+        >> *Simple* : Returns a graph in which each mode is a different colour (red and white). Attention to the order of modes is required, as there is no table.
+        >> *Complex* : Returns a graph in which each mode is a different colour, and if `files` is one of the modes, popular file types will be a different colour.
+        >> Otherwise, simply do not include the colour argument. The defualt colour is light grey for all nodes.
+        >> Enabling colours will also add the colours column to the node data, which will allow importing into other software. See the walkthrough and R tutorial for the example.
+
         > *edge_helper* : `None`
 
         >> The helper function used to compute an edge.
