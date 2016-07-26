@@ -217,11 +217,11 @@ class TestNetworkGeneratorSmall(unittest.TestCase):
         # self.assertIn(not 'colour', nodes)
         # self.assertIn(not 'lightcoral', nodes)
         # self.assertIn(not 'oldlace', nodes)
+        # Need a way to assert that certain strings are NOT in the record.
 
     def test_simple_colours(self):
         net = self.my_log.generate_network('author', 'files', colours='simple')
         nodes = str(net.nodes(data=True))
-        #print(nodes)
         self.assertIn("'id': 'readme.md'" and "'type': 'files'" and "'colour': 'lightcoral'", nodes)
         self.assertIn("'id': 'Alice'" and "'type': 'author'" and "'colour': 'oldlace'", nodes)
 
@@ -235,4 +235,4 @@ class TestNetworkGeneratorSmall(unittest.TestCase):
         sub.call(["rm","-rf",".git"])
 
 if __name__ == '__main__':
-    unittest.main(buffer=False)
+    unittest.main(buffer=True)

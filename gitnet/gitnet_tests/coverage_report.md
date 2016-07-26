@@ -8,13 +8,13 @@ test_commit_log.py                                    259      0   100%
 test_get.py                                            91      1    99%   48
 test_helpers.py                                       201      0   100%   
 test_log.py                                           678      0   100%   
-test_netgen.py                                        111      0   100%   
-test_network.py                                       524      0   100%   
+test_netgen.py                                        126      0   100%   
+test_network.py                                       524      1    99%   659
 C:\Users\User\Desktop\gitnet\gitnet\helpers.py        132      2    98%   55, 385
-C:\Users\User\Desktop\gitnet\gitnet\log.py            381     30    92%   199, 247-249, 251, 444, 484, 691, 708, 800-821
-C:\Users\User\Desktop\gitnet\gitnet\multigraph.py     201      2    99%   151, 254
+C:\Users\User\Desktop\gitnet\gitnet\log.py            383     13    97%   200, 248-250, 252, 445, 485, 692, 709, 820, 822, 826, 828
+C:\Users\User\Desktop\gitnet\gitnet\multigraph.py     201      4    98%   148-151, 254
 ---------------------------------------------------------------------------------
-TOTAL                                                2814     52    98%   
+TOTAL                                                2831     38    99%   
 
 ## 9 lines will not be run with our tests:
     - log.py            line 188,189,190,192
