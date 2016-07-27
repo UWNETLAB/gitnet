@@ -75,8 +75,8 @@ class MultiGraphPlus(nx.MultiGraph):
                           " been converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
                           " convert them to atomic attributes prior to calling .write_graphml"
                           .format(warning_set))
-
         nx.write_graphml(graph, fname)
+        print("Success. Wrote GraphML file {} to {}".format(fname, os.getcwd()))
 
     def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
                    weight_string='weight'):
@@ -173,6 +173,7 @@ class MultiGraphPlus(nx.MultiGraph):
                     f.write(" {}\n".format(weight))
                 else:
                     f.write("\n")
+        print("Success. Wrote Tnet file {} to {}".format(fname, os.getcwd()))
 
     def node_attributes(self, name, helper):
         """
