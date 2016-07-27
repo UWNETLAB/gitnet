@@ -216,7 +216,7 @@ class CommitLog(Log):
             ignore_note = "matches"
         elif ignoreif == "no match":
             ignore_note = "doesn't match"
-        summary = "Ignore files that {} the regular expression: {}".format(ignore_note,pattern)
+        summary = "Ignore files that {} the regular expression: {}".format(ignore_note, pattern)
         self_copy.filters.append(summary)
         return self_copy
 

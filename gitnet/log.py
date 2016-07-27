@@ -487,7 +487,7 @@ class Log(object):
             warnings.warn("Non-string input forced to string {} time(s).".format(num_forced))
         if fname is not None:
             f.close()
-            out = "Data written to {}".format(fname)
+            out = "Data written to {} in {}".format(fname, os.getcwd())
         print(out)
         return out
 
@@ -564,9 +564,9 @@ class Log(object):
                 elif cur_val != selfcopy.collection[record][tag] and replaced_vals == 0:
                     status = 1
         if status == 0:
-            warnings.warn("The tag requested does not appear in this collection.")
+            warnings.warn("Failed. The tag requested does not appear in this collection.")
         elif status == 1:
-            warnings.warn("The value requested does not appear in any records in this collection.")
+            warnings.warn("Failed. The value requested does not appear in any records in this collection.")
         elif status == 2:
             print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
         return selfcopy
