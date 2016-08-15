@@ -59,6 +59,6 @@ class MergeError(gitnetException):
 
 class GraphStatsError(gitnetException):
     """
-    Exception given when the statistics are not generated as expected.
+    Exception given when the network graph statistics are not generated as expected.
     """
     pass

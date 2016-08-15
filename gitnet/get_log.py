@@ -15,57 +15,41 @@
 # *********************************************************************************************
 
 import bash as sh
+import subprocess as sub
 import os
 import warnings
 from gitnet.exceptions import RepositoryError, ParseError, InputError
 from gitnet.commit_log import CommitLog
-import subprocess as sub
 
-
-def retrieve_commits(path, mode="stat"):
+def get_log(path, mode="stat", commit_source="local git"):
     """
-    Takes a file path string and a mode string and produces the  git log for the
-    specified directory. The default mode, "stat" retrieves the logs by running "git log --stat".
-    Modes include: "basic" (git log), "raw" ("git log --raw"), and "stat" ("git log --stat").
+    A function for gathering data from a local Git repository.
 
     **Parameters** :
 
     > *path* : `string`
 
-    >> A string identifying the path to the target git repository.
+    >> A string containing the path of the Git repository.
 
     > *mode* : `string`
 
-    >> A string identifying the git log mode to be retrieved. Default mode is "stat".
+    >> The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
 
-    **Return** :
+    > *commit_source* : `string`
 
-    > Returns a large string containing the raw output from the repository's git log.
+    >> The source of the Git repository, local is currently the only option.
+
+    **Returns** : `Commitlog`
 
     """
-    print("Attempting local git log retrieval...")
-    # Log command modes, referenced by "mode" input.
-    log_commands = {"basic": "git log", "raw": "git log --raw", "stat":"git log --stat"}
-    if mode not in log_commands.keys():
-        raise InputError("{} is not a valid retrieval mode.".format(mode))
-    # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
-    work_dir = os.getcwd()
-    os.chdir(path)
-    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8")
-    os.chdir(work_dir)
-    # If the retrieval was unsuccessful, raise an error.
-    if len(raw_logs) == 0:
-        print("Raising error.")
-        if "true" in str(sh.bash("git rev-parse --is-inside-work-tree").stdout):
-            raise RepositoryError("{} is not a Git repository.".format(path))
-        else:
-            raise RepositoryError("{} has no commits.".format(path))
-    # If the retrieval was successful, print a summary."
-    print("Got {} characters from: {}".format(len(raw_logs), path))
-    # Record the retrieval mode.
-    raw_logs = "Mode =\n{}\n".format(mode) + raw_logs
-    return raw_logs
-
+    if commit_source == "local git":
+        detect_key = "hash"
+    else:
+        detect_key = "unknown"
+    return CommitLog(dofd=parse_commits(retrieve_commits(path, mode)),
+                     source=commit_source,
+                     path=path,
+                     key_type=detect_key)
 
 def identify(s):
     """
@@ -116,7 +100,6 @@ def identify(s):
         warnings.warn("Unexpected parsing behaviour. <{}> did not match any input patterns during parsing,"
                       " so was identified as 'other'.".format(s))
         return "none"
-
 
 def parse_commits(commit_str):
     """
@@ -214,33 +197,46 @@ def parse_commits(commit_str):
             warnings.warn("Parser was unable to identify {}. Identity string <{}> not recognized".format(line,id))
     return collection
 
-
-def get_log(path, mode="stat", commit_source="local git"):
+def retrieve_commits(path, mode="stat"):
     """
-    A function for gathering data from a local Git repository.
+    Takes a file path string and a mode string and produces the  git log for the
+    specified directory. The default mode, "stat" retrieves the logs by running "git log --stat".
+    Modes include: "basic" (git log), "raw" ("git log --raw"), and "stat" ("git log --stat").
 
     **Parameters** :
 
     > *path* : `string`
 
-    >> A string containing the path of the Git repository.
+    >> A string identifying the path to the target git repository.
 
     > *mode* : `string`
 
-    >> The retrieval mode. Modes currently implemented: "basic", "raw", "stat".
+    >> A string identifying the git log mode to be retrieved. Default mode is "stat".
 
-    > *commit_source* : `string`
+    **Return** :
 
-    >> The source of the Git repository, local is currently the only option.
-
-    **Returns** : `Commitlog`
+    > Returns a large string containing the raw output from the repository's git log.
 
     """
-    if commit_source == "local git":
-        detect_key = "hash"
-    else:
-        detect_key = "unknown"
-    return CommitLog(dofd=parse_commits(retrieve_commits(path, mode)),
-                     source=commit_source,
-                     path=path,
-                     key_type=detect_key)
+    print("Attempting local git log retrieval...")
+    # Log command modes, referenced by "mode" input.
+    log_commands = {"basic": "git log", "raw": "git log --raw", "stat":"git log --stat"}
+    if mode not in log_commands.keys():
+        raise InputError("{} is not a valid retrieval mode.".format(mode))
+    # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
+    work_dir = os.getcwd()
+    os.chdir(path)
+    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8")
+    os.chdir(work_dir)
+    # If the retrieval was unsuccessful, raise an error.
+    if len(raw_logs) == 0:
+        print("Raising error.")
+        if "true" in str(sh.bash("git rev-parse --is-inside-work-tree").stdout):
+            raise RepositoryError("{} is not a Git repository.".format(path))
+        else:
+            raise RepositoryError("{} has no commits.".format(path))
+    # If the retrieval was successful, print a summary."
+    print("Got {} characters from: {}".format(len(raw_logs), path))
+    # Record the retrieval mode.
+    raw_logs = "Mode =\n{}\n".format(mode) + raw_logs
+    return raw_logs

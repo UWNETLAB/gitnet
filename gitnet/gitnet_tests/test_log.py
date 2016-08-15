@@ -487,7 +487,7 @@ class TsvTests(unittest.TestCase):
         # Check that a file exists where expected
         self.assertTrue(os.path.exists(self.path))
         # Check a summary string is produced
-        self.assertEqual("Data written to temp.tsv", self.tsv_str)
+        self.assertIn("Data written to temp.tsv", self.tsv_str)
 
     def test_basic_nofn(self):
         """Is no file produced but a string given? """
@@ -506,7 +506,7 @@ class TsvTests(unittest.TestCase):
         # Checking file is created
         self.assertTrue(os.path.exists(self.path))
         # Check a summary string is produced
-        self.assertEqual("Data written to temp.tsv", tsv_str)
+        self.assertIn("Data written to temp.tsv", tsv_str)
 
     def test_warnings(self):
         # Warning occurs non string values are forced to strings

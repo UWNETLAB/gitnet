@@ -15,13 +15,13 @@
 # *********************************************************************************************
 
 import networkx as nx
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import warnings
+import copy
 from gitnet.exceptions import MergeError
 from gitnet.helpers import list_to_scd
-import matplotlib.pyplot as plt
-import copy
-import numpy as np
 from gitnet.helpers import datetime_git
 from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.algorithms import bipartite
@@ -33,278 +33,64 @@ class MultiGraphPlus(nx.MultiGraph):
 
     mode2 = ""
 
-    def write_graphml(self, fname):
+    def collapse_edges(self, sum_weights=False):
         """
-        Converts a `MultiGraphPlus` object to a graphml file.
+        Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
+        assigned depends on the `sum_weights` parameter.
 
         **Parameters** :
 
-        > *fname* :
+        > *sum_weights* : `bool`
 
-        >> A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.
-
-        **Return** : `None`
-
-        > This method will have the side effect of creating a file, specified by fpath.
-        > This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
-        > a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
-        > attributes are preceded by 'n:' while edge attributes are preceded by 'e:').
-
-        """
-
-        graph = copy.deepcopy(self)
-
-        warning = False
-        warning_set = set([])
-        for n in graph.nodes():
-            for attr in graph.node[n].keys():
-                if isinstance(graph.node[n][attr], list):
-                    warning = True
-                    warning_set = {'n:' + attr} | warning_set
-                    graph.node[n][attr] = list_to_scd(graph.node[n][attr])
-
-        for n1, n2, data in graph.edges(data=True):
-            for k in data:
-                if isinstance(data[k], list):
-                    warning = True
-                    warning_set = {'e:'+k} | warning_set
-                    data[k] = list_to_scd(data[k])
-
-        if warning:
-            warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
-                          " been converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
-                          " convert them to atomic attributes prior to calling .write_graphml"
-                          .format(warning_set))
-        nx.write_graphml(graph, fname)
-        print("Success. Wrote GraphML file {} to {}".format(fname, os.getcwd()))
-
-    def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
-                   weight_string='weight'):
-        """
-        A function to write an edgelist formatted for the tnet library for network analysis in R.
-
-        **Parameters** :
-
-        > *fname* : `string`
-
-        >> A string indicating the path or file name to write to.
-
-        > *mode_string* : `string`
-
-        >> The name string of the mode node attribute.
-
-        > *weighted* : `bool`
-
-        >> Do the edges have weights? True or false.
-
-        > *time_string* : `string`
-
-        >> the name string of the date/time node attribute.
-
-        > *node_index_string* : `int`
-
-        >> Creates a new integer id attribute.
-
-        > *weight_string* : `string`
-
-        >> The name of the weight node attribute.
-
-        **Return** : `None`
-
-        *Source* :
-
-        > Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
-
-        """
-        modes = []
-        mode1set = set()
-        for node_index, node in enumerate(self.nodes_iter(data=True), start=1):
-            try:
-                nmode = node[1][mode_string]
-            except KeyError:
-                # too many modes so will fail
-                modes = [1, 2, 3]
-                nmode = 4
-            if nmode not in modes:
-                if len(modes) < 2:
-                    modes.append(nmode)
-                else:
-                    raise ValueError(
-                        "Too many modes of '{}' found in the network or one of the nodes was missing its mode. "
-                        "There must be exactly 2 modes.".format(mode_string))
-            if nmode == modes[0]:
-                mode1set.add(node[0])
-            node[1][node_index_string] = node_index
-        if len(modes) != 2:
-            raise ValueError(
-                "Too few modes of '{}' found in the network. There must be exactly 2 modes.".format(mode_string))
-        with open(fname, 'w', encoding='utf-8') as f:
-            for n1, n2, eDict in self.edges_iter(data=True):
-                if n1 in mode1set:
-                    if n2 in mode1set:
-                        raise ValueError(
-                            "The nodes '{}' and '{}' have an edge and the same type. "
-                            "The network must be purely 2-mode.".format(n1, n2))
-                elif n2 in mode1set:
-                    n1, n2 = n2, n1
-                else:
-                    raise ValueError(
-                        "The nodes '{}' and '{}' have an edge and the same type. "
-                        "The network must be purely 2-mode.".format(n1, n2))
-
-                if time_string is not None and time_string in eDict:
-                    edt = eDict[time_string]
-                    if type(edt) is str:
-                        edt = datetime_git(eDict[time_string])
-                    e_time_string = edt.strftime("\"%y-%m-%d %H:%M:%S\"")
-                else:
-                    e_time_string = ''
-
-                # Write to file
-                node1 = self.node[n1][node_index_string]
-                node2 = self.node[n2][node_index_string]
-                if time_string is not None:
-                    f.write("{} {} {}".format(e_time_string, node1, node2))
-                else:
-                    f.write("{} {}".format(node1, node2))
-
-                if weighted:
-                    weight = eDict[weight_string]
-                    f.write(" {}\n".format(weight))
-                else:
-                    f.write("\n")
-        print("Success. Wrote Tnet file {} to {}".format(fname, os.getcwd()))
-
-    def node_attributes(self, name, helper):
-        """
-        Creates a new node attribute.
-
-        **Parameters** :
-
-        > *name* : `string`
-
-        >> The name of the new attribute.
-
-        > *helper* : `None`
-
-        >> A helper function, which takes an attribute dict and produces the new attribute.
+        >> An optional boolean parameter. Determines how weights will be assigned to the final edges.
+        >> If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
+        >> the weights of collapsed edges.
 
         **Return** :
 
-        > A new MultiGraphPlus object, identical to self but with the desired attribute.
+        > A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
+        > stores other edge data in lists.
+
+        **Note** :
+
+        > The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
+        > weight attribute, this method assumes the weight of the edge is 1.
 
         """
-        self_copy = copy.deepcopy(self)
-        for n in self_copy.nodes():
-            self_copy.node[n][name] = helper(self_copy.node[n])
-        return self_copy
-
-    def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
-        """
-        Makes a quick visualization of the network.
-
-        **Parameters** :
-
-        > *fname* : `string`
-
-        >> A string indicating the path or file name to write to.
-
-        > *k* : `None`
-
-        >> Default function used for plotting.
-
-        > *iterations* : `int`
-
-        >> Default number of iterations to run on the plot.
-
-        > *layout* : `string`
-
-        >> The type of layout to draw, the available layouts are: ("spring", "circular", "shell", "spectral", or "random").
-
-        > *size* : `int`
-
-        >> The size of the nodes. Default is 20.
-
-        > *default_colour* : `string`
-
-        >> Only default nodes will be coloured with this colour.
-
-        **Return** : `None`
-
-        """
-
-        if type(k) is str:
-            k = 4/np.sqrt(self.number_of_nodes())
-        # Make a copy
-        copy_net = copy.deepcopy(self)
-        # Remove isolates
-        copy_net.remove_nodes_from(nx.isolates(copy_net))
-        # Add detect colour attribute
-        colour_data = {}
-        for n in copy_net.nodes():
-            if "colour" in copy_net.node[n].keys():
-                colour_data[n] = copy_net.node[n]["colour"]
-            elif "color" in copy_net.node[n].keys():
-                colour_data[n] = copy_net.node[n]["color"]
+        gnew = MultiGraphPlus()
+        for n1, n2, data in self.edges(data=True):
+            if gnew.has_edge(n1, n2):
+                gnew_data = gnew.edge[n1][n2][0]
+                if 'weight' not in data:
+                    gnew_data['weight'] += 1
+                for k in data:
+                    if k in gnew_data:
+                        if k == 'weight':
+                            if sum_weights:
+                                gnew_data[k] += data[k]
+                            else:
+                                gnew_data[k] += 1
+                        elif isinstance(data[k], list):
+                            gnew_data[k] += data[k]
+                        else:
+                            if isinstance(gnew_data[k], list):
+                                gnew_data[k] += [data[k]]
+                            else:
+                                gnew_data[k] = [gnew_data[k], data[k]]
+                    else:
+                        gnew_data[k] = data[k]
             else:
-                colour_data[n] = default_colour
-        colour_list = [colour_data[node] for node in copy_net.nodes()]
-        # Plot the network
-        print("Plotting...")
-        if layout in ["dot", "neato", "fdp", "circo"]:
-            nx.draw(copy_net,
-                pos=graphviz_layout(copy_net, prog=layout),
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        if layout == "spring":
-            nx.draw(copy_net,
-                pos=nx.spring_layout(copy_net, k=k, iterations=iterations),
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        elif layout == "circular":
-            nx.draw_circular(copy_net,
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        elif layout == "shell":
-            nx.draw_shell(copy_net,
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        elif layout == "spectral":
-            nx.draw_spectral(copy_net,
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        elif layout == "random":
-            nx.draw_random(copy_net,
-                node_size=size,
-                font_size=5,
-                node_color=colour_list,
-                linewidths=.5,
-                edge_color="DarkGray",
-                width=.1)
-        # Save figure if applicable
-        if fname is not None:
-            plt.savefig(fname, bbox_inches="tight")
-            print("Wrote file: {} to {}".format(fname, os.getcwd()))
+                edge_attr = {'weight': 1}
+                for k in data:
+                    if k == 'weight':
+                        if sum_weights:
+                            edge_attr[k] = data[k]
+                    elif isinstance(data[k], list):
+                        edge_attr[k] = data[k]
+                    else:
+                        edge_attr[k] = data[k]
+                gnew.add_edge(n1, n2, attr_dict=edge_attr)
+        return gnew
 
     def describe(self, extra=False):
         """
@@ -449,61 +235,275 @@ class MultiGraphPlus(nx.MultiGraph):
 
         return merged_graph
 
-    def collapse_edges(self, sum_weights=False):
+    def node_attributes(self, name, helper):
         """
-        Collapses all edges which share nodes into one edge, with a new weight assigned to it. How this weight is
-        assigned depends on the `sum_weights` parameter.
+        Creates a new node attribute.
 
         **Parameters** :
 
-        > *sum_weights* : `bool`
+        > *name* : `string`
 
-        >> An optional boolean parameter. Determines how weights will be assigned to the final edges.
-        >> If False, the weight will be the number of edges which were collapsed. If True, the weight will be the sum of
-        >> the weights of collapsed edges.
+        >> The name of the new attribute.
+
+        > *helper* : `None`
+
+        >> A helper function, which takes an attribute dict and produces the new attribute.
 
         **Return** :
 
-        > A new MultiGraphPlus object, which has collapsed all duplicate edges, assigned a new weight, and
-        > stores other edge data in lists.
-
-        **Note** :
-
-        > The default weight of an edge is 1. Thus, if sum_weights is set to True, but an edge does not have a
-        > weight attribute, this method assumes the weight of the edge is 1.
+        > A new MultiGraphPlus object, identical to self but with the desired attribute.
 
         """
-        gnew = MultiGraphPlus()
-        for n1, n2, data in self.edges(data=True):
-            if gnew.has_edge(n1, n2):
-                gnew_data = gnew.edge[n1][n2][0]
-                if 'weight' not in data:
-                    gnew_data['weight'] += 1
-                for k in data:
-                    if k in gnew_data:
-                        if k == 'weight':
-                            if sum_weights:
-                                gnew_data[k] += data[k]
-                            else:
-                                gnew_data[k] += 1
-                        elif isinstance(data[k], list):
-                            gnew_data[k] += data[k]
-                        else:
-                            if isinstance(gnew_data[k], list):
-                                gnew_data[k] += [data[k]]
-                            else:
-                                gnew_data[k] = [gnew_data[k], data[k]]
-                    else:
-                        gnew_data[k] = data[k]
+        self_copy = copy.deepcopy(self)
+        for n in self_copy.nodes():
+            self_copy.node[n][name] = helper(self_copy.node[n])
+        return self_copy
+
+    def quickplot(self, fname, k="4/sqrt(n)", iterations=50, layout="neato", size=20, default_colour="lightgrey"):
+        """
+        Makes a quick visualization of the network.
+
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *k* : `None`
+
+        >> Default function used for plotting.
+
+        > *iterations* : `int`
+
+        >> Default number of iterations to run on the plot.
+
+        > *layout* : `string`
+
+        >> The type of layout to draw, the available layouts are: ("spring", "circular", "shell", "spectral", or "random").
+
+        > *size* : `int`
+
+        >> The size of the nodes. Default is 20.
+
+        > *default_colour* : `string`
+
+        >> Only default nodes will be coloured with this colour.
+
+        **Return** : `None`
+
+        """
+
+        if type(k) is str:
+            k = 4/np.sqrt(self.number_of_nodes())
+        # Make a copy
+        copy_net = copy.deepcopy(self)
+        # Remove isolates
+        copy_net.remove_nodes_from(nx.isolates(copy_net))
+        # Add detect colour attribute
+        colour_data = {}
+        for n in copy_net.nodes():
+            if "colour" in copy_net.node[n].keys():
+                colour_data[n] = copy_net.node[n]["colour"]
+            elif "color" in copy_net.node[n].keys():
+                colour_data[n] = copy_net.node[n]["color"]
             else:
-                edge_attr = {'weight': 1}
-                for k in data:
-                    if k == 'weight':
-                        if sum_weights:
-                            edge_attr[k] = data[k]
-                    elif isinstance(data[k], list):
-                        edge_attr[k] = data[k]
-                    else:
-                        edge_attr[k] = data[k]
-                gnew.add_edge(n1, n2, attr_dict=edge_attr)
-        return gnew
+                colour_data[n] = default_colour
+        colour_list = [colour_data[node] for node in copy_net.nodes()]
+        # Plot the network
+        print("Plotting...")
+        if layout in ["dot", "neato", "fdp", "circo"]:
+            nx.draw(copy_net,
+                pos=graphviz_layout(copy_net, prog=layout),
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        if layout == "spring":
+            nx.draw(copy_net,
+                pos=nx.spring_layout(copy_net, k=k, iterations=iterations),
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        elif layout == "circular":
+            nx.draw_circular(copy_net,
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        elif layout == "shell":
+            nx.draw_shell(copy_net,
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        elif layout == "spectral":
+            nx.draw_spectral(copy_net,
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        elif layout == "random":
+            nx.draw_random(copy_net,
+                node_size=size,
+                font_size=5,
+                node_color=colour_list,
+                linewidths=.5,
+                edge_color="DarkGray",
+                width=.1)
+        # Save figure if applicable
+        if fname is not None:
+            plt.savefig(fname, bbox_inches="tight")
+            print("Wrote file: {} to {}".format(fname, os.getcwd()))
+
+    def write_graphml(self, fname):
+        """
+        Converts a `MultiGraphPlus` object to a graphml file.
+
+        **Parameters** :
+
+        > *fname* :
+
+        >> A string indicating the path or file name to write to. File names which end in `.gz` or `.bz2` will be compressed.
+
+        **Return** : `None`
+
+        > This method will have the side effect of creating a file, specified by fpath.
+        > This method cannot use vector attributes within the graphml file. Instead, vector attributes are converted into
+        > a semicolon-delimited string. When this occurs, a warning is raised indicating the vector attributes (node
+        > attributes are preceded by 'n:' while edge attributes are preceded by 'e:').
+
+        """
+
+        graph = copy.deepcopy(self)
+
+        warning = False
+        warning_set = set([])
+        for n in graph.nodes():
+            for attr in graph.node[n].keys():
+                if isinstance(graph.node[n][attr], list):
+                    warning = True
+                    warning_set = {'n:' + attr} | warning_set
+                    graph.node[n][attr] = list_to_scd(graph.node[n][attr])
+
+        for n1, n2, data in graph.edges(data=True):
+            for k in data:
+                if isinstance(data[k], list):
+                    warning = True
+                    warning_set = {'e:'+k} | warning_set
+                    data[k] = list_to_scd(data[k])
+
+        if warning:
+            warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
+                          " been converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
+                          " convert them to atomic attributes prior to calling .write_graphml"
+                          .format(warning_set))
+        nx.write_graphml(graph, fname)
+        print("Success. Wrote GraphML file {} to {}".format(fname, os.getcwd()))
+
+    def write_tnet(self, fname, mode_string="type", weighted=False, time_string="date", node_index_string="tnet_id",
+                   weight_string='weight'):
+        """
+        A function to write an edgelist formatted for the tnet library for network analysis in R.
+
+        **Parameters** :
+
+        > *fname* : `string`
+
+        >> A string indicating the path or file name to write to.
+
+        > *mode_string* : `string`
+
+        >> The name string of the mode node attribute.
+
+        > *weighted* : `bool`
+
+        >> Do the edges have weights? True or false.
+
+        > *time_string* : `string`
+
+        >> the name string of the date/time node attribute.
+
+        > *node_index_string* : `int`
+
+        >> Creates a new integer id attribute.
+
+        > *weight_string* : `string`
+
+        >> The name of the weight node attribute.
+
+        **Return** : `None`
+
+        *Source* :
+
+        > Adapted from code written by Reid McIlroy Young for the Metaknowledge python library.
+
+        """
+        modes = []
+        mode1set = set()
+        for node_index, node in enumerate(self.nodes_iter(data=True), start=1):
+            try:
+                nmode = node[1][mode_string]
+            except KeyError:
+                # too many modes so will fail
+                modes = [1, 2, 3]
+                nmode = 4
+            if nmode not in modes:
+                if len(modes) < 2:
+                    modes.append(nmode)
+                else:
+                    raise ValueError(
+                        "Too many modes of '{}' found in the network or one of the nodes was missing its mode. "
+                        "There must be exactly 2 modes.".format(mode_string))
+            if nmode == modes[0]:
+                mode1set.add(node[0])
+            node[1][node_index_string] = node_index
+        if len(modes) != 2:
+            raise ValueError(
+                "Too few modes of '{}' found in the network. There must be exactly 2 modes.".format(mode_string))
+        with open(fname, 'w', encoding='utf-8') as f:
+            for n1, n2, eDict in self.edges_iter(data=True):
+                if n1 in mode1set:
+                    if n2 in mode1set:
+                        raise ValueError(
+                            "The nodes '{}' and '{}' have an edge and the same type. "
+                            "The network must be purely 2-mode.".format(n1, n2))
+                elif n2 in mode1set:
+                    n1, n2 = n2, n1
+                else:
+                    raise ValueError(
+                        "The nodes '{}' and '{}' have an edge and the same type. "
+                        "The network must be purely 2-mode.".format(n1, n2))
+
+                if time_string is not None and time_string in eDict:
+                    edt = eDict[time_string]
+                    if type(edt) is str:
+                        edt = datetime_git(eDict[time_string])
+                    e_time_string = edt.strftime("\"%y-%m-%d %H:%M:%S\"")
+                else:
+                    e_time_string = ''
+
+                # Write to file
+                node1 = self.node[n1][node_index_string]
+                node2 = self.node[n2][node_index_string]
+                if time_string is not None:
+                    f.write("{} {} {}".format(e_time_string, node1, node2))
+                else:
+                    f.write("{} {}".format(node1, node2))
+
+                if weighted:
+                    weight = eDict[weight_string]
+                    f.write(" {}\n".format(weight))
+                else:
+                    f.write("\n")
+        print("Success. Wrote Tnet file {} to {}".format(fname, os.getcwd()))

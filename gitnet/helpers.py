@@ -18,7 +18,6 @@ import datetime as dt
 import re
 from gitnet.exceptions import InputError
 
-
 # Working with Git Log date strings
 def datetime_git(s):
     """
@@ -55,7 +54,6 @@ def datetime_reference(s):
             raise InputError("Unrecognized date format. match should be a Git formatted date string "
                              "(e.g. 'Mon Apr 18 00:59:02 2016 -0400') or a datetime object.")
     return ref_date
-
 
 # Filtering functions.
 def filter_since(s, match):
@@ -207,8 +205,30 @@ def filter_has(x,match):
     except TypeError:
         return False
 
+def list_to_scd(lst):
+    """
+    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings
+    prior to joining.
 
-# Working with lists.
+    **Parameters**
+
+    >*lst* : `list`
+    >> A list of items which are either strings or objects which can be converted to strings using `str()`
+
+    **Return** `str`
+    > A String which includes each item within `lst`, separated by semicolons.
+    """
+    new_lst = []
+    for i in lst:
+        if not isinstance(i, str):
+            new_lst.append(str(i))
+        else:
+            new_lst.append(i)
+
+    string = ';'.join(new_lst)
+
+    return string
+
 def most_common(lst, n=1):
     """
     Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common
@@ -257,7 +277,6 @@ def most_common(lst, n=1):
 
     return sorted(ret_list, reverse=True)
 
-
 def most_occurrences(lst):
     """
     Produces the number of times the most common value appears.
@@ -284,32 +303,6 @@ def most_occurrences(lst):
         elif occurrences[i] == max:
             m_common.append(i)
     return max
-
-
-def list_to_scd(lst):
-    """
-    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings
-    prior to joining.
-
-    **Parameters**
-
-    >*lst* : `list`
-    >> A list of items which are either strings or objects which can be converted to strings using `str()`
-
-    **Return** `str`
-    > A String which includes each item within `lst`, separated by semicolons.
-    """
-    new_lst = []
-    for i in lst:
-        if not isinstance(i, str):
-            new_lst.append(str(i))
-        else:
-            new_lst.append(i)
-
-    string = ';'.join(new_lst)
-
-    return string
-
 
 # Network Edge Generator Functions
 def net_edges_simple(v1, v2, record, keep):
@@ -385,7 +378,6 @@ def net_edges_changes(v1, v2, record, keep):
             weight = "0"
         properties["weight"] = int(weight)
     return (v1, v2, properties)
-
 
 # Network Attribute Helper Functions
 def node_colours(d):

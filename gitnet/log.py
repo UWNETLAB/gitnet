@@ -88,6 +88,13 @@ class Log(object):
         """
         return self.collection[item]
 
+    def __len__(self):
+        """
+        The number of records in `self.collection`.
+
+        """
+        return len(self.collection)
+
     def __str__(self):
         """
         Basic summary of the `Log`. For a more detailed report (which analyzes record contents) use the `describe` method.
@@ -99,25 +106,6 @@ class Log(object):
         """
         return "Log containing {} records from {} created at {}."\
             .format(len(self.collection), self.source, self.timestamp)
-
-    def __len__(self):
-        """
-        The number of records in `self.collection`.
-
-        """
-        return len(self.collection)
-
-    def get_tags(self):
-        """
-        For the base `Log` class, tags defaults to an empty list. `Log` subclasses have alternate `get_tags` methods, which
-        specify the expected data points in their core data sets, and give a preferred order for displaying the data.
-
-        **Return** : `list`
-
-        > An empty list of tags.
-
-        """
-        return []
 
     def attributes(self):
         """
@@ -148,44 +136,6 @@ class Log(object):
             attr_list = attr_list + sorted(list(attr))
         return attr_list
 
-    def describe(self):
-        """
-        A method which provides a description of the contents of the `Log`. More detailed descriptions are implemented
-        for individual subclasses.
-
-        """
-        des_basic = "{}\n{}".format(self, self.path)
-        des_fstart = ""
-        des_filters = ""
-
-        if len(self.filters) != 0:
-            des_fstart = "\nFilters:"
-            for f in self.filters:
-                des_filters = "\t{}".format(f)
-
-        description = des_basic + des_fstart + des_filters
-        print(description)
-        return description
-
-    def browse(self):
-        """
-        Interactively prints the contents of the Log collection, one record at a time.
-
-        **Return** : `None`
-
-        """
-        for key in self.collection.keys():
-            print("----- {} -----".format(key))
-            for rkey in self.collection[key].keys():
-                print("--- {} ---".format(rkey))
-                if type(self.collection[key][rkey]) in [str, int, bool, float]:
-                    print(self.collection[key][rkey])
-                elif type(self.collection[key][rkey]) == list:
-                    for s in self.collection[key][rkey]:
-                        print(s)
-            if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
-                break
-
     def author_email_list(self):
         """
         Gathers each unique author email combination from the log, and then prints them in a list.
@@ -212,6 +162,44 @@ class Log(object):
         authors_emails = templist + footer
         print(authors_emails)
         return authors_emails
+
+    def browse(self):
+        """
+        Interactively prints the contents of the Log collection, one record at a time.
+
+        **Return** : `None`
+
+        """
+        for key in self.collection.keys():
+            print("----- {} -----".format(key))
+            for rkey in self.collection[key].keys():
+                print("--- {} ---".format(rkey))
+                if type(self.collection[key][rkey]) in [str, int, bool, float]:
+                    print(self.collection[key][rkey])
+                elif type(self.collection[key][rkey]) == list:
+                    for s in self.collection[key][rkey]:
+                        print(s)
+            if input("\nAnother? [press enter to continue, or press q to quit]\n") == "q":
+                break
+
+    def describe(self):
+        """
+        A method which provides a description of the contents of the `Log`. More detailed descriptions are implemented
+        for individual subclasses.
+
+        """
+        des_basic = "{}\n{}".format(self, self.path)
+        des_fstart = ""
+        des_filters = ""
+
+        if len(self.filters) != 0:
+            des_fstart = "\nFilters:"
+            for f in self.filters:
+                des_filters = "\t{}".format(f)
+
+        description = des_basic + des_fstart + des_filters
+        print(description)
+        return description
 
     def detect_dup_emails(self):
         """
@@ -253,6 +241,17 @@ class Log(object):
                           "printed as question marks".format(warn))
 
         return duplicate_dict
+
+    def df(self):
+        """
+        Converts the `Log` to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
+
+        **Return** : `dataframe`
+
+        > Returns a `pandas dataframe` object. Rows are commits by short-hash. Columns are commit attributes.
+        """
+        retval = pd.DataFrame.from_dict(self.collection, orient="index")[self.attributes()]
+        return retval
 
     def filter(self, tag, fun, match, negate=False, helper=None, summary=None):
         """
@@ -390,6 +389,61 @@ class Log(object):
                 del new_log.collection[record]
         return new_log
 
+    def get_tags(self):
+        """
+        For the base `Log` class, tags defaults to an empty list. `Log` subclasses have alternate `get_tags` methods, which
+        specify the expected data points in their core data sets, and give a preferred order for displaying the data.
+
+        **Return** : `list`
+
+        > An empty list of tags.
+
+        """
+        return []
+
+    def replace_val(self, tag, cur_val, new_val):
+        """
+        Searches for user specified values in a specific tag in the `Log` and replaces them with a new value.
+        This method is particularly useful for combining duplicate names for the same author.
+
+        **Parameters** :
+
+        > *tag* : `string`
+
+        >> The record tag string whose values will be checked (and replaced when appropriate).
+
+        > *cur_val* : `string`
+
+        >> This is the value that the user wants to replace.
+
+        > *new_val* : `string`
+
+        >> This is the value that the user wants to use in the new `Log`.
+
+        **Return** : `Log`
+
+        > Returns a `Log` object with values that have been replaced according to user specifications.
+
+        """
+        selfcopy = copy.deepcopy(self)
+        status = 0
+        replaced_vals = 0
+        for record in selfcopy.collection:
+            if tag in selfcopy.collection[record].keys():
+                if selfcopy[record][tag] == cur_val:
+                    selfcopy[record][tag] = new_val
+                    status = 2
+                    replaced_vals = replaced_vals + 1
+                elif cur_val != selfcopy.collection[record][tag] and replaced_vals == 0:
+                    status = 1
+        if status == 0:
+            warnings.warn("Failed. The tag requested does not appear in this collection.")
+        elif status == 1:
+            warnings.warn("Failed. The value requested does not appear in any records in this collection.")
+        elif status == 2:
+            print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
+        return selfcopy
+
     def tsv(self, fname, ignore=[], empty_cols=False):
         """
         Converts the `Log` to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option
@@ -491,17 +545,6 @@ class Log(object):
         print(out)
         return out
 
-    def df(self):
-        """
-        Converts the `Log` to a Pandas dataframe. Recommended method for analyzing attribute data in Python.
-
-        **Return** : `dataframe`
-
-        > Returns a `pandas dataframe` object. Rows are commits by short-hash. Columns are commit attributes.
-        """
-        retval = pd.DataFrame.from_dict(self.collection, orient="index")[self.attributes()]
-        return retval
-
     def vector(self, tag):
         """
         Returns a list containing all of the (keyless) values of a certain tag in the Log collection.
@@ -528,48 +571,7 @@ class Log(object):
                     v.append(value)
         return v
 
-    def replace_val(self, tag, cur_val, new_val):
-        """
-        Searches for user specified values in a specific tag in the `Log` and replaces them with a new value.
-        This method is particularly useful for combining duplicate names for the same author.
-
-        **Parameters** :
-
-        > *tag* : `string`
-
-        >> The record tag string whose values will be checked (and replaced when appropriate).
-
-        > *cur_val* : `string`
-
-        >> This is the value that the user wants to replace.
-
-        > *new_val* : `string`
-
-        >> This is the value that the user wants to use in the new `Log`.
-
-        **Return** : `Log`
-
-        > Returns a `Log` object with values that have been replaced according to user specifications.
-
-        """
-        selfcopy = copy.deepcopy(self)
-        status = 0
-        replaced_vals = 0
-        for record in selfcopy.collection:
-            if tag in selfcopy.collection[record].keys():
-                if selfcopy[record][tag] == cur_val:
-                    selfcopy[record][tag] = new_val
-                    status = 2
-                    replaced_vals = replaced_vals + 1
-                elif cur_val != selfcopy.collection[record][tag] and replaced_vals == 0:
-                    status = 1
-        if status == 0:
-            warnings.warn("Failed. The tag requested does not appear in this collection.")
-        elif status == 1:
-            warnings.warn("Failed. The value requested does not appear in any records in this collection.")
-        elif status == 2:
-            print("Success. You have replaced the " + tag + " value: " + str(cur_val) + " " + str(replaced_vals) + " times.")
-        return selfcopy
+# Network Generation and node and edge writing features, follow a second alpha-ordering.
 
     def generate_edges(self, mode1, mode2, helper=net_edges_simple, edge_attributes=[]):
         """
@@ -623,106 +625,6 @@ class Log(object):
                 for item1 in m1:
                     for item2 in m2:
                         yield helper(item1, item2, cur, edge_attributes)
-
-    def generate_nodes(self, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
-        """
-        Generates the bipartite nodes present in the Log object.
-
-        **Parameters** :
-
-        > *mode1* : `string`
-
-        >> The tag string for the first mode type.
-
-        > *mode2* : `string`
-
-        >> The tag string for the second mode type.
-
-        > *keep_atom1* : `list`
-
-        >> Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
-
-        > *keep_vector1* :  list
-
-        >> Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
-
-        > *keep_atom2* : `list`
-
-        >> Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
-
-        > *keep_vector2* : `list`
-
-        >> Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
-
-        **Return** :
-
-        > A list of tuples, i.e. ("node_id", {attribute_dictionary}).
-
-        *By default, each node should have a record in the following format* :
-
-        > ("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})
-
-        > With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
-
-        > `("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},`
-        > `atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",`
-        > `vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])`
-
-        """
-        nodes = {}
-        for record in self.collection:
-            cur = self.collection[record]
-            if mode1 in cur.keys() and mode2 in cur.keys():
-                # Set up mode one data for this record
-                m1 = cur[mode1]
-                if type(m1) not in [list, dict, set]:
-                    m1 = [m1]
-                # Set up mode one data for this record
-                m2 = cur[mode2]
-                if type(m2) not in [list, dict, set]:
-                    m2 = [m2]
-                # Yield node attributes
-                for item1 in m1:
-
-                    if item1 in nodes.keys():
-                        nodes[item1]["records"].append(record)
-                        for tag in keep_vector1:
-                            if tag in cur.keys():
-                                if tag not in nodes[item1].keys():
-                                    nodes[item1][tag] = [cur[tag]]
-                                elif tag in cur.keys():
-                                    nodes[item1][tag].append(cur[tag])
-                    else:
-                        nodes[item1] = {"id": item1, "type": mode1, "records": [record]}
-                        for tag in keep_atom1:
-                            if tag in cur.keys():
-                                nodes[item1][tag] = cur[tag]
-                        for tag in keep_vector1:
-                            if tag in cur.keys():
-                                nodes[item1][tag] = [cur[tag]]
-                for item2 in m2:
-                    if item2 in nodes.keys():
-                        nodes[item2]["records"].append(record)
-                        for tag in keep_vector2:
-                            if tag in cur.keys():
-                                if tag not in nodes[item2].keys():
-                                    nodes[item2][tag] = [cur[tag]]
-                                elif tag in cur.keys():
-                                    nodes[item2][tag].append(cur[tag])
-                    else:
-                        nodes[item2] = {"id": item2, "type": mode2, "records": [record]}
-                        for tag in keep_atom2:
-                            if tag in cur.keys():
-                                nodes[item2][tag] = cur[tag]
-                        for tag in keep_vector2:
-                            if tag in cur.keys():
-                                nodes[item2][tag] = [cur[tag]]
-        if len(nodes) is 0:
-            warnings.warn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.")
-        node_tuple_list = []
-        for n in nodes:
-            node_tuple_list.append((n,nodes[n]))
-        return node_tuple_list
 
     def generate_network(self, mode1, mode2, colours=None, edge_helper=net_edges_simple, edge_attributes=[], mode1_atom_attrs=[],
                          mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
@@ -831,6 +733,105 @@ class Log(object):
         print('Created a MultiGraphPlus network object with {} nodes and {} edges.'.format(graph.number_of_nodes(), graph.number_of_edges()))
         return graph
 
+    def generate_nodes(self, mode1, mode2, keep_atom1=[], keep_vector1=[], keep_atom2=[], keep_vector2=[]):
+        """
+        Generates the bipartite nodes present in the Log object.
+
+        **Parameters** :
+
+        > *mode1* : `string`
+
+        >> The tag string for the first mode type.
+
+        > *mode2* : `string`
+
+        >> The tag string for the second mode type.
+
+        > *keep_atom1* : `list`
+
+        >> Atomic variables for mode1 nodes, recorded when a new node is added to the dictionary.
+
+        > *keep_vector1* :  list
+
+        >> Variables for mode1 nodes, for which a new datapoint is recorded for every recurrence.
+
+        > *keep_atom2* : `list`
+
+        >> Atomic variables for mode2 nodes, recorded when a new node is added to the dictionary.
+
+        > *keep_vector2* : `list`
+
+        >> Variables for mode2 nodes, for which a new datapoint is recorded for every recurrence.
+
+        **Return** :
+
+        > A list of tuples, i.e. ("node_id", {attribute_dictionary}).
+
+        *By default, each node should have a record in the following format* :
+
+        > ("id_value",  {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn})
+
+        > With optional variables kept (i.e. keep_atom_1 etc. are not empty) format is as follows:
+
+        > `("id_value" : {"id": "id_value", "type": mode, "records": [rkey1, rkey2, ..., rkeyn},`
+        > `atom_tag_1: "atom_value_1", ..., atom_tag_n: "atom_value_n",`
+        > `vector_tag_1: [value_1_1, ..., value_1_m], ..., vector_tag_n: [value_n_1, ..., value_n_m])`
+
+        """
+        nodes = {}
+        for record in self.collection:
+            cur = self.collection[record]
+            if mode1 in cur.keys() and mode2 in cur.keys():
+                # Set up mode one data for this record
+                m1 = cur[mode1]
+                if type(m1) not in [list, dict, set]:
+                    m1 = [m1]
+                # Set up mode one data for this record
+                m2 = cur[mode2]
+                if type(m2) not in [list, dict, set]:
+                    m2 = [m2]
+                # Yield node attributes
+                for item1 in m1:
+
+                    if item1 in nodes.keys():
+                        nodes[item1]["records"].append(record)
+                        for tag in keep_vector1:
+                            if tag in cur.keys():
+                                if tag not in nodes[item1].keys():
+                                    nodes[item1][tag] = [cur[tag]]
+                                elif tag in cur.keys():
+                                    nodes[item1][tag].append(cur[tag])
+                    else:
+                        nodes[item1] = {"id": item1, "type": mode1, "records": [record]}
+                        for tag in keep_atom1:
+                            if tag in cur.keys():
+                                nodes[item1][tag] = cur[tag]
+                        for tag in keep_vector1:
+                            if tag in cur.keys():
+                                nodes[item1][tag] = [cur[tag]]
+                for item2 in m2:
+                    if item2 in nodes.keys():
+                        nodes[item2]["records"].append(record)
+                        for tag in keep_vector2:
+                            if tag in cur.keys():
+                                if tag not in nodes[item2].keys():
+                                    nodes[item2][tag] = [cur[tag]]
+                                elif tag in cur.keys():
+                                    nodes[item2][tag].append(cur[tag])
+                    else:
+                        nodes[item2] = {"id": item2, "type": mode2, "records": [record]}
+                        for tag in keep_atom2:
+                            if tag in cur.keys():
+                                nodes[item2][tag] = cur[tag]
+                        for tag in keep_vector2:
+                            if tag in cur.keys():
+                                nodes[item2][tag] = [cur[tag]]
+        if len(nodes) is 0:
+            warnings.warn("Dictionary of node attributes is empty. Check that mode1 and mode2 names are valid tags.")
+        node_tuple_list = []
+        for n in nodes:
+            node_tuple_list.append((n,nodes[n]))
+        return node_tuple_list
 
     def write_edges(self, fname, mode1, mode2, helper=net_edges_simple, edge_attribute=['weight', 'date']):
         """
