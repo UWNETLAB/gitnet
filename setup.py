@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='gitnet',
-    version='beta-0.1.1',
+    version='0.1.1',
     description='An analysis tool for git and other VCS managed open-source projects.',
     long_description=long_description,
     url='http://networkslab.org/gitnet',
