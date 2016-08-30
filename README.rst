@@ -18,10 +18,10 @@ A Quick (Meta) Example
    import gitnet as gn
 
    gn_log = gn.get_log("Users/localpath/gitnet")
-   gn_log = gn_log.ignore("\.py$",ignoreif = "no match")
+   gn_log = gn_log.ignore("\.py$", ignoreif="no match")
 
-   gn_net = gn_log.network("author/file")
-   gn_net.quickplot("plot.pdf", layout = "spring", colours = "simple")
+   gn_net = gn_log.network("author", "file", colours="simple")
+   gn_net.quickplot("plot.pdf", layout = "spring")
 
 This snippet imports ``gitnet``, creates a ``CommitLog`` from our local repository, uses a regular expression to ignore files with names that do not end with ``.py``, creates a ``MultiGraphPlus`` object using presets for a bipartite author/file network, and saves a basic visualization of the network. (By default, author nodes are coloured white and python files are coloured light red.) The result looks like this:
 
