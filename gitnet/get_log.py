@@ -21,7 +21,7 @@ import warnings
 from gitnet.exceptions import RepositoryError, ParseError, InputError
 from gitnet.commit_log import CommitLog
 
-def get_log(path, mode="stat", commit_source="local git"):
+def get_log(path, mode="stat", commit_source="local git", tag_calendar=True):
     """
     A function for gathering data from a local Git repository.
 
@@ -42,10 +42,18 @@ def get_log(path, mode="stat", commit_source="local git"):
     **Returns** : `Commitlog`
 
     """
+
     if commit_source == "local git":
         detect_key = "hash"
     else:
         detect_key = "unknown"
+    if tag_calendar == True:
+        os.chdir(path)
+        # Bash should be changed to subprocess.
+        tag_calendar = sh.bash('git log --tags --simplify-by-decoration --pretty="format:%ai %d"').stdout.decode("utf-8")
+        if len(tag_calendar) == 0:
+            print("This repository has no tags.")
+        print(tag_calendar)
     return CommitLog(dofd=parse_commits(retrieve_commits(path, mode)),
                      source=commit_source,
                      path=path,
@@ -226,7 +234,7 @@ def retrieve_commits(path, mode="stat"):
     # Save the current directory. Navigate to new directory. Retrieve logs. Return to original directory.
     work_dir = os.getcwd()
     os.chdir(path)
-    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8")
+    raw_logs = sh.bash(log_commands[mode]).stdout.decode("utf-8", "ignore")
     os.chdir(work_dir)
     # If the retrieval was unsuccessful, raise an error.
     if len(raw_logs) == 0:
