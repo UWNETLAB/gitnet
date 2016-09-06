@@ -405,8 +405,8 @@ class MultiGraphPlus(nx.MultiGraph):
 
         if warning:
             warnings.warn("The provided graph contained the vector attributes: {}. All values of vector attributes have"
-                          " been converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
-                          " convert them to atomic attributes prior to calling .write_graphml"
+                          "\nbeen converted to semicolon-delimited strings. To prevent this, remove vector attributes or"
+                          "\nconvert them to atomic attributes prior to calling .write_graphml"
                           .format(warning_set))
         nx.write_graphml(graph, fname)
         print("Success. Wrote GraphML file {} to {}".format(fname, os.getcwd()))

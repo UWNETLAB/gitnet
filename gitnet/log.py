@@ -658,17 +658,20 @@ class Log(object):
 
         >> The tag names of attributes to be saved for each edge.
 
+        **NOTE**: Need to refine the below section, since there seems to be some confusing statements.
+        *Adding atomic attributes to the graph will also add them to any graphml file generated*.
+
         > *mode1_atom_attrs* : `list`
 
         >> The tag names of attributes to be saved once for each node of mode1.
 
         > *mode2_atom_attrs* : `list`
 
-        >> The tag names of attributes to be saved repeatedly for each node of mode1.
+        >> The tag names of attributes to be saved once for each node of mode2.
 
         > *mode1_vector_attrs* : `list`
 
-        >> The tag names of attributes to be saved once for each node of mode2.
+        >> The tag names of attributes to be saved repeatedly for each node of mode1.
 
         > *mode2_vector_attrs* : `list`
 
