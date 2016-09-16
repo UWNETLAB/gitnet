@@ -14,8 +14,10 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************************************
 
-import numpy as np
 import copy
+import numpy as np
+import warnings
+import datetime
 from gitnet.log import Log
 from gitnet.exceptions import InputError
 from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes
@@ -25,6 +27,24 @@ class CommitLog(Log):
     """
     A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.
     """
+
+    def annotate(self):
+        """
+        A method that automatically runs after initialization. Processes date information, and adds easily parsed
+        date strings to each record.
+
+        utc_date : "YYYY-MM-DD" in Coordinated Universal Time. Formatted for `parse_date()` in `readr` package in R.
+        utc_datetime : A standardized date string in Coordinated Universal Time
+        """
+        warnings.warn("New utc_date and utc_datetime attributes have only been tested informally.")
+        for record in self:
+            if "date" in self[record]:
+                git_dt = datetime_git(self[record]["date"]).astimezone(datetime.timezone(datetime.timedelta(0)))
+                self[record]["utc_date"] = git_dt.strftime("%Y-%m-%d")
+                self[record]["utc_datetime"] = git_dt.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                self[record]["utc_date"] = None
+                self[record]["utc_datetime"] = None
 
     def describe(self, mode = "default", exclude = []):
         """
@@ -175,8 +195,8 @@ class CommitLog(Log):
         > A list of ordered reference hashes.
 
         """
-        return ["hash","author","email","date","mode","merge","summary",
-                "fedits","inserts","deletes","message","files","changes"]
+        return ["hash","author","email","date","utc_date","utc_datetime","mode","merge",
+                "summary","fedits","inserts","deletes","message","files","changes"]
 
     def ignore(self, pattern, ignoreif="match"):
         """
@@ -254,3 +274,52 @@ class CommitLog(Log):
                                          edge_helper=net_edges_changes)
         else:
             raise InputError("{} is not a valid network preset.".format(type))
+
+    def generate_cu_auth_changes(self):
+        """
+        Generates a new tag called "cu_auth_changes"; for each commit, cu_auth_changes is the cumulative changes that
+        the commit's author has made to each file. The new tag is a list of strings in the format "filename:weight".
+        This tag is currently not implemented as a default option (i.e. computed upon the initialization of a commit_log
+        object) because it is relatively inefficient, and important only in specific types of analysis. It is of main
+        concern when generating a network with edges weighted by cu_auth_changes, in which case the network generator
+        will check that these weight have been computed.
+        """
+        warnings.warn("generate_cu_auth_changes not yet tested. Proceed with caution.")
+        self_copy = copy.deepcopy(self)
+        for record in self_copy:
+            if "files" in self_copy[record]:
+                date = self_copy[record]["date"]
+                cu_log = self_copy.filter("date","before",date)
+                cu_auth_log = cu_log.filter("author","equals",self_copy[record]["author"])
+                cu_auth_dict = {}
+                cu_auth_changes = []
+                for ch in cu_auth_log.vector("changes"):
+                    split_change = ch.split("|")
+                    if split_change == [""]:
+                        break
+                    # Get the file name
+                    fname = split_change[0].replace(" ", "")
+                    # Get the number of changes
+                    weight_str = split_change[1]
+                    if "Bin" in weight_str:
+                        weight = 1
+                    else:
+                        weight = ""
+                        for char in weight_str:
+                            if char.isnumeric():
+                                weight += char
+                        if weight == "":
+                            weight = "0"
+                        weight = int(weight)
+                    if fname in cu_auth_dict.keys():
+                        cu_auth_dict[fname] += weight
+                    else:
+                        cu_auth_dict[fname] = weight
+                for file in self_copy[record]["files"]:
+                    if file in cu_auth_dict:
+                        cu_auth_changes.append("{}:{}".format(file,cu_auth_dict[file]))
+                self_copy[record]["cu_auth_changes"] = cu_auth_changes
+        return self_copy
+
+
+

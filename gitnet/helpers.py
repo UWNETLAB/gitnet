@@ -47,7 +47,7 @@ def datetime_reference(s):
     if type(s) is dt.datetime:
         ref_date = s
     elif type(s) is str:
-        git_date_p = re.compile("[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} -\d{4}")
+        git_date_p = re.compile("[A-Z][a-z][a-z] [A-Z][a-z][a-z] \d\d? \d\d:\d\d:\d\d \d{4} [-+]\d{4}")
         if bool(re.match(git_date_p, s)):
             ref_date = datetime_git(s)
         else:
@@ -377,6 +377,36 @@ def net_edges_changes(v1, v2, record, keep):
         if weight == "":
             weight = "0"
         properties["weight"] = int(weight)
+    return (v1, v2, properties)
+
+def net_edges_cu_auth_changes(v1, v2, record, keep):
+    """
+    A helper function for the Log.generate_edges() method. Network must be a bipartite author-file network. Creates an
+    edge between two vertices, weighted by the total number of changes this author has made to this file, up to and
+    including this commit (but not later commits). The first vertex (`v1`) must have the type "author". The second
+    vertex (`v2`) must have the type "files".
+
+    **Parameters**
+
+    >*v1* : `any`
+    >> The first vertex, whose type must be "author".
+
+    >*v2* : `str`
+    >> A string giving the id of a vertex whose type is "files".
+
+    >*record* : `str`
+    >> The short hash string for the current record in edge generation.
+
+    >*keep* : `list`
+    >> A list of edge attributes to be kept from the CommitLog record.
+
+    **Return**
+    > A tuple, in the format (id1, id2, {edge attribute dictionary}), representing an edge between `v1` and `v2`. The
+    edge attribute dictionary will contain a weight attribute, determined by the number of lines changed in `v2`.
+    """
+    properties = {k:v for k,v in record.items() if k in keep}
+    if "cu_auth_changes" in record.keys():
+        properties["weight"] = record["cu_auth_changes"]
     return (v1, v2, properties)
 
 # Network Attribute Helper Functions

@@ -72,6 +72,7 @@ class Log(object):
         self.key_type = key_type
         self.filters = filters
         # This must be updated as tags/subclasses are added. Ideally, this would be housed within each subclass.
+        self.annotate()
         self.tags = self.get_tags()
 
     def __iter__(self):
@@ -107,6 +108,13 @@ class Log(object):
         return "Log containing {} records from {} created at {}."\
             .format(len(self.collection), self.source, self.timestamp)
 
+    def annotate(self):
+        """
+        A method that automatically runs after initialization. Used to define additional initialization behaviours in
+        Log subclasses.
+        """
+        pass
+
     def attributes(self):
         """
         A method for determining what data has been recorded in this `Commitlog`.
@@ -137,6 +145,7 @@ class Log(object):
         return attr_list
 
     def author_email_list(self):
+        #TODO: I think that this should be in commit_log. It is commit_log specific, not "log-general".
         """
         Gathers each unique author email combination from the log, and then prints them in a list.
         The intention is that the user can use these author names in the `replace_val` function.
@@ -202,6 +211,7 @@ class Log(object):
         return description
 
     def detect_dup_emails(self):
+        ## TODO: Same here. Do we want this for all Logs ever???
         """
         Finds emails which are associated with multiple authors. This list should be a good indicator of authors which
         have committed under multiple names. This will allow you to either replace the author names in the `Log`, or
