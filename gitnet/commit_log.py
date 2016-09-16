@@ -20,7 +20,7 @@ import warnings
 import datetime
 from gitnet.log import Log
 from gitnet.exceptions import InputError
-from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes
+from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes, net_edges_cu_auth_changes
 
 
 class CommitLog(Log):
@@ -284,7 +284,7 @@ class CommitLog(Log):
         concern when generating a network with edges weighted by cu_auth_changes, in which case the network generator
         will check that these weight have been computed.
         """
-        warnings.warn("generate_cu_auth_changes not yet tested. Proceed with caution.")
+        warnings.warn("generate_cu_auth_changes has only been tested informally. Proceed with caution.")
         self_copy = copy.deepcopy(self)
         for record in self_copy:
             if "files" in self_copy[record]:
