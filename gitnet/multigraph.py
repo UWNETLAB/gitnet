@@ -312,8 +312,6 @@ class MultiGraphPlus(nx.MultiGraph):
         # Plot the network
         print("Plotting...")
         if layout in ["dot", "neato", "fdp", "circo"]:
-            warnings.warn("Because of outstanding issues in the source package, graphviz layouts"
-                          "don't work on some computers.")
             nx.draw(copy_net,
                 pos=graphviz_layout(copy_net, prog=layout),
                 node_size=size,
