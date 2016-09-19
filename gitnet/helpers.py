@@ -16,7 +16,6 @@
 
 import datetime as dt
 import re
-import warnings
 from gitnet.exceptions import InputError
 
 # Working with Git Log date strings
@@ -407,18 +406,8 @@ def net_edges_cu_auth_changes(v1, v2, record, keep):
     """
     properties = {k:v for k,v in record.items() if k in keep}
     if "cu_auth_changes" in record.keys():
-        cu_auth_weight = list(set([r for r in record["cu_auth_changes"] if v2 in r.split(":")]))
-        if len(cu_auth_weight) != 1:
-            warning_string = "Incorrect number of matches({}) when generating cu_auth_weights. Weight set to 1. " \
-                             "v1: {}, v2: {}, record: {}".format(len(cu_auth_weight),v1,v2,record["cu_auth_changes"])
-            warnings.warn(warning_string)
-            print("CU_AUTH_CHANGES MATCHED: {}".format(cu_auth_weight))
-            properties["weight"] = 1
-            return (v1, v2, properties)
-        else:
-            cu_auth_weight = int(cu_auth_weight[0].split(":")[-1])
-            properties["weight"] = cu_auth_weight
-            return (v1, v2, properties)
+        properties["weight"] = record["cu_auth_changes"]
+    return (v1, v2, properties)
 
 # Network Attribute Helper Functions
 def node_colours(d):

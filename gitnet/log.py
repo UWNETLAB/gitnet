@@ -21,9 +21,8 @@ import warnings
 import copy
 import subprocess as sub
 from gitnet.multigraph import MultiGraphPlus
-from gitnet.exceptions import InputError
 from gitnet.helpers import datetime_git, filter_before, filter_beforex, filter_since, filter_sincex, \
-    filter_has, filter_equals, net_edges_simple, net_edges_changes, net_edges_cu_auth_changes
+    filter_has, filter_equals, net_edges_simple, net_edges_changes
 
 
 class Log(object):
@@ -584,7 +583,7 @@ class Log(object):
 
 # Network Generation and node and edge writing features, follow a second alpha-ordering.
 
-    def generate_edges(self, mode1, mode2, helper="net_edges_simple", edge_attributes=[]):
+    def generate_edges(self, mode1, mode2, helper=net_edges_simple, edge_attributes=[]):
         """
         Generates bipartite edges present in each Log record.
 
@@ -598,9 +597,9 @@ class Log(object):
 
         >> A record attribute or tag, which becomes the second node type.
 
-        > *helper* : `string`
+        > *helper* : `function`
 
-        >> The name of the function that computes the edges. Options are simple_edge (default), net_edges_cu_auth_changes and changes_edge.
+        >> The function that computes the edges. Options are simple_edge (default) and changes_edge.
 
         > *edge_attributes* :
 
@@ -609,7 +608,7 @@ class Log(object):
 
         **Return** :
 
-        > A generator object which yields edges and their weights in form (v1, v2, {properties_dictionary}).
+        > A generator object containing edges and their weights.
 
         **Notes** :
 
@@ -621,15 +620,6 @@ class Log(object):
         >> Computes edges between authors and files based on the number of lines changed in the corresponding changes (weight is 6 for `README.md | 6 +++---`).
 
         """
-        helper_dict = {"net_edges_simple":net_edges_simple,
-                       "net_edges_changes":net_edges_changes,
-                       "net_edges_cu_auth_changes":net_edges_cu_auth_changes}
-        if helper in ["net_edges_changes", "net_edges_cu_auth_changes"]:
-            if str(type(self)) != "<class 'gitnet.commit_log.CommitLog'>":
-                    raise InputError("{} only supported for CommitLog subclass".format(helper))
-        if helper == "net_edges_cu_auth_changes" and "cu_auth_changes" not in self.attributes():
-            warnings.warn("Cumulative author changes must be generated before using net_edges_cu_auth_changes."
-                          "(e.g. my_log = my_log.generate_cu_auth_changes())")
         for record in self.collection:
             cur = self.collection[record]
             if mode1 in cur.keys() and mode2 in cur.keys():
@@ -644,7 +634,7 @@ class Log(object):
                 # Yield edges
                 for item1 in m1:
                     for item2 in m2:
-                        yield helper_dict[helper](item1, item2, cur, edge_attributes)
+                        yield helper(item1, item2, cur, edge_attributes)
 
     def generate_network(self, mode1, mode2, colours=None, edge_helper=net_edges_simple, edge_attributes=[], mode1_atom_attrs=[],
                          mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[]):
