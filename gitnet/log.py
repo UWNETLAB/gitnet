@@ -136,6 +136,29 @@ class Log(object):
             attr_list = attr_list + sorted(list(attr))
         return attr_list
 
+    def add_attribute(self,name,helper):
+        """
+        Creates a new record attribute.
+
+        **Parameters** :
+
+        > *name* : `string`
+
+        >> The name of the new attribute.
+
+        > *helper* : `None`
+
+        >> A helper function, which takes an attribute dict and produces the new attribute.
+
+        **Return** :
+
+        > A new Log object, identical to self but with the desired attribute.
+        """
+        self_copy = copy.deepcopy(self)
+        for n in self_copy:
+            self_copy[n][name] = helper(self_copy[n])
+        return self_copy
+
     def author_email_list(self):
         """
         Gathers each unique author email combination from the log, and then prints them in a list.

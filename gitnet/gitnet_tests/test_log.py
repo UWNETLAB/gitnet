@@ -102,6 +102,39 @@ class AttributesTests(unittest.TestCase):
         # Delete the temporary .git folder
         sub.call(["rm", "-rf", ".git"])
 
+class AddAttributeTest(unittest.TestCase):
+    """
+    Tests for the add_attribute method.
+    """
+    def setUp(self):
+        data = {"Bob": {"author": 'Bob',
+                        "email": 'bob@gmail.com',
+                        "type": 'author',
+                        "loc": 'Waterloo',
+                        "books": ['BookA', 'BookB']},
+                "Bobby": {"author": 'Bobby',
+                          "email": 'bobby@gmail.com',
+                          "type": 'author',
+                          "loc": 'Kitchener',
+                          "books": ['BookC', 'BookD']},
+                "Robert": {"author": 'Robert',
+                           "email": 'robby@gmail.com',
+                           "type": 'author',
+                           "loc": 'Kitchener',
+                           "books": ['BookC', 'BookD']}}
+        self.log = gitnet.Log(data)
+
+    def test_new_attr_1(self):
+        new_log = self.log.add_attribute("letter", lambda d: d["author"][0])
+        self.assertEqual(new_log["Bob"]["letter"], "B")
+        self.assertEqual(new_log["Bobby"]["letter"], "B")
+        self.assertEqual(new_log["Robert"]["letter"], "R")
+
+    def test_new_attr_1(self):
+        new_log = self.log.add_attribute("edge",lambda d: gitnet.net_edges_simple("v1","v2",d,["loc"]))
+        self.assertEqual(new_log["Bob"]["edge"], ("v1","v2",{"loc":"Waterloo"}))
+        self.assertEqual(new_log["Bobby"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
+        self.assertEqual(new_log["Robert"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
 
 class DescribeTests(unittest.TestCase):
     def setUp(self):
