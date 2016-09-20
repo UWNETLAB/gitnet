@@ -456,3 +456,26 @@ def make_utc_datetime(dict):
         return git_dt.strftime("%Y-%m-%d %H:%M:%S")
     else:
         return None
+
+def make_domain(dict):
+    """
+    Takes an attribute dictionary. If "email" present, returns its domain. Otherwise, returns None.
+
+    **Parameters**:
+
+    > *dict* : `dict`
+
+    >> An attribute dictionary.
+
+    **Return** `string` or `none`
+    """
+    if "email" in dict:
+        domain = dict["email"].split("@")[1]
+        go = True
+        while go:
+            if domain[-1] == ".":
+                go = False
+            domain = domain[:-1]
+        return domain
+    else:
+        return None

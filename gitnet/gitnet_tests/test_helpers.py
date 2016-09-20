@@ -349,7 +349,6 @@ class TestAnnotateHelpers(unittest.TestCase):
         utc = helpers.make_utc_date({"not":"Fri Oct 5 12:20:15 2012 +0200"})
         self.assertEquals(utc, None)
 
-
     def test_make_utc_datetime(self):
         """Is the function converting the string properly?"""
         utc = helpers.make_utc_datetime({"date":"Mon Jul 22 11:40:03 2013 -0600"})
@@ -360,6 +359,12 @@ class TestAnnotateHelpers(unittest.TestCase):
         self.assertEquals(utc, "2012-10-05 10:20:15")
         utc = helpers.make_utc_datetime({"not":"Fri Oct 5 12:20:15 2012 +0200"})
         self.assertEquals(utc, None)
+
+    def test_make_domain(self):
+        self.assertEquals(helpers.make_domain({"email":"mail@hoolagin.com"}), "hoolagin")
+        self.assertEquals(helpers.make_domain({"email":"joe@gmail.com"}), "gmail")
+        self.assertEquals(helpers.make_domain({"email":"afsjkl@gar.net"}), "gar")
+        self.assertEquals(helpers.make_domain({"email":"linux@cs.uwaterloo.ca"}), "cs.uwaterloo")
 
 if __name__ == '__main__':
     unittest.main(buffer=True)

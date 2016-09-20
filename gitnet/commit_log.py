@@ -19,7 +19,7 @@ import copy
 from gitnet.log import Log
 from gitnet.exceptions import InputError
 from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes, \
-    make_utc_datetime, make_utc_date
+    make_utc_datetime, make_utc_date, make_domain
 
 
 class CommitLog(Log):
@@ -36,6 +36,7 @@ class CommitLog(Log):
         """
         self.mutate_attribute("utc_date",make_utc_date)
         self.mutate_attribute("utc_datetime",make_utc_datetime)
+        self.mutate_attribute("domain",make_domain)
 
     def describe(self, mode = "default", exclude = []):
         """
@@ -73,10 +74,10 @@ class CommitLog(Log):
         # Define included/excluded data summaries.
         if mode == "default":
             output = ["summary", "path", "filters", "authors", "files",
-                      "emails", "dates", "changes", "merges", "errors"]
+                      "emails", "domain", "date", "utc_date", "utc_datetime", "changes", "merges", "errors"]
         else:
             output = ["summary", "path", "filters", "authors", "files",
-                      "emails", "dates", "changes", "merges", "errors"]
+                      "emails", "domain", "date", "utc_date", "utc_datetime", "changes", "merges", "errors"]
         for i in exclude:
             output.remove(i)
         # Print summary
@@ -186,7 +187,7 @@ class CommitLog(Log):
         > A list of ordered reference hashes.
 
         """
-        return ["hash","author","email","date","utc_date","utc_datetime","mode","merge","summary",
+        return ["hash","author","email","domain","date","utc_date","utc_datetime","mode","merge","summary",
                 "fedits","inserts","deletes","message","files","changes"]
 
     def ignore(self, pattern, ignoreif="match"):

@@ -95,7 +95,7 @@ class AttributesTests(unittest.TestCase):
         cl = gitnet.get_log(path)
         attr_list = cl.attributes()
 
-        exp_attr_list = {"hash","author","email","date","utc_date","utc_datetime","mode","summary",
+        exp_attr_list = {"hash","author","email","domain","date","utc_date","utc_datetime","mode","summary",
                          "fedits","inserts","message","files","changes"}
 
         self.assertSetEqual(set(attr_list), exp_attr_list)

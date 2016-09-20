@@ -33,7 +33,7 @@ class GetTagsTests(unittest.TestCase):
 
         tags = my_log.get_tags()
 
-        self.assertListEqual(tags, ["hash", "author", "email", "date", "utc_date", "utc_datetime", "mode", "merge",
+        self.assertListEqual(tags, ["hash", "author", "email", "domain", "date", "utc_date", "utc_datetime", "mode", "merge",
                                     "summary", "fedits", "inserts", "deletes", "message", "files", "changes"])
 
         # Delete temporary .git file
@@ -59,6 +59,13 @@ class AnnotateTests(unittest.TestCase):
         self.assertEqual(self.my_log["6cd4bbf"]["utc_datetime"],"2016-05-25 05:12:48")
         self.assertEqual(self.my_log["ee2c408"]["utc_datetime"],"2016-05-23 06:45:25")
         self.assertEqual(self.my_log["b3a4bac"]["utc_datetime"],"2016-05-20 13:19:20")
+
+    def test_domain(self):
+        """Is domain being generated correctly?"""
+        self.assertEqual(self.my_log["7965e62"]["domain"],"gmail")
+        self.assertEqual(self.my_log["6cd4bbf"]["domain"],"gmail")
+        self.assertEqual(self.my_log["ee2c408"]["domain"],"gmail")
+        self.assertEqual(self.my_log["b3a4bac"]["domain"],"gmail")
 
     def tearDown(self):
         # Delete temporary .git file
