@@ -71,7 +71,8 @@ class Log(object):
         self.path = path
         self.key_type = key_type
         self.filters = filters
-        # This must be updated as tags/subclasses are added. Ideally, this would be housed within each subclass.
+        # Annotate and tags must be updated as tags/subclasses are added.
+        self.annotate()
         self.tags = self.get_tags()
 
     def __iter__(self):
@@ -106,6 +107,12 @@ class Log(object):
         """
         return "Log containing {} records from {} created at {}."\
             .format(len(self.collection), self.source, self.timestamp)
+
+    def annotate(self):
+        """
+        A method that automatically runs after initialization. Behaviours only defined for Log subclasses.
+        """
+        pass
 
     def attributes(self):
         """
@@ -158,6 +165,27 @@ class Log(object):
         for n in self_copy:
             self_copy[n][name] = helper(self_copy[n])
         return self_copy
+
+    def mutate_attribute(self,name,helper):
+        """
+        Creates a new record attribute, mutating the original log.
+
+        **Parameters** :
+
+        > *name* : `string`
+
+        >> The name of the new attribute.
+
+        > *helper* : `None`
+
+        >> A helper function, which takes an attribute dict and produces the new attribute.
+
+        **Return** :
+
+        > None
+        """
+        for n in self:
+            self[n][name] = helper(self[n])
 
     def author_email_list(self):
         """

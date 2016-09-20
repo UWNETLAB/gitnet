@@ -97,7 +97,7 @@ class TestBigGit(unittest.TestCase):
         f = open("nx_test.tsv", "r")
         nx_lines = f.readlines()
         self.assertEqual(len(nx_lines), 4882)
-        self.assertEqual(re.sub('[\s+]', '', nx_lines[0]), "hashauthoremaildatemodemergesummaryfedits"
+        self.assertEqual(re.sub('[\s+]', '', nx_lines[0]), "hashauthoremaildateutc_dateutc_datetimemodemergesummaryfedits"
                                                            "insertsdeletesmessagefileschanges")
         f.close()
         sub.call(["rm", "-rf", "nx_test.tsv"])

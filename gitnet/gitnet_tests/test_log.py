@@ -95,7 +95,7 @@ class AttributesTests(unittest.TestCase):
         cl = gitnet.get_log(path)
         attr_list = cl.attributes()
 
-        exp_attr_list = {"hash","author","email","date","mode","summary",
+        exp_attr_list = {"hash","author","email","date","utc_date","utc_datetime","mode","summary",
                          "fedits","inserts","message","files","changes"}
 
         self.assertSetEqual(set(attr_list), exp_attr_list)
@@ -135,6 +135,18 @@ class AddAttributeTest(unittest.TestCase):
         self.assertEqual(new_log["Bob"]["edge"], ("v1","v2",{"loc":"Waterloo"}))
         self.assertEqual(new_log["Bobby"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
         self.assertEqual(new_log["Robert"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
+
+    def test_new_attr_mutate_1(self):
+        self.log.mutate_attribute("letter", lambda d: d["author"][0])
+        self.assertEqual(self.log["Bob"]["letter"], "B")
+        self.assertEqual(self.log["Bobby"]["letter"], "B")
+        self.assertEqual(self.log["Robert"]["letter"], "R")
+
+    def test_new_attr_mutate_2(self):
+        self.log.mutate_attribute("edge",lambda d: gitnet.net_edges_simple("v1","v2",d,["loc"]))
+        self.assertEqual(self.log["Bob"]["edge"], ("v1","v2",{"loc":"Waterloo"}))
+        self.assertEqual(self.log["Bobby"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
+        self.assertEqual(self.log["Robert"]["edge"], ("v1","v2",{"loc":"Kitchener"}))
 
 class DescribeTests(unittest.TestCase):
     def setUp(self):

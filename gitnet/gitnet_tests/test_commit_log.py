@@ -33,12 +33,36 @@ class GetTagsTests(unittest.TestCase):
 
         tags = my_log.get_tags()
 
-        self.assertListEqual(tags, ["hash", "author", "email", "date", "mode", "merge", "summary",
-                                    "fedits", "inserts", "deletes", "message", "files", "changes"])
+        self.assertListEqual(tags, ["hash", "author", "email", "date", "utc_date", "utc_datetime", "mode", "merge",
+                                    "summary", "fedits", "inserts", "deletes", "message", "files", "changes"])
 
         # Delete temporary .git file
         sub.call(["rm", "-rf", ".git"])
 
+class AnnotateTests(unittest.TestCase):
+    def setUp(self):
+        # Set up small network
+        sub.call(["cp", "-R", "small_network_repo.git", ".git"])
+        path = os.getcwd()
+        self.my_log = gitnet.get_log(path)
+
+    def test_utc_date(self):
+        """Is utc_date being generated correctly?"""
+        self.assertEqual(self.my_log["7965e62"]["utc_date"],"2016-05-26")
+        self.assertEqual(self.my_log["6cd4bbf"]["utc_date"],"2016-05-25")
+        self.assertEqual(self.my_log["ee2c408"]["utc_date"],"2016-05-23")
+        self.assertEqual(self.my_log["b3a4bac"]["utc_date"],"2016-05-20")
+
+    def test_utc_datetime(self):
+        """Is utc_datetime being generated correctly?"""
+        self.assertEqual(self.my_log["7965e62"]["utc_datetime"],"2016-05-26 15:21:03")
+        self.assertEqual(self.my_log["6cd4bbf"]["utc_datetime"],"2016-05-25 05:12:48")
+        self.assertEqual(self.my_log["ee2c408"]["utc_datetime"],"2016-05-23 06:45:25")
+        self.assertEqual(self.my_log["b3a4bac"]["utc_datetime"],"2016-05-20 13:19:20")
+
+    def tearDown(self):
+        # Delete temporary .git file
+        sub.call(["rm", "-rf", ".git"])
 
 class DescribeTests(unittest.TestCase):
     def setUp(self):

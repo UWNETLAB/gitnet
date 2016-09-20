@@ -18,13 +18,24 @@ import numpy as np
 import copy
 from gitnet.log import Log
 from gitnet.exceptions import InputError
-from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes
+from gitnet.helpers import datetime_git, most_common, filter_regex, net_edges_simple, net_edges_changes, \
+    make_utc_datetime, make_utc_date
 
 
 class CommitLog(Log):
     """
     A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.
     """
+
+    def annotate(self):
+        """
+        A method that automatically runs after initialization. Processes date information, and adds easily parsed
+        date strings to each record.
+        utc_date : "YYYY-MM-DD" in Coordinated Universal Time. Formatted for `parse_date()` in `readr` package in R.
+        utc_datetime : "YYYY-MM-DD HH:MM:SS" in Coordinated Universal Time.
+        """
+        self.mutate_attribute("utc_date",make_utc_date)
+        self.mutate_attribute("utc_datetime",make_utc_datetime)
 
     def describe(self, mode = "default", exclude = []):
         """
@@ -175,7 +186,7 @@ class CommitLog(Log):
         > A list of ordered reference hashes.
 
         """
-        return ["hash","author","email","date","mode","merge","summary",
+        return ["hash","author","email","date","utc_date","utc_datetime","mode","merge","summary",
                 "fedits","inserts","deletes","message","files","changes"]
 
     def ignore(self, pattern, ignoreif="match"):

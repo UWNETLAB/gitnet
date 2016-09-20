@@ -415,3 +415,44 @@ def node_colours(d):
                 return "lightgrey"
         else:
             return "lightgrey"
+
+# Helpers for making UTC time strings from git time strings.
+
+def make_utc_date(dict):
+    """
+    Takes an attribute dictionary. If "date" present, returns "YYYY-MM-DD" in Coordinated Universal Time.
+    Otherwise, returns None. "date" must be a git-formatted string, e.g. 'Mon Apr 18 00:59:02 2016 -0400'.
+
+    **Parameters**:
+
+    > *dict* : `dict`
+
+    >> An attribute dictionary.
+
+    **Return** `string` or `none`
+    """
+    if "date" in dict:
+        git_dt = datetime_git(dict["date"]).astimezone(dt.timezone(dt.timedelta(0)))
+        return git_dt.strftime("%Y-%m-%d")
+    else:
+        return None
+
+def make_utc_datetime(dict):
+    """
+    Takes an attribute dictionary. If "date" present, returns "YYYY-MM-DD HH:MM:SS" in
+    Coordinated Universal Time. Otherwise, returns None. "date" must be a git-formatted string,
+    e.g. 'Mon Apr 18 00:59:02 2016 -0400'.
+
+    **Parameters**:
+
+    > *dict* : `dict`
+
+    >> An attribute dictionary.
+
+    **Return** `string` or `none`
+    """
+    if "date" in dict:
+        git_dt = datetime_git(dict["date"]).astimezone(dt.timezone(dt.timedelta(0)))
+        return git_dt.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return None
