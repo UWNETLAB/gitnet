@@ -365,6 +365,10 @@ class TestAnnotateHelpers(unittest.TestCase):
         self.assertEquals(helpers.make_domain({"email":"joe@gmail.com"}), "gmail")
         self.assertEquals(helpers.make_domain({"email":"afsjkl@gar.net"}), "gar")
         self.assertEquals(helpers.make_domain({"email":"linux@cs.uwaterloo.ca"}), "cs.uwaterloo")
+        self.assertEquals(helpers.make_domain({"notemail":"mail@hoolagin.com"}), None)
+        self.assertEquals(helpers.make_domain({"email":"mailhoolagin.com"}), None)
+        self.assertEquals(helpers.make_domain({"email":"mail@hoolagincom"}), None)
+        self.assertEquals(helpers.make_domain({"email":"mail@.com"}), None)
 
 if __name__ == '__main__':
     unittest.main(buffer=True)

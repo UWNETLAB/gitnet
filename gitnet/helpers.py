@@ -469,7 +469,13 @@ def make_domain(dict):
 
     **Return** `string` or `none`
     """
+    # Check if email is in the data dictionary.
     if "email" in dict:
+        # Handling invalid emails. Check if the string is valid format with regex.
+        email_re = re.compile(".+@.+\..+")
+        if not re.match(email_re,dict["email"]):
+            return None
+        # Handling valid emails by stripping away non-domain characters.
         domain = dict["email"].split("@")[1]
         go = True
         while go:
@@ -477,5 +483,6 @@ def make_domain(dict):
                 go = False
             domain = domain[:-1]
         return domain
+    # If missing, produce none.
     else:
         return None
