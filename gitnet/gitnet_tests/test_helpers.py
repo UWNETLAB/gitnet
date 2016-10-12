@@ -341,34 +341,36 @@ class TestAnnotateHelpers(unittest.TestCase):
     def test_make_utc_date(self):
         """Is the function converting the string properly?"""
         utc = helpers.make_utc_date({"date":"Mon Jul 22 11:40:03 2013 -0600"})
-        self.assertEquals(utc, "2013-07-22")
+        self.assertEqual(utc, "2013-07-22")
         utc = helpers.make_utc_date({"date":"Sat Apr 16 22:29:50 2016 -0200"})
-        self.assertEquals(utc, "2016-04-17")
+        self.assertEqual(utc, "2016-04-17")
         utc = helpers.make_utc_date({"date":"Fri Oct 5 12:20:15 2012 +0200"})
-        self.assertEquals(utc, "2012-10-05")
+        self.assertEqual(utc, "2012-10-05")
         utc = helpers.make_utc_date({"not":"Fri Oct 5 12:20:15 2012 +0200"})
-        self.assertEquals(utc, None)
+        self.assertEqual(utc, None)
 
     def test_make_utc_datetime(self):
         """Is the function converting the string properly?"""
         utc = helpers.make_utc_datetime({"date":"Mon Jul 22 11:40:03 2013 -0600"})
-        self.assertEquals(utc, "2013-07-22 17:40:03")
+        self.assertEqual(utc, "2013-07-22 17:40:03")
         utc = helpers.make_utc_datetime({"date":"Sat Apr 16 22:29:50 2016 -0200"})
-        self.assertEquals(utc, "2016-04-17 00:29:50")
+        self.assertEqual(utc, "2016-04-17 00:29:50")
         utc = helpers.make_utc_datetime({"date":"Fri Oct 5 12:20:15 2012 +0200"})
-        self.assertEquals(utc, "2012-10-05 10:20:15")
+        self.assertEqual(utc, "2012-10-05 10:20:15")
         utc = helpers.make_utc_datetime({"not":"Fri Oct 5 12:20:15 2012 +0200"})
-        self.assertEquals(utc, None)
+        self.assertEqual(utc, None)
 
     def test_make_domain(self):
-        self.assertEquals(helpers.make_domain({"email":"mail@hoolagin.com"}), "hoolagin")
-        self.assertEquals(helpers.make_domain({"email":"joe@gmail.com"}), "gmail")
-        self.assertEquals(helpers.make_domain({"email":"afsjkl@gar.net"}), "gar")
-        self.assertEquals(helpers.make_domain({"email":"linux@cs.uwaterloo.ca"}), "cs.uwaterloo")
-        self.assertEquals(helpers.make_domain({"notemail":"mail@hoolagin.com"}), None)
-        self.assertEquals(helpers.make_domain({"email":"mailhoolagin.com"}), None)
-        self.assertEquals(helpers.make_domain({"email":"mail@hoolagincom"}), None)
-        self.assertEquals(helpers.make_domain({"email":"mail@.com"}), None)
+        self.assertEqual(helpers.make_domain({"email":"mail@hoolagin.com"}), "hoolagin")
+        self.assertEqual(helpers.make_domain({"email":"joe@gmail.com"}), "gmail")
+        self.assertEqual(helpers.make_domain({"email":"afsjkl@gar.net"}), "gar")
+        self.assertEqual(helpers.make_domain({"email":"linux@cs.uwaterloo.ca"}), "cs.uwaterloo")
+        self.assertEqual(helpers.make_domain({"notemail":"mail@hoolagin.com"}), None)
+        self.assertEqual(helpers.make_domain({"email":"mailhoolagin.com"}), None)
+        self.assertEqual(helpers.make_domain({"email":"mail@hoolagincom"}), None)
+        self.assertEqual(helpers.make_domain({"email":"mail@.com"}), None)
+        self.assertEqual(helpers.make_domain({"email":""}), None)
+        self.assertEqual(helpers.make_domain({"email":None}), None)
 
 if __name__ == '__main__':
     unittest.main(buffer=True)

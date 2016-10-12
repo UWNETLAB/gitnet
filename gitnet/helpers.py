@@ -14,8 +14,9 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************************************
 
-import datetime as dt
 import re
+import warnings
+import datetime as dt
 from gitnet.exceptions import InputError
 
 # Working with Git Log date strings
@@ -471,18 +472,24 @@ def make_domain(dict):
     """
     # Check if email is in the data dictionary.
     if "email" in dict:
-        # Handling invalid emails. Check if the string is valid format with regex.
-        email_re = re.compile(".+@.+\..+")
-        if not re.match(email_re,dict["email"]):
+        try:
+            # Handling invalid emails. Check if the string is valid format with regex.
+            if dict["email"] == "" or dict["email"] == None:
+                return None
+            email_re = re.compile(".+@.+\..+")
+            if not re.match(email_re,dict["email"]):
+                return None
+            # Handling valid emails by stripping away non-domain characters.
+            domain = dict["email"].split("@")[1]
+            go = True
+            while go:
+                if domain[-1] == ".":
+                    go = False
+                domain = domain[:-1]
+            return domain
+        except:
             return None
-        # Handling valid emails by stripping away non-domain characters.
-        domain = dict["email"].split("@")[1]
-        go = True
-        while go:
-            if domain[-1] == ".":
-                go = False
-            domain = domain[:-1]
-        return domain
+            warnings.warn("Domain generator failed for: [{}]. Assigned None value.".format(dict["email"]))
     # If missing, produce none.
     else:
         return None
