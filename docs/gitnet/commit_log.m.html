@@ -1048,6 +1048,8 @@ table {
           
   <ul>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.__init__">__init__</a></li>
+    <li class="mono"><a href="#gitnet.commit_log.CommitLog.add_attribute">add_attribute</a></li>
+    <li class="mono"><a href="#gitnet.commit_log.CommitLog.annotate">annotate</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.attributes">attributes</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.author_email_list">author_email_list</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.browse">browse</a></li>
@@ -1060,6 +1062,7 @@ table {
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.generate_nodes">generate_nodes</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.get_tags">get_tags</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.ignore">ignore</a></li>
+    <li class="mono"><a href="#gitnet.commit_log.CommitLog.mutate_attribute">mutate_attribute</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.network">network</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.replace_val">replace_val</a></li>
     <li class="mono"><a href="#gitnet.commit_log.CommitLog.tsv">tsv</a></li>
@@ -1108,13 +1111,25 @@ table {
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">gitnet.log</span> <span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
-<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">net_edges_changes</span>
+<span class="kn">from</span> <span class="nn">gitnet.helpers</span> <span class="kn">import</span> <span class="n">datetime_git</span><span class="p">,</span> <span class="n">most_common</span><span class="p">,</span> <span class="n">filter_regex</span><span class="p">,</span> <span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">net_edges_changes</span><span class="p">,</span> \
+    <span class="n">make_utc_datetime</span><span class="p">,</span> <span class="n">make_utc_date</span><span class="p">,</span> <span class="n">make_domain</span>
 
 
 <span class="k">class</span> <span class="nc">CommitLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method that automatically runs after initialization. Processes date information, and adds easily parsed</span>
+<span class="sd">        date strings to each record.</span>
+<span class="sd">        utc_date : &quot;YYYY-MM-DD&quot; in Coordinated Universal Time. Formatted for `parse_date()` in `readr` package in R.</span>
+<span class="sd">        utc_datetime : &quot;YYYY-MM-DD HH:MM:SS&quot; in Coordinated Universal Time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="n">make_utc_date</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="n">make_utc_datetime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="n">make_domain</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1152,10 +1167,10 @@ table {
         <span class="c1"># Define included/excluded data summaries.</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
             <span class="n">output</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="c1"># Print summary</span>
@@ -1265,7 +1280,7 @@ table {
 <span class="sd">        &gt; A list of ordered reference hashes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">ignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignoreif</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
@@ -1306,7 +1321,7 @@ table {
             <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;matches&quot;</span>
         <span class="k">elif</span> <span class="n">ignoreif</span> <span class="o">==</span> <span class="s2">&quot;no match&quot;</span><span class="p">:</span>
             <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;doesn&#39;t match&quot;</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="n">self_copy</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">self_copy</span>
 
@@ -1368,6 +1383,17 @@ table {
 <span class="sd">    A subclass of `Log` for holding git commit logs, whose data has been parsed into a dictionary of dictionaries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method that automatically runs after initialization. Processes date information, and adds easily parsed</span>
+<span class="sd">        date strings to each record.</span>
+<span class="sd">        utc_date : &quot;YYYY-MM-DD&quot; in Coordinated Universal Time. Formatted for `parse_date()` in `readr` package in R.</span>
+<span class="sd">        utc_datetime : &quot;YYYY-MM-DD HH:MM:SS&quot; in Coordinated Universal Time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="n">make_utc_date</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="n">make_utc_datetime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="n">make_domain</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method for creating extended descriptive output for the `Commitlog` subclass.</span>
@@ -1404,10 +1430,10 @@ table {
         <span class="c1"># Define included/excluded data summaries.</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                      <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
             <span class="n">output</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="c1"># Print summary</span>
@@ -1517,7 +1543,7 @@ table {
 <span class="sd">        &gt; A list of ordered reference hashes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">ignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">ignoreif</span><span class="o">=</span><span class="s2">&quot;match&quot;</span><span class="p">):</span>
@@ -1558,7 +1584,7 @@ table {
             <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;matches&quot;</span>
         <span class="k">elif</span> <span class="n">ignoreif</span> <span class="o">==</span> <span class="s2">&quot;no match&quot;</span><span class="p">:</span>
             <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;doesn&#39;t match&quot;</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="n">self_copy</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">self_copy</span>
 
@@ -1679,8 +1705,92 @@ added to the empty dictionary in <code>self.collection</code>.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">key_type</span> <span class="o">=</span> <span class="n">key_type</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">filters</span>
-    <span class="c1"># This must be updated as tags/subclasses are added. Ideally, this would be housed within each subclass.</span>
+    <span class="c1"># Annotate and tags must be updated as tags/subclasses are added.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">annotate</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tags</span><span class="p">()</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.commit_log.CommitLog.add_attribute">
+    <p>def <span class="ident">add_attribute</span>(</p><p>self, name, helper)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Creates a new record attribute.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>name</em> : <code>string</code></p>
+<blockquote>
+<p>The name of the new attribute.</p>
+</blockquote>
+<p><em>helper</em> : <code>None</code></p>
+<blockquote>
+<p>A helper function, which takes an attribute dict and produces the new attribute.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>A new Log object, identical to self but with the desired attribute.</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.add_attribute', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.commit_log.CommitLog.add_attribute" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">add_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">helper</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new record attribute.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *name* : `string`</span>
+<span class="sd">    &gt;&gt; The name of the new attribute.</span>
+<span class="sd">    &gt; *helper* : `None`</span>
+<span class="sd">    &gt;&gt; A helper function, which takes an attribute dict and produces the new attribute.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; A new Log object, identical to self but with the desired attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">self_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">self_copy</span><span class="p">:</span>
+        <span class="n">self_copy</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">helper</span><span class="p">(</span><span class="n">self_copy</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">self_copy</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.commit_log.CommitLog.annotate">
+    <p>def <span class="ident">annotate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A method that automatically runs after initialization. Processes date information, and adds easily parsed
+date strings to each record.
+utc_date : "YYYY-MM-DD" in Coordinated Universal Time. Formatted for <code>parse_date()</code> in <code>readr</code> package in R.
+utc_datetime : "YYYY-MM-DD HH:MM:SS" in Coordinated Universal Time.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.annotate', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.commit_log.CommitLog.annotate" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A method that automatically runs after initialization. Processes date information, and adds easily parsed</span>
+<span class="sd">    date strings to each record.</span>
+<span class="sd">    utc_date : &quot;YYYY-MM-DD&quot; in Coordinated Universal Time. Formatted for `parse_date()` in `readr` package in R.</span>
+<span class="sd">    utc_datetime : &quot;YYYY-MM-DD HH:MM:SS&quot; in Coordinated Universal Time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="n">make_utc_date</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="n">make_utc_datetime</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mutate_attribute</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="n">make_domain</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -1879,10 +1989,10 @@ The intention is that the user can use these author names in the <code>replace_v
     <span class="c1"># Define included/excluded data summaries.</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                  <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+                  <span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_date&quot;</span><span class="p">,</span> <span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">,</span> <span class="s2">&quot;merges&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
         <span class="n">output</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="c1"># Print summary</span>
@@ -2274,7 +2384,7 @@ are not valid for date strings.</p>
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_edges">
-    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function net_edges_simple at 0x112d7a6a8&gt;, edge_attributes=[])</p>
+    <p>def <span class="ident">generate_edges</span>(</p><p>self, mode1, mode2, helper=&lt;function net_edges_simple at 0x10fdd0a60&gt;, edge_attributes=[])</p>
     </div>
     
 
@@ -2361,7 +2471,7 @@ Computes edges between authors and files based on the number of lines changed in
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.generate_network">
-    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, edge_helper=&lt;function net_edges_simple at 0x112d7a6a8&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
+    <p>def <span class="ident">generate_network</span>(</p><p>self, mode1, mode2, colours=None, edge_helper=&lt;function net_edges_simple at 0x10fdd0a60&gt;, edge_attributes=[], mode1_atom_attrs=[], mode2_atom_attrs=[], mode1_vector_attrs=[], mode2_vector_attrs=[])</p>
     </div>
     
 
@@ -2378,6 +2488,14 @@ pull requests will not be transferred from the log.</p>
 <p><em>mode2</em> : <code>string</code></p>
 <blockquote>
 <p>The tag string for the second mode type.</p>
+</blockquote>
+<p><em>colours</em> : <code>string</code></p>
+<blockquote>
+<p>The string that specifies the colour preset desired by the user.
+<em>Simple</em> : Returns a graph in which each mode is a different colour (red and white). Attention to the order of modes is required, as there is no table.
+<em>Complex</em> : Returns a graph in which each mode is a different colour, and if <code>files</code> is one of the modes, popular file types will be a different colour.
+Otherwise, simply do not include the colour argument. The defualt colour is light grey for all nodes.
+Enabling colours will also add the colours column to the node data, which will allow importing into other software. See the walkthrough and R tutorial for the example.</p>
 </blockquote>
 <p><em>edge_helper</em> : <code>None</code></p>
 <blockquote>
@@ -2411,11 +2529,11 @@ pull requests will not be transferred from the log.</p>
 <p><strong>Notes</strong> :</p>
 <p>Currently, two edge_helper functions are available in gitnet.gn_helpers:</p>
 <blockquote>
-<p><code>simple_edge</code></p>
+<p><code>net_edges_simple</code></p>
 <blockquote>
 <p>Creates an unweighted edge, and saves the attributes specified by edge_attributes.</p>
 </blockquote>
-<p><code>changes_edge</code></p>
+<p><code>net_edges_changes</code></p>
 <blockquote>
 <p>Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).</p>
 <p>Computes edges between authors and files based on the number of lines changed in the</p>
@@ -2425,7 +2543,7 @@ pull requests will not be transferred from the log.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.generate_network', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.generate_network" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">generate_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">edge_helper</span><span class="o">=</span><span class="n">net_edges_simple</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_atom_attrs</span><span class="o">=</span><span class="p">[],</span>
                      <span class="n">mode2_atom_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode1_vector_attrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode2_vector_attrs</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract network generator. For networks that contain authors, any authors that made</span>
@@ -2435,6 +2553,12 @@ pull requests will not be transferred from the log.</p>
 <span class="sd">    &gt;&gt; The tag string for the first mode type.</span>
 <span class="sd">    &gt; *mode2* : `string`</span>
 <span class="sd">    &gt;&gt; The tag string for the second mode type.</span>
+<span class="sd">    &gt; *colours* : `string`</span>
+<span class="sd">    &gt;&gt; The string that specifies the colour preset desired by the user.</span>
+<span class="sd">    &gt;&gt; *Simple* : Returns a graph in which each mode is a different colour (red and white). Attention to the order of modes is required, as there is no table.</span>
+<span class="sd">    &gt;&gt; *Complex* : Returns a graph in which each mode is a different colour, and if `files` is one of the modes, popular file types will be a different colour.</span>
+<span class="sd">    &gt;&gt; Otherwise, simply do not include the colour argument. The defualt colour is light grey for all nodes.</span>
+<span class="sd">    &gt;&gt; Enabling colours will also add the colours column to the node data, which will allow importing into other software. See the walkthrough and R tutorial for the example.</span>
 <span class="sd">    &gt; *edge_helper* : `None`</span>
 <span class="sd">    &gt;&gt; The helper function used to compute an edge.</span>
 <span class="sd">    &gt; *edge_attributes* : `list`</span>
@@ -2451,9 +2575,9 @@ pull requests will not be transferred from the log.</p>
 <span class="sd">    &gt; A `MultiGraphPlus` object, which inherits from the NetworkX MultiGraph class.</span>
 <span class="sd">    **Notes** :</span>
 <span class="sd">    Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
-<span class="sd">    &gt; `simple_edge`</span>
+<span class="sd">    &gt; `net_edges_simple`</span>
 <span class="sd">    &gt;&gt; Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
-<span class="sd">    &gt; `changes_edge`</span>
+<span class="sd">    &gt; `net_edges_changes`</span>
 <span class="sd">    &gt;&gt; Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
 <span class="sd">    &gt;&gt; Computes edges between authors and files based on the number of lines changed in the</span>
 <span class="sd">    &gt;&gt; corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).</span>
@@ -2470,6 +2594,30 @@ pull requests will not be transferred from the log.</p>
     <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_edges</span><span class="p">(</span><span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">helper</span><span class="o">=</span><span class="n">edge_helper</span><span class="p">,</span> <span class="n">edge_attributes</span><span class="o">=</span><span class="n">edge_attributes</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">])])</span>
+    <span class="k">if</span> <span class="n">colours</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">colours</span> <span class="o">==</span> <span class="s1">&#39;simple&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">mode1</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;oldlace&#39;</span>
+                <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">mode2</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;lightcoral&#39;</span>
+        <span class="k">elif</span> <span class="n">colours</span> <span class="o">==</span> <span class="s1">&#39;complex&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;author&#39;</span><span class="p">:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;oldlace&#39;</span>
+                    <span class="k">elif</span> <span class="s2">&quot;.py&quot;</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;springgreen&#39;</span>
+                    <span class="k">elif</span> <span class="s2">&quot;.cc&quot;</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;seagreen&#39;</span>
+                    <span class="k">elif</span> <span class="s2">&quot;.md&quot;</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;orange&#39;</span>
+                    <span class="k">elif</span> <span class="s2">&quot;.sh&quot;</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;colour&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;slateblue&quot;</span>
+                    <span class="k">elif</span> <span class="s2">&quot;.html&quot;</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;colour&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;plum&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;colour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;lightgrey&#39;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Created a MultiGraphPlus network object with {} nodes and {} edges.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()))</span>
     <span class="k">return</span> <span class="n">graph</span>
 </pre></div>
 
@@ -2644,7 +2792,7 @@ is the order of columns in TSV output.</p>
 <span class="sd">    **Return** `list`</span>
 <span class="sd">    &gt; A list of ordered reference hashes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span><span class="s2">&quot;author&quot;</span><span class="p">,</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_date&quot;</span><span class="p">,</span><span class="s2">&quot;utc_datetime&quot;</span><span class="p">,</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span>
             <span class="s2">&quot;fedits&quot;</span><span class="p">,</span><span class="s2">&quot;inserts&quot;</span><span class="p">,</span><span class="s2">&quot;deletes&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="s2">&quot;files&quot;</span><span class="p">,</span><span class="s2">&quot;changes&quot;</span><span class="p">]</span>
 </pre></div>
 
@@ -2712,9 +2860,57 @@ and moves them into <code>f_ignore</code> and <code>ch_ignore</code> respectivel
         <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;matches&quot;</span>
     <span class="k">elif</span> <span class="n">ignoreif</span> <span class="o">==</span> <span class="s2">&quot;no match&quot;</span><span class="p">:</span>
         <span class="n">ignore_note</span> <span class="o">=</span> <span class="s2">&quot;doesn&#39;t match&quot;</span>
-    <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;Ignore files that {} the regular expression: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ignore_note</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
     <span class="n">self_copy</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">self_copy</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="gitnet.commit_log.CommitLog.mutate_attribute">
+    <p>def <span class="ident">mutate_attribute</span>(</p><p>self, name, helper)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Creates a new record attribute, mutating the original log.</p>
+<p><strong>Parameters</strong> :</p>
+<blockquote>
+<p><em>name</em> : <code>string</code></p>
+<blockquote>
+<p>The name of the new attribute.</p>
+</blockquote>
+<p><em>helper</em> : <code>None</code></p>
+<blockquote>
+<p>A helper function, which takes an attribute dict and produces the new attribute.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> :</p>
+<blockquote>
+<p>None</p>
+</blockquote></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.mutate_attribute', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.commit_log.CommitLog.mutate_attribute" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mutate_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">helper</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new record attribute, mutating the original log.</span>
+<span class="sd">    **Parameters** :</span>
+<span class="sd">    &gt; *name* : `string`</span>
+<span class="sd">    &gt;&gt; The name of the new attribute.</span>
+<span class="sd">    &gt; *helper* : `None`</span>
+<span class="sd">    &gt;&gt; A helper function, which takes an attribute dict and produces the new attribute.</span>
+<span class="sd">    **Return** :</span>
+<span class="sd">    &gt; None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">helper</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
 </pre></div>
 
   </div>
@@ -2840,9 +3036,9 @@ This method is particularly useful for combining duplicate names for the same au
             <span class="k">elif</span> <span class="n">cur_val</span> <span class="o">!=</span> <span class="n">selfcopy</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">record</span><span class="p">][</span><span class="n">tag</span><span class="p">]</span> <span class="ow">and</span> <span class="n">replaced_vals</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The tag requested does not appear in this collection.&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed. The tag requested does not appear in this collection.&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The value requested does not appear in any records in this collection.&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed. The value requested does not appear in any records in this collection.&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Success. You have replaced the &quot;</span> <span class="o">+</span> <span class="n">tag</span> <span class="o">+</span> <span class="s2">&quot; value: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cur_val</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">replaced_vals</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; times.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">selfcopy</span>
@@ -2856,7 +3052,7 @@ This method is particularly useful for combining duplicate names for the same au
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.tsv">
-    <p>def <span class="ident">tsv</span>(</p><p>self, ignore=[], fname=None, empty_cols=False)</p>
+    <p>def <span class="ident">tsv</span>(</p><p>self, fname, ignore=[], empty_cols=False)</p>
     </div>
     
 
@@ -2887,7 +3083,7 @@ file will be written.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.commit_log.CommitLog.tsv', this);">Show source &equiv;</a></p>
   <div id="source-gitnet.commit_log.CommitLog.tsv" class="source">
-    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">tsv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">fname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">empty_cols</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">tsv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">empty_cols</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts the `Log` to a tab-delimited string (using a tab-delimted format is preferrable to CSV since this option</span>
 <span class="sd">    does not change the content strings by removing commas).</span>
@@ -2973,7 +3169,8 @@ file will be written.</p>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Non-string input forced to string {} time(s).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_forced</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;Data written to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;Data written to {} in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span>
 </pre></div>
 
@@ -3035,7 +3232,7 @@ file will be written.</p>
             
   <div class="item">
     <div class="name def" id="gitnet.commit_log.CommitLog.write_edges">
-    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function net_edges_simple at 0x112d7a6a8&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
+    <p>def <span class="ident">write_edges</span>(</p><p>self, fname, mode1, mode2, helper=&lt;function net_edges_simple at 0x10fdd0a60&gt;, edge_attribute=[&#39;weight&#39;, &#39;date&#39;])</p>
     </div>
     
 
@@ -3069,11 +3266,11 @@ file will be written.</p>
 <p><strong>Notes</strong> :</p>
 <p>Currently, two edge_helper functions are available in gitnet.gn_helpers:</p>
 <blockquote>
-<p><code>simple_edge</code></p>
+<p><code>net_edges_simple</code></p>
 <blockquote>
 <p>Creates an unweighted edge, and saves the attributes specified by edge_attributes.</p>
 </blockquote>
-<p><code>changes_edge</code></p>
+<p><code>net_edges_changes</code></p>
 <blockquote>
 <p>Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).</p>
 <p>Computes edges between authors and files based on the number of lines changed in the</p>
@@ -3100,9 +3297,9 @@ file will be written.</p>
 <span class="sd">    **Return** : `None`</span>
 <span class="sd">    **Notes** :</span>
 <span class="sd">    Currently, two edge_helper functions are available in gitnet.gn_helpers:</span>
-<span class="sd">    &gt; `simple_edge`</span>
+<span class="sd">    &gt; `net_edges_simple`</span>
 <span class="sd">    &gt;&gt; Creates an unweighted edge, and saves the attributes specified by edge_attributes.</span>
-<span class="sd">    &gt; `changes_edge`</span>
+<span class="sd">    &gt; `net_edges_changes`</span>
 <span class="sd">    &gt;&gt; Only to be used for Author/File networks, with &quot;changes&quot; from &quot;git log --stat&quot; logs (as in a CommitLog).</span>
 <span class="sd">    &gt;&gt; Computes edges between authors and files based on the number of lines changed in the</span>
 <span class="sd">    &gt;&gt; corresponding changes string (for example, the weight is 6 for `README.md | 6 +++---`).</span>
@@ -3134,7 +3331,7 @@ file will be written.</p>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># Close file and print summary.</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Wrote edgelist with attributes to {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Wrote edgelist with attributes to {} in {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
 </pre></div>
 
   </div>
@@ -3245,7 +3442,7 @@ file will be written.</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Wrote node attributes to {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Wrote node attributes to {} in {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
 </pre></div>
 
   </div>

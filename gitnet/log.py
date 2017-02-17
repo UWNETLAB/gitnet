@@ -14,11 +14,11 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************************************
 
+import os
+import copy
+import warnings
 import pandas as pd
 import datetime as dt
-import os
-import warnings
-import copy
 import subprocess as sub
 from gitnet.multigraph import MultiGraphPlus
 from gitnet.helpers import datetime_git, filter_before, filter_beforex, filter_since, filter_sincex, \
@@ -916,11 +916,11 @@ class Log(object):
 
         Currently, two edge_helper functions are available in gitnet.gn_helpers:
 
-        > `simple_edge`
+        > `net_edges_simple`
 
         >> Creates an unweighted edge, and saves the attributes specified by edge_attributes.
 
-        > `changes_edge`
+        > `net_edges_changes`
 
         >> Only to be used for Author/File networks, with "changes" from "git log --stat" logs (as in a CommitLog).
 

@@ -1052,6 +1052,9 @@ table {
     <li class="mono"><a href="#gitnet.helpers.filter_since">filter_since</a></li>
     <li class="mono"><a href="#gitnet.helpers.filter_sincex">filter_sincex</a></li>
     <li class="mono"><a href="#gitnet.helpers.list_to_scd">list_to_scd</a></li>
+    <li class="mono"><a href="#gitnet.helpers.make_domain">make_domain</a></li>
+    <li class="mono"><a href="#gitnet.helpers.make_utc_date">make_utc_date</a></li>
+    <li class="mono"><a href="#gitnet.helpers.make_utc_datetime">make_utc_datetime</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_common">most_common</a></li>
     <li class="mono"><a href="#gitnet.helpers.most_occurrences">most_occurrences</a></li>
     <li class="mono"><a href="#gitnet.helpers.net_edges_changes">net_edges_changes</a></li>
@@ -1094,10 +1097,10 @@ table {
 <span class="c1"># If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># *********************************************************************************************</span>
 
-<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
 <span class="kn">from</span> <span class="nn">gitnet.exceptions</span> <span class="kn">import</span> <span class="n">InputError</span>
-
 
 <span class="c1"># Working with Git Log date strings</span>
 <span class="k">def</span> <span class="nf">datetime_git</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
@@ -1135,7 +1138,6 @@ table {
             <span class="k">raise</span> <span class="n">InputError</span><span class="p">(</span><span class="s2">&quot;Unrecognized date format. match should be a Git formatted date string &quot;</span>
                              <span class="s2">&quot;(e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;) or a datetime object.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ref_date</span>
-
 
 <span class="c1"># Filtering functions.</span>
 <span class="k">def</span> <span class="nf">filter_since</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
@@ -1287,8 +1289,30 @@ table {
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">False</span>
 
+<span class="k">def</span> <span class="nf">list_to_scd</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings</span>
+<span class="sd">    prior to joining.</span>
 
-<span class="c1"># Working with lists.</span>
+<span class="sd">    **Parameters**</span>
+
+<span class="sd">    &gt;*lst* : `list`</span>
+<span class="sd">    &gt;&gt; A list of items which are either strings or objects which can be converted to strings using `str()`</span>
+
+<span class="sd">    **Return** `str`</span>
+<span class="sd">    &gt; A String which includes each item within `lst`, separated by semicolons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">string</span>
+
 <span class="k">def</span> <span class="nf">most_common</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a list containing the n most common entries (occurring more than once) in a list. If the nth most common</span>
@@ -1337,7 +1361,6 @@ table {
 
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ret_list</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-
 <span class="k">def</span> <span class="nf">most_occurrences</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces the number of times the most common value appears.</span>
@@ -1364,32 +1387,6 @@ table {
         <span class="k">elif</span> <span class="n">occurrences</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="nb">max</span><span class="p">:</span>
             <span class="n">m_common</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">max</span>
-
-
-<span class="k">def</span> <span class="nf">list_to_scd</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Produces a string which joins the items of the list by semicolons. Non-string items are converted to strings</span>
-<span class="sd">    prior to joining.</span>
-
-<span class="sd">    **Parameters**</span>
-
-<span class="sd">    &gt;*lst* : `list`</span>
-<span class="sd">    &gt;&gt; A list of items which are either strings or objects which can be converted to strings using `str()`</span>
-
-<span class="sd">    **Return** `str`</span>
-<span class="sd">    &gt; A String which includes each item within `lst`, separated by semicolons.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">new_lst</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">new_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-
-    <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">string</span>
-
 
 <span class="c1"># Network Edge Generator Functions</span>
 <span class="k">def</span> <span class="nf">net_edges_simple</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
@@ -1466,7 +1463,6 @@ table {
         <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
 
-
 <span class="c1"># Network Attribute Helper Functions</span>
 <span class="k">def</span> <span class="nf">node_colours</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1503,6 +1499,83 @@ table {
                 <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;lightgrey&quot;</span>
+
+<span class="c1"># Helpers for making UTC time strings from git time strings.</span>
+
+<span class="k">def</span> <span class="nf">make_utc_date</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;date&quot; present, returns &quot;YYYY-MM-DD&quot; in Coordinated Universal Time.</span>
+<span class="sd">    Otherwise, returns None. &quot;date&quot; must be a git-formatted string, e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">git_dt</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">git_dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">make_utc_datetime</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;date&quot; present, returns &quot;YYYY-MM-DD HH:MM:SS&quot; in</span>
+<span class="sd">    Coordinated Universal Time. Otherwise, returns None. &quot;date&quot; must be a git-formatted string,</span>
+<span class="sd">    e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">git_dt</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">git_dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">make_domain</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;email&quot; present, returns its domain. Otherwise, returns None.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if email is in the data dictionary.</span>
+    <span class="k">if</span> <span class="s2">&quot;email&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Handling invalid emails. Check if the string is valid format with regex.</span>
+            <span class="k">if</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="n">email_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+@.+\..+&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">email_re</span><span class="p">,</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="c1"># Handling valid emails by stripping away non-domain characters.</span>
+            <span class="n">domain</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">go</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">while</span> <span class="n">go</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">domain</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                    <span class="n">go</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">domain</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Domain generator failed for: [{}]. Assigned None value.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]))</span>
+    <span class="c1"># If missing, produce none.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
 </pre></div>
 
   </div>
@@ -2043,6 +2116,165 @@ prior to joining.</p>
     <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">string</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.make_domain">
+    <p>def <span class="ident">make_domain</span>(</p><p>dict)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Takes an attribute dictionary. If "email" present, returns its domain. Otherwise, returns None.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<p><em>dict</em> : <code>dict</code></p>
+<blockquote>
+<p>An attribute dictionary.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>string</code> or <code>none</code></p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.make_domain', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.make_domain" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_domain</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;email&quot; present, returns its domain. Otherwise, returns None.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if email is in the data dictionary.</span>
+    <span class="k">if</span> <span class="s2">&quot;email&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Handling invalid emails. Check if the string is valid format with regex.</span>
+            <span class="k">if</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="n">email_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+@.+\..+&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">email_re</span><span class="p">,</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="c1"># Handling valid emails by stripping away non-domain characters.</span>
+            <span class="n">domain</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">go</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">while</span> <span class="n">go</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">domain</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                    <span class="n">go</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">domain</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Domain generator failed for: [{}]. Assigned None value.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]))</span>
+    <span class="c1"># If missing, produce none.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.make_utc_date">
+    <p>def <span class="ident">make_utc_date</span>(</p><p>dict)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Takes an attribute dictionary. If "date" present, returns "YYYY-MM-DD" in Coordinated Universal Time.
+Otherwise, returns None. "date" must be a git-formatted string, e.g. 'Mon Apr 18 00:59:02 2016 -0400'.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<p><em>dict</em> : <code>dict</code></p>
+<blockquote>
+<p>An attribute dictionary.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>string</code> or <code>none</code></p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.make_utc_date', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.make_utc_date" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_utc_date</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;date&quot; present, returns &quot;YYYY-MM-DD&quot; in Coordinated Universal Time.</span>
+<span class="sd">    Otherwise, returns None. &quot;date&quot; must be a git-formatted string, e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">git_dt</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">git_dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="gitnet.helpers.make_utc_datetime">
+    <p>def <span class="ident">make_utc_datetime</span>(</p><p>dict)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Takes an attribute dictionary. If "date" present, returns "YYYY-MM-DD HH:MM:SS" in
+Coordinated Universal Time. Otherwise, returns None. "date" must be a git-formatted string,
+e.g. 'Mon Apr 18 00:59:02 2016 -0400'.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<p><em>dict</em> : <code>dict</code></p>
+<blockquote>
+<p>An attribute dictionary.</p>
+</blockquote>
+</blockquote>
+<p><strong>Return</strong> <code>string</code> or <code>none</code></p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-gitnet.helpers.make_utc_datetime', this);">Show source &equiv;</a></p>
+  <div id="source-gitnet.helpers.make_utc_datetime" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_utc_datetime</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an attribute dictionary. If &quot;date&quot; present, returns &quot;YYYY-MM-DD HH:MM:SS&quot; in</span>
+<span class="sd">    Coordinated Universal Time. Otherwise, returns None. &quot;date&quot; must be a git-formatted string,</span>
+<span class="sd">    e.g. &#39;Mon Apr 18 00:59:02 2016 -0400&#39;.</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">    &gt; *dict* : `dict`</span>
+
+<span class="sd">    &gt;&gt; An attribute dictionary.</span>
+
+<span class="sd">    **Return** `string` or `none`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">git_dt</span> <span class="o">=</span> <span class="n">datetime_git</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">git_dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
 </pre></div>
 
   </div>
