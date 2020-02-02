@@ -9,7 +9,7 @@ gitnet
 
 ``gitnet`` is a Python 3 package with tools for collecting, cleaning, and exporting datasets from local Git repositories, as well as creating network datasets and visualizations. The primary purpose of ``gitnet`` is to provide scholarly tools to study the collaboration structure of free and open source software development projects, but may also be of use to organizations, project managers, and curious coders.
 
-**We are not currently developing `gitnet`**, but are happy to respond to any questions. 
+`gitnet` is not under active development right now, but we are happy to respond to any questions you might have about using it. 
 
 A Quick (Meta) Example
 -------------------------------
